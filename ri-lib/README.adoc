@@ -1,0 +1,3 @@
+= Problem Details Impl Lib
+
+This is a library of some classes that can be shared between the JAX-RS and the Spring Boot implementation. This is not part of any public API.

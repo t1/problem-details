@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.t1</groupId>
+    <artifactId>jax-rs-problem-detail</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <description>Problem Details for JAX-RS and Spring Boot</description>
+
+    <repositories>
+        <repository>
+            <id>bintray-t1-javaee-helpers</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/t1/javaee-helpers</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+    </build>
+
+    <modules>
+        <module>api</module>
+        <module>ri</module>
+        <module>ri-lib</module>
+        <module>ri-spring</module>
+        <module>spring</module>
+        <module>test</module>
+    </modules>
+</project>

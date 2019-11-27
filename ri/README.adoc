@@ -1,0 +1,8 @@
+= Problem Details Dummy Implementation for JAX-RS
+
+This is a JAX-RS dummy implementation for the Problem Details API. It's just a dummy, because
+
+a. it's not built into the container, you'll have to build it into your applications
+
+b. it doesn't handle `@Valid` annotated parameters and other exceptions that the container produces.
+
