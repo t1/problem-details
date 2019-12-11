@@ -24,7 +24,7 @@ import static test.ProblemDetailMapperExtension.then;
 
 /**
  * Demonstrate the behavior of mapping exceptions to problem details
- * as presented on the rfc.
+ * as presented in the rfc.
  */
 class DemoIT {
     @RegisterExtension static ProblemDetailMapperExtension mapper = new ProblemDetailMapperExtension();

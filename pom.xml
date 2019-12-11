@@ -28,7 +28,7 @@
         <module>ri</module>
         <module>ri-lib</module>
         <module>ri-spring</module>
-        <module>spring</module>
+        <module>test-spring</module>
         <module>test</module>
     </modules>
 </project>
