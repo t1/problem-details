@@ -21,7 +21,7 @@ public class StandardExceptionBoundary {
         throw new BadRequestException("some message");
     }
 
-    @Path("/bad-request-with-response")
+    @Path("/bad-request-with-text-response")
     @POST public void badRequestWithResponse() {
         throw new BadRequestException(Response.status(BAD_REQUEST)
             .type(TEXT_PLAIN_TYPE).entity("the body").build());

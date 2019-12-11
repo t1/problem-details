@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Demonstrate the behavior of mapping exceptions to problem details
  * as presented in the rfc.
  */
-class SpringDemoIT {
+class DemoIT {
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(SpringDemoBoundary.class)
         .setControllerAdvice(ProblemDetailControllerAdvice.class)

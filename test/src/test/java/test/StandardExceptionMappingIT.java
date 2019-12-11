@@ -43,7 +43,7 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldUseEntityFromWebApplicationException() {
-        Response response = mapper.post("/standard/bad-request-with-response");
+        Response response = mapper.post("/standard/bad-request-with-text-response");
 
         then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         then(response.getMediaType()).isIn(TEXT_PLAIN_TYPE, TEXT_PLAIN_TYPE.withCharset("UTF-8"));

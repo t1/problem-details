@@ -27,7 +27,7 @@ public class StandardExceptionBoundary {
         throw HttpClientErrorException.create("some message", BAD_REQUEST, null, null, null, null);
     }
 
-    @PostMapping(path = "/bad-request-with-response")
+    @PostMapping(path = "/bad-request-with-text-response")
     public void badRequestWithResponse() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(TEXT_PLAIN);
