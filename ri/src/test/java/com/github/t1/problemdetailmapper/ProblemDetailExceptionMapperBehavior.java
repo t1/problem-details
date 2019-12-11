@@ -37,7 +37,7 @@ class ProblemDetailExceptionMapperBehavior {
         assertThat(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(problemDetailAsMap(problemDetail))
             .contains(
-                entry("type", URI.create("urn:problem-type:java.lang.NullPointerException")),
+                entry("type", URI.create("urn:problem-type:null-pointer")),
                 entry("title", "Null Pointer"),
                 entry("status", 500),
                 entry("detail", "some message"))
@@ -51,7 +51,7 @@ class ProblemDetailExceptionMapperBehavior {
         assertThat(problemDetail.getStatusInfo()).isEqualTo(BAD_REQUEST);
         assertThat(problemDetailAsMap(problemDetail))
             .contains(
-                entry("type", URI.create("urn:problem-type:java.lang.IllegalArgumentException")),
+                entry("type", URI.create("urn:problem-type:illegal-argument")),
                 entry("title", "Illegal Argument"),
                 entry("status", 400),
                 entry("detail", "some message"))
@@ -65,7 +65,7 @@ class ProblemDetailExceptionMapperBehavior {
         assertThat(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
         assertThat(problemDetailAsMap(problemDetail))
             .contains(
-                entry("type", URI.create("urn:problem-type:javax.ws.rs.ForbiddenException")),
+                entry("type", URI.create("urn:problem-type:forbidden")),
                 entry("title", "Forbidden"),
                 entry("status", 403),
                 entry("detail", "some message"))
@@ -167,7 +167,7 @@ class ProblemDetailExceptionMapperBehavior {
 
         assertThat(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
         assertThat(problemDetailAsMap(problemDetail)).containsExactly(
-            entry("type", URI.create("urn:problem-type:com.github.t1.problemdetailmapper.ProblemDetailExceptionMapperBehavior$4SomeException")),
+            entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
             entry("status", 500),
             entry("instance", URI.create("urn:invalid-uri-syntax?" +

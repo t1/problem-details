@@ -2,14 +2,19 @@ package com.github.t1.problemdetail.ri.lib;
 
 import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Instance;
+import com.github.t1.problemdetail.LogLevel;
+import com.github.t1.problemdetail.Logging;
 import com.github.t1.problemdetail.ProblemExtension;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriBuilder;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -24,11 +29,16 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import static com.github.t1.problemdetail.LogLevel.AUTO;
 import static java.util.stream.Collectors.joining;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
-public abstract class ProblemDetailBuilder {
+/**
+ * Tech stack independent collector. Template methods can be overridden to provide tech stack specifics.
+ */
+public abstract class ProblemDetails {
     protected final Exception exception;
     protected final Class<? extends Exception> type;
 
@@ -37,13 +47,15 @@ public abstract class ProblemDetailBuilder {
     @Getter private final String mediaType;
     @Getter private final String logMessage;
 
-    public ProblemDetailBuilder(Exception exception) {
+    public ProblemDetails(Exception exception) {
         this.exception = exception;
         this.type = exception.getClass();
         this.status = buildStatus();
         this.body = buildBody();
         this.mediaType = buildResponseMediaType();
         this.logMessage = buildLogMessage();
+
+        log(logMessage);
     }
 
     protected Object buildBody() {
@@ -157,7 +169,7 @@ public abstract class ProblemDetailBuilder {
         }
     }
 
-    private URI buildInstance() {
+    protected URI buildInstance() {
         String instance = null;
         for (Method method : type.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Instance.class)) {
@@ -226,5 +238,66 @@ public abstract class ProblemDetailBuilder {
             .map(entry -> "  " + entry.getKey() + ": " + entry.getValue())
             .collect(joining("\n"))
             : String.valueOf(body);
+    }
+
+
+    private void log(String message) {
+        Logger logger = buildLogger();
+        switch (buildLogLevel()) {
+            case AUTO:
+                if (CLIENT_ERROR.equals(status.getFamily())) {
+                    logger.debug(message);
+                } else {
+                    logger.error(message);
+                }
+                break;
+            case ERROR:
+                logger.error(message);
+                break;
+            case WARNING:
+                logger.warn(message);
+                break;
+            case INFO:
+                logger.info(message);
+                break;
+            case DEBUG:
+                logger.debug(message);
+                break;
+            case OFF:
+                break;
+        }
+    }
+
+    private Logger buildLogger() {
+        Logging logging = findLoggingAnnotation();
+        return (logging == null || logging.to().isEmpty()) ? LoggerFactory.getLogger(type)
+            : LoggerFactory.getLogger(logging.to());
+    }
+
+    private LogLevel buildLogLevel() {
+        Logging logging = findLoggingAnnotation();
+        return (logging == null) ? AUTO : logging.at();
+    }
+
+    private Logging findLoggingAnnotation() {
+        Logging onType = type.getAnnotation(Logging.class);
+        Logging onPackage = type.getPackage().getAnnotation(Logging.class);
+        if (onPackage == null)
+            return onType;
+        if (onType == null)
+            return onPackage;
+        return new Logging() {
+            @Override public Class<? extends Annotation> annotationType() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override public String to() {
+                return (onType.to().isEmpty()) ? onPackage.to() : onType.to();
+            }
+
+            @Override public LogLevel at() {
+                return (onType.at() == AUTO) ? onPackage.at() : onType.at();
+            }
+        };
     }
 }

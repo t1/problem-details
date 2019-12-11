@@ -1,6 +1,6 @@
 package com.github.t1.problemdetail.spring;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
+import com.github.t1.problemdetail.ri.lib.ProblemDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,8 +17,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 import java.util.Enumeration;
 
-import static javax.ws.rs.core.Response.Status.Family.SERVER_ERROR;
-
 /**
  * Maps exceptions to a response with a body containing problem details
  * as specified in https://tools.ietf.org/html/rfc7807
@@ -30,7 +28,7 @@ public class ProblemDetailControllerAdvice {
     @ResponseBody ResponseEntity<Object>
     toProblemDetail(HttpServletRequest request, Exception exception) {
         log.debug("handle error", exception);
-        ProblemDetailBuilder problemDetail = new ProblemDetailBuilder(exception) {
+        ProblemDetails problemDetail = new ProblemDetails(exception) {
             @Override protected Object buildBody() {
                 if (exception instanceof RestClientResponseException) {
                     byte[] body = ((RestClientResponseException) exception).getResponseBodyAsByteArray();
@@ -84,12 +82,6 @@ public class ProblemDetailControllerAdvice {
                 }
             }
         };
-
-        if (SERVER_ERROR.equals(problemDetail.getStatus().getFamily())) {
-            log.error(problemDetail.getLogMessage());
-        } else {
-            log.debug(problemDetail.getLogMessage());
-        }
 
         return ResponseEntity.status(problemDetail.getStatus().getStatusCode())
             .contentType(MediaType.valueOf(problemDetail.getMediaType()))

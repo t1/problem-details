@@ -1,6 +1,6 @@
 package com.github.t1.problemdetailmapper;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
+import com.github.t1.problemdetail.ri.lib.ProblemDetails;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.WebApplicationException;
@@ -29,7 +29,7 @@ public class ProblemDetailExceptionMapper implements ExceptionMapper<Exception> 
             return response;
         }
 
-        ProblemDetailBuilder problemDetail = new ProblemDetailBuilder(exception) {
+        ProblemDetails problemDetail = new ProblemDetails(exception) {
             @Override protected StatusType fallbackStatus() {
                 return (response != null) ? response.getStatusInfo() : super.fallbackStatus();
             }
