@@ -1,7 +1,7 @@
 package com.github.t1.validation;
 
 import com.github.t1.problemdetail.Detail;
-import com.github.t1.problemdetail.ProblemExtension;
+import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 
@@ -43,7 +43,7 @@ public class ValidationFailedException extends RuntimeException {
         return violations.size() + " violations failed";
     }
 
-    @ProblemExtension
+    @Extension
     public Map<String, String> violations() {
         return violations.stream()
             .map(violation -> new SimpleEntry<>(violation.getPropertyPath().toString(), violation.getMessage()))

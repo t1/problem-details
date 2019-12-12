@@ -2,7 +2,7 @@ package com.github.t1.problemdetailmapper;
 
 import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Instance;
-import com.github.t1.problemdetail.ProblemExtension;
+import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
@@ -87,7 +87,7 @@ class ProblemDetailExceptionMapperBehavior {
         @Title("some-title")
         @Status(FORBIDDEN)
         class SomeException extends RuntimeException {
-            @ProblemExtension private final int f1 = 123;
+            @Extension private final int f1 = 123;
             @SuppressWarnings("unused") private final int unmapped = 456;
             @Instance private final URI instance = URI.create("https://some.domain/some/path");
             @Detail String detail = "some-detail";
@@ -111,7 +111,7 @@ class ProblemDetailExceptionMapperBehavior {
         @Title("some-title")
         @Status(FORBIDDEN)
         class SomeException extends RuntimeException {
-            @ProblemExtension private int f1() { return 123; }
+            @Extension private int f1() { return 123; }
 
             @Instance private URI instance() { return URI.create("https://some.domain/some/path"); }
 
@@ -136,7 +136,7 @@ class ProblemDetailExceptionMapperBehavior {
         @Title("some-title")
         @Status(FORBIDDEN)
         class SomeException extends RuntimeException {
-            @ProblemExtension private int f1() { throw new RuntimeException("no f1"); }
+            @Extension private int f1() { throw new RuntimeException("no f1"); }
 
             @Instance private URI instance() { throw new IllegalArgumentException("no instance"); }
 

@@ -2,7 +2,7 @@ package com.github.t1.problemdetaildemoapp;
 
 import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Instance;
-import com.github.t1.problemdetail.ProblemExtension;
+import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
@@ -141,7 +141,7 @@ public class CustomExceptionBoundary {
     @PostMapping(path = "extension-method")
     public void customExtensionMethod() {
         class SomeException extends RuntimeException {
-            @ProblemExtension public String ex() { return "some extension"; }
+            @Extension public String ex() { return "some extension"; }
         }
         throw new SomeException();
     }
@@ -149,7 +149,7 @@ public class CustomExceptionBoundary {
     @PostMapping(path = "extension-method-with-name")
     public void customExtensionMethodWithExplicitName() {
         class SomeMessageException extends RuntimeException {
-            @ProblemExtension("foo") public String ex() { return "some extension"; }
+            @Extension("foo") public String ex() { return "some extension"; }
         }
         throw new SomeMessageException();
     }
@@ -157,7 +157,7 @@ public class CustomExceptionBoundary {
     @PostMapping(path = "extension-field")
     public void customExtensionField() {
         class SomeMessageException extends RuntimeException {
-            @ProblemExtension public String ex = "some extension";
+            @Extension public String ex = "some extension";
         }
         throw new SomeMessageException();
     }
@@ -165,7 +165,7 @@ public class CustomExceptionBoundary {
     @PostMapping(path = "extension-field-with-name")
     public void customExtensionFieldWithName() {
         class SomeMessageException extends RuntimeException {
-            @ProblemExtension("foo") public String ex = "some extension";
+            @Extension("foo") public String ex = "some extension";
         }
         throw new SomeMessageException();
     }
@@ -173,12 +173,12 @@ public class CustomExceptionBoundary {
     @PostMapping(path = "multi-extension")
     public void multiExtension() {
         class SomeMessageException extends RuntimeException {
-            @ProblemExtension String m1() { return "method 1"; }
+            @Extension String m1() { return "method 1"; }
 
-            @ProblemExtension("m2") String method() { return "method 2"; }
+            @Extension("m2") String method() { return "method 2"; }
 
-            @ProblemExtension String f1 = "field 1";
-            @ProblemExtension("f2") String field = "field 2";
+            @Extension String f1 = "field 1";
+            @Extension("f2") String field = "field 2";
         }
         throw new SomeMessageException();
     }

@@ -4,7 +4,7 @@ import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.LogLevel;
 import com.github.t1.problemdetail.Logging;
-import com.github.t1.problemdetail.ProblemExtension;
+import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
@@ -200,12 +200,12 @@ public abstract class ProblemDetails {
     protected Map<String, Object> buildExtensions() {
         Map<String, Object> extensions = new TreeMap<>();
         for (Method method : type.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(ProblemExtension.class)) {
+            if (method.isAnnotationPresent(Extension.class)) {
                 extensions.put(extensionName(method), invoke(method));
             }
         }
         for (Field field : type.getDeclaredFields()) {
-            if (field.isAnnotationPresent(ProblemExtension.class)) {
+            if (field.isAnnotationPresent(Extension.class)) {
                 extensions.put(extensionName(field), get(field));
             }
         }
@@ -213,7 +213,7 @@ public abstract class ProblemDetails {
     }
 
     private String extensionName(Member member) {
-        String annotatedName = ((AnnotatedElement) member).getAnnotation(ProblemExtension.class).value();
+        String annotatedName = ((AnnotatedElement) member).getAnnotation(Extension.class).value();
         return annotatedName.isEmpty() ? member.getName() : annotatedName;
     }
 

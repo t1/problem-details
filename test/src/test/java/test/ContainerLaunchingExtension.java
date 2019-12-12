@@ -11,7 +11,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -41,11 +40,11 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
     }
 
     public static ProblemDetailAssert<ProblemDetail> testPost(String path) {
-        return then(post(path, null));
+        return then(post(path));
     }
 
     public static <T extends ProblemDetail> ProblemDetailAssert<T> testPost(String path, Class<T> type) {
-        return then(post(path, null), type);
+        return then(post(path), type);
     }
 
     public static ProblemDetailAssert<ProblemDetail> testPost(String path, String accept) {
@@ -60,8 +59,8 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         return new ResponseAssert<>(target(path).request(MediaType.valueOf(accept)).post(null), type);
     }
 
-    public static Response post(String path, Entity<?> entity) {
-        return target(path).request(APPLICATION_JSON_TYPE).post(entity);
+    private static Response post(String path) {
+        return target(path).request(APPLICATION_JSON_TYPE).post(null);
     }
 
     private static WebTarget target(String path) {
@@ -72,7 +71,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         .register(ProblemDetailJsonMessageBodyReader.class)
         .register(ProblemDetailXmlMessageBodyReader.class);
 
-    private static WebTarget target() {
+    public static WebTarget target() {
         return CLIENT.target(BASE_URI);
     }
 

@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Demonstrate the behavior of mapping exceptions to problem details
+ * Demonstrate the client side when mapping exceptions to problem details
  * as presented in the rfc.
  */
 class DemoIT {

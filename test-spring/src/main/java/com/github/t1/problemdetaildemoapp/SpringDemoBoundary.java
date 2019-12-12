@@ -12,6 +12,7 @@ import javax.ws.rs.NotFoundException;
 import java.net.URI;
 import java.time.LocalDate;
 
+import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 @Slf4j
@@ -75,7 +76,7 @@ public class SpringDemoBoundary {
         if (balance < cost) {
             throw new OutOfCreditException(balance, cost,
                 URI.create("/account/12345/msgs/abc"),
-                ACCOUNT_1, ACCOUNT_2
+                asList(ACCOUNT_1, ACCOUNT_2)
             );
         }
     }

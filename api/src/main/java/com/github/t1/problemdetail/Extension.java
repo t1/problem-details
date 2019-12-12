@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  */
 @Retention(RUNTIME)
 @Target({METHOD, FIELD})
-public @interface ProblemExtension {
+public @interface Extension {
     /**
      * Defaults to the field/method name
      */

@@ -32,7 +32,7 @@ These defaults can be overridden with annotations.
 
 == Dummy-Impl [ri]
 
-It's called `ri`, but it's actually only a POC, and it's incomplete: it doesn't support the use case that the
+It's called `ri`, but it's actually only a POC, and it's incomplete. See the README for details.
 
 == Test
 
