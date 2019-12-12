@@ -4,24 +4,20 @@ import com.github.t1.problemdetail.ProblemDetail;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.ws.rs.core.Response;
-
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
+import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.BDDAssertions.then;
-import static test.ProblemDetailMapperExtension.then;
+import static test.ContainerLaunchingExtension.testPost;
 
+@ExtendWith(ContainerLaunchingExtension.class)
 class ExtensionMappingIT {
-    @RegisterExtension static ProblemDetailMapperExtension mapper = new ProblemDetailMapperExtension();
 
     @Test void shouldMapExtensionStringMethod() {
-        Response response = mapper.post("/custom/extension-method");
-
-        then(response, ProblemDetailWithExtensionString.class)
+        testPost("/custom/extension-method", ProblemDetailWithExtensionString.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some")
             .hasTitle("Some")
             .hasDetail(null)
@@ -30,11 +26,9 @@ class ExtensionMappingIT {
     }
 
     @Test void shouldMapExtensionStringMethodWithAnnotatedName() {
-        Response response = mapper.post("/custom/extension-method-with-name");
-
-        then(response, ProblemDetailWithExtensionStringFoo.class)
+        testPost("/custom/extension-method-with-name", ProblemDetailWithExtensionStringFoo.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail(null)
@@ -43,11 +37,9 @@ class ExtensionMappingIT {
     }
 
     @Test void shouldMapExtensionStringField() {
-        Response response = mapper.post("/custom/extension-field");
-
-        then(response, ProblemDetailWithExtensionString.class)
+        testPost("/custom/extension-field", ProblemDetailWithExtensionString.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail(null)
@@ -56,11 +48,9 @@ class ExtensionMappingIT {
     }
 
     @Test void shouldMapExtensionStringFieldWithAnnotatedName() {
-        Response response = mapper.post("/custom/extension-field-with-name");
-
-        then(response, ProblemDetailWithExtensionStringFoo.class)
+        testPost("/custom/extension-field-with-name", ProblemDetailWithExtensionStringFoo.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail(null)
@@ -69,11 +59,9 @@ class ExtensionMappingIT {
     }
 
     @Test void shouldMapMultiplePackagePrivateExtensions() {
-        Response response = mapper.post("/custom/multi-extension");
-
-        then(response, ProblemDetailWithMultipleExtensions.class)
+        testPost("/custom/multi-extension", ProblemDetailWithMultipleExtensions.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail(null)

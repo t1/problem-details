@@ -1,23 +1,22 @@
 package test;
 
-import com.github.t1.problemdetail.ProblemDetail;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static test.TestTools.post;
-import static test.TestTools.then;
+import static test.ContainerLaunchingExtension.testPost;
 
+/** The difference between this class and the same class in the `test` module is only in the imports */
+@ExtendWith(ContainerLaunchingExtension.class)
 class CustomExceptionIT {
-    @Test void shouldMapCustomRuntimeException() {
-        ResponseEntity<ProblemDetail> response = post("/custom/runtime-exception");
 
-        then(response)
+    @Test void shouldMapCustomRuntimeException() {
+        testPost("/custom/runtime-exception")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:custom")
             .hasTitle("Custom")
             .hasDetail(null)
@@ -25,11 +24,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapCustomIllegalArgumentException() {
-        ResponseEntity<ProblemDetail> response = post("/custom/illegal-argument-exception");
-
-        then(response)
+        testPost("/custom/illegal-argument-exception")
             .hasStatus(BAD_REQUEST)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:custom")
             .hasTitle("Custom")
             .hasDetail(null)
@@ -37,11 +34,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapExplicitType() {
-        ResponseEntity<ProblemDetail> response = post("/custom/explicit-type");
-
-        then(response)
+        testPost("/custom/explicit-type")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("http://error-codes.org/out-of-memory")
             .hasTitle("Some")
             .hasDetail(null)
@@ -49,11 +44,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapExplicitTitle() {
-        ResponseEntity<ProblemDetail> response = post("/custom/explicit-title");
-
-        then(response)
+        testPost("/custom/explicit-title")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some")
             .hasTitle("Some Title")
             .hasDetail(null)
@@ -61,11 +54,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapExplicitStatus() {
-        ResponseEntity<ProblemDetail> response = post("/custom/explicit-status");
-
-        then(response)
+        testPost("/custom/explicit-status")
             .hasStatus(FORBIDDEN)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:something-forbidden")
             .hasTitle("Something Forbidden")
             .hasDetail(null)
@@ -74,11 +65,9 @@ class CustomExceptionIT {
 
 
     @Test void shouldMapDetailMethod() {
-        ResponseEntity<ProblemDetail> response = post("/custom/public-detail-method");
-
-        then(response)
+        testPost("/custom/public-detail-method")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail("some detail")
@@ -86,11 +75,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapPrivateDetailMethod() {
-        ResponseEntity<ProblemDetail> response = post("/custom/private-detail-method");
-
-        then(response)
+        testPost("/custom/private-detail-method")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail("some detail")
@@ -98,11 +85,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapFailingDetailMethod() {
-        ResponseEntity<ProblemDetail> response = post("/custom/failing-detail-method");
-
-        then(response)
+        testPost("/custom/failing-detail-method")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:failing-detail")
             .hasTitle("Failing Detail")
             .hasDetail("could not invoke FailingDetailException.failingDetail: java.lang.RuntimeException: inner")
@@ -110,11 +95,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapPublicDetailFieldOverridingMessage() {
-        ResponseEntity<ProblemDetail> response = post("/custom/public-detail-field");
-
-        then(response)
+        testPost("/custom/public-detail-field")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail("some detail")
@@ -122,11 +105,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapPrivateDetailField() {
-        ResponseEntity<ProblemDetail> response = post("/custom/private-detail-field");
-
-        then(response)
+        testPost("/custom/private-detail-field")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail("some detail")
@@ -134,11 +115,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapMultipleDetailFields() {
-        ResponseEntity<ProblemDetail> response = post("/custom/multi-detail-fields");
-
-        then(response)
+        testPost("/custom/multi-detail-fields")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail("detail a. detail b")
@@ -146,11 +125,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldMapDetailMethodAndTwoFields() {
-        ResponseEntity<ProblemDetail> response = post("/custom/mixed-details");
-
-        then(response)
+        testPost("/custom/mixed-details")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail("detail a. detail b. detail c")
@@ -158,11 +135,9 @@ class CustomExceptionIT {
     }
 
     @Test void shouldFailToMapDetailMethodTakingAnArgument() {
-        ResponseEntity<ProblemDetail> response = post("/custom/detail-method-arg");
-
-        then(response)
+        testPost("/custom/detail-method-arg")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail("could not invoke SomeMessageException.detail: expected no args but got 1")

@@ -4,26 +4,23 @@ import com.github.t1.problemdetail.ProblemDetail;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.ws.rs.core.Response;
 import java.util.Map;
 
+import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.BDDAssertions.then;
-import static test.ProblemDetailMapperExtension.then;
+import static test.ContainerLaunchingExtension.testPost;
 
+@ExtendWith(ContainerLaunchingExtension.class)
 class ValidationFailedExceptionMappingIT {
-    @RegisterExtension static ProblemDetailMapperExtension mapper = new ProblemDetailMapperExtension();
-
     @Test void shouldMapValidationFailedException() {
-        Response response = mapper.post("/validation");
-
-        then(response, ValidationProblemDetail.class)
+        testPost("/validation", ValidationProblemDetail.class)
             .hasStatus(BAD_REQUEST)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:validation-failed")
             .hasTitle("Validation Failed")
             .hasDetail("6 violations failed")

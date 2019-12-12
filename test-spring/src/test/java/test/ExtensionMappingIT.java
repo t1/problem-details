@@ -3,88 +3,75 @@ package test;
 import com.github.t1.problemdetail.ProblemDetail;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.assertj.core.api.BDDAssertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
+import static org.assertj.core.api.BDDAssertions.then;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static test.TestTools.post;
-import static test.TestTools.then;
+import static test.ContainerLaunchingExtension.testPost;
 
+/** The difference between this class and the same class in the `test` module is only in the imports */
+@ExtendWith(ContainerLaunchingExtension.class)
 class ExtensionMappingIT {
-    @Test void shouldMapExtensionStringMethod() {
-        ResponseEntity<ProblemDetailWithExtensionString> response =
-            post("/custom/extension-method", ProblemDetailWithExtensionString.class);
 
-        then(response)
+    @Test void shouldMapExtensionStringMethod() {
+        testPost("/custom/extension-method", ProblemDetailWithExtensionString.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some")
             .hasTitle("Some")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> BDDAssertions.then(detail.ex).isEqualTo("some extension"));
+            .checkExtensions(detail -> then(detail.ex).isEqualTo("some extension"));
     }
 
     @Test void shouldMapExtensionStringMethodWithAnnotatedName() {
-        ResponseEntity<ProblemDetailWithExtensionStringFoo> response =
-            post("/custom/extension-method-with-name", ProblemDetailWithExtensionStringFoo.class);
-
-        then(response)
+        testPost("/custom/extension-method-with-name", ProblemDetailWithExtensionStringFoo.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> BDDAssertions.then(detail.foo).isEqualTo("some extension"));
+            .checkExtensions(detail -> then(detail.foo).isEqualTo("some extension"));
     }
 
     @Test void shouldMapExtensionStringField() {
-        ResponseEntity<ProblemDetailWithExtensionString> response =
-            post("/custom/extension-field", ProblemDetailWithExtensionString.class);
-
-        then(response)
+        testPost("/custom/extension-field", ProblemDetailWithExtensionString.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> BDDAssertions.then(detail.ex).isEqualTo("some extension"));
+            .checkExtensions(detail -> then(detail.ex).isEqualTo("some extension"));
     }
 
     @Test void shouldMapExtensionStringFieldWithAnnotatedName() {
-        ResponseEntity<ProblemDetailWithExtensionStringFoo> response =
-            post("/custom/extension-field-with-name", ProblemDetailWithExtensionStringFoo.class);
-
-        then(response)
+        testPost("/custom/extension-field-with-name", ProblemDetailWithExtensionStringFoo.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> BDDAssertions.then(detail.foo).isEqualTo("some extension"));
+            .checkExtensions(detail -> then(detail.foo).isEqualTo("some extension"));
     }
 
     @Test void shouldMapMultiplePackagePrivateExtensions() {
-        ResponseEntity<ProblemDetailWithMultipleExtensions> response =
-            post("/custom/multi-extension", ProblemDetailWithMultipleExtensions.class);
-
-        then(response)
+        testPost("/custom/multi-extension", ProblemDetailWithMultipleExtensions.class)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:some-message")
             .hasTitle("Some Message")
             .hasDetail(null)
             .hasUuidInstance()
             .checkExtensions(detail -> {
-                BDDAssertions.then(detail.m1).isEqualTo("method 1");
-                BDDAssertions.then(detail.m2).isEqualTo("method 2");
-                BDDAssertions.then(detail.f1).isEqualTo("field 1");
-                BDDAssertions.then(detail.f2).isEqualTo("field 2");
+                then(detail.m1).isEqualTo("method 1");
+                then(detail.m2).isEqualTo("method 2");
+                then(detail.f1).isEqualTo("field 1");
+                then(detail.f2).isEqualTo("field 2");
             });
     }
 

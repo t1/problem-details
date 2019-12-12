@@ -1,29 +1,23 @@
 package test;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.ws.rs.core.Response;
-
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_XML_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
+import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
+import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_XML;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.SERVICE_UNAVAILABLE;
-import static org.assertj.core.api.BDDAssertions.then;
-import static test.ProblemDetailMapperExtension.then;
+import static test.ContainerLaunchingExtension.testPost;
 
+@ExtendWith(ContainerLaunchingExtension.class)
 class StandardExceptionMappingIT {
-    @RegisterExtension static ProblemDetailMapperExtension mapper = new ProblemDetailMapperExtension();
-
     @Test void shouldMapClientWebApplicationExceptionWithoutEntityOrMessage() {
-        Response response = mapper.post("/standard/plain-bad-request");
-
-        then(response)
+        testPost("standard/plain-bad-request")
             .hasStatus(BAD_REQUEST)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:bad-request")
             .hasTitle("Bad Request")
             .hasDetail(null)
@@ -31,11 +25,9 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldMapClientWebApplicationExceptionWithoutEntityButMessage() {
-        Response response = mapper.post("/standard/bad-request-with-message");
-
-        then(response)
+        testPost("/standard/bad-request-with-message")
             .hasStatus(BAD_REQUEST)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:bad-request")
             .hasTitle("Bad Request")
             .hasDetail("some message")
@@ -43,19 +35,16 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldUseEntityFromWebApplicationException() {
-        Response response = mapper.post("/standard/bad-request-with-text-response");
-
-        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
-        then(response.getMediaType()).isIn(TEXT_PLAIN_TYPE, TEXT_PLAIN_TYPE.withCharset("UTF-8"));
-        then(response.readEntity(String.class)).isEqualTo("the body");
+        testPost("/standard/bad-request-with-text-response", TEXT_PLAIN, String.class)
+            .hasStatus(BAD_REQUEST)
+            .hasContentType(TEXT_PLAIN)
+            .hasBody("the body");
     }
 
     @Test void shouldMapServerWebApplicationExceptionWithoutEntityOrMessage() {
-        Response response = mapper.post("/standard/plain-service-unavailable");
-
-        then(response)
+        testPost("/standard/plain-service-unavailable")
             .hasStatus(SERVICE_UNAVAILABLE)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:service-unavailable")
             .hasTitle("Service Unavailable")
             .hasDetail(null)
@@ -63,11 +52,9 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldMapIllegalArgumentExceptionWithoutMessage() {
-        Response response = mapper.post("/standard/illegal-argument-without-message");
-
-        then(response)
+        testPost("/standard/illegal-argument-without-message")
             .hasStatus(BAD_REQUEST)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:illegal-argument")
             .hasTitle("Illegal Argument")
             .hasDetail(null)
@@ -75,11 +62,9 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldMapIllegalArgumentExceptionWithMessage() {
-        Response response = mapper.post("/standard/illegal-argument-with-message");
-
-        then(response)
+        testPost("/standard/illegal-argument-with-message")
             .hasStatus(BAD_REQUEST)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:illegal-argument")
             .hasTitle("Illegal Argument")
             .hasDetail("some message")
@@ -87,11 +72,9 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldMapNullPointerExceptionWithoutMessage() {
-        Response response = mapper.post("/standard/npe-without-message");
-
-        then(response)
+        testPost("/standard/npe-without-message")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:null-pointer")
             .hasTitle("Null Pointer")
             .hasDetail(null)
@@ -99,11 +82,9 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldMapNullPointerExceptionWithMessage() {
-        Response response = mapper.post("/standard/npe-with-message");
-
-        then(response)
+        testPost("/standard/npe-with-message")
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:null-pointer")
             .hasTitle("Null Pointer")
             .hasDetail("some message")
@@ -111,12 +92,9 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldMapToXml() {
-        Response response = mapper.target("/standard/npe-with-message")
-            .request(APPLICATION_XML_TYPE).post(null);
-
-        then(response)
+        testPost("/standard/npe-with-message", APPLICATION_XML)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_XML_TYPE)
+            .hasContentType(PROBLEM_DETAIL_XML)
             .hasType("urn:problem-type:null-pointer")
             .hasTitle("Null Pointer")
             .hasDetail("some message")
@@ -124,12 +102,9 @@ class StandardExceptionMappingIT {
     }
 
     @Test void shouldMapToSecondAcceptXml() {
-        Response response = mapper.target("/standard/npe-with-message")
-            .request(TEXT_PLAIN_TYPE, APPLICATION_XML_TYPE).post(null);
-
-        then(response)
+        testPost("/standard/npe-with-message", TEXT_PLAIN, APPLICATION_XML)
             .hasStatus(INTERNAL_SERVER_ERROR)
-            .hasMediaType(PROBLEM_DETAIL_XML_TYPE)
+            .hasContentType(PROBLEM_DETAIL_XML)
             .hasType("urn:problem-type:null-pointer")
             .hasTitle("Null Pointer")
             .hasDetail("some message")

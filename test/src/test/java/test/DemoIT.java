@@ -4,7 +4,7 @@ import com.github.t1.problemdetail.ProblemDetail;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
@@ -20,17 +20,17 @@ import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_2;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.BDDAssertions.then;
-import static test.ProblemDetailMapperExtension.then;
+import static test.ContainerLaunchingExtension.post;
+import static test.ContainerLaunchingExtension.then;
 
 /**
  * Demonstrate the behavior of mapping exceptions to problem details
  * as presented in the rfc.
  */
+@ExtendWith(ContainerLaunchingExtension.class)
 class DemoIT {
-    @RegisterExtension static ProblemDetailMapperExtension mapper = new ProblemDetailMapperExtension();
-
     @Test void shouldOrderCheapGadget() {
-        Response response = mapper.post("/orders", Entity.form(new Form()
+        Response response = post("/orders", Entity.form(new Form()
             .param("user", "1")
             .param("article", "cheap gadget")));
 
@@ -40,7 +40,7 @@ class DemoIT {
     }
 
     @Test void shouldFailToOrderExpensiveGadgetWhenOutOfCredit() {
-        Response response = mapper.post("/orders", Entity.form(new Form()
+        Response response = post("/orders", Entity.form(new Form()
             .param("user", "1")
             .param("article", "expensive gadget")));
 
@@ -49,7 +49,7 @@ class DemoIT {
 
         then(response, ExtendedProblemDetail.class)
             .hasStatus(FORBIDDEN)
-            .hasMediaType(PROBLEM_DETAIL_JSON_TYPE)
+            .hasContentType(PROBLEM_DETAIL_JSON_TYPE)
             .hasType("https://example.com/probs/out-of-credit")
             .hasTitle("You do not have enough credit.")
             .hasDetail("Your current balance is 30, but that costs 50.")

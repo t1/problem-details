@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.Mockito.mock;
 
 public class MockLoggerFactory implements ILoggerFactory {
@@ -27,9 +27,9 @@ public class MockLoggerFactory implements ILoggerFactory {
     }
 
     public static Logger onlyLogger(String name) {
-        assertThat(LOGGERS.keySet()).containsOnly(name);
+        then(LOGGERS.keySet()).containsOnly(name);
         Logger logger = LOGGERS.remove(name);
-        assertThat(logger).isNotNull();
+        then(logger).isNotNull();
         return logger;
     }
 }

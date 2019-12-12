@@ -20,8 +20,8 @@ import java.util.Map;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class ProblemDetailExceptionMapperBehavior {
 
@@ -34,8 +34,8 @@ class ProblemDetailExceptionMapperBehavior {
     @Test void shouldMapStandardRuntimeException() {
         Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
 
-        assertThat(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(problemDetailAsMap(problemDetail))
+        then(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(problemDetail))
             .contains(
                 entry("type", URI.create("urn:problem-type:null-pointer")),
                 entry("title", "Null Pointer"),
@@ -48,8 +48,8 @@ class ProblemDetailExceptionMapperBehavior {
     @Test void shouldMapStandardIllegalArgumentException() {
         Response problemDetail = mapper.toResponse(new IllegalArgumentException("some message"));
 
-        assertThat(problemDetail.getStatusInfo()).isEqualTo(BAD_REQUEST);
-        assertThat(problemDetailAsMap(problemDetail))
+        then(problemDetail.getStatusInfo()).isEqualTo(BAD_REQUEST);
+        then(problemDetailAsMap(problemDetail))
             .contains(
                 entry("type", URI.create("urn:problem-type:illegal-argument")),
                 entry("title", "Illegal Argument"),
@@ -62,8 +62,8 @@ class ProblemDetailExceptionMapperBehavior {
     @Test void shouldMapWebApplicationException() {
         Response problemDetail = mapper.toResponse(new ForbiddenException("some message"));
 
-        assertThat(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
-        assertThat(problemDetailAsMap(problemDetail))
+        then(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(problemDetailAsMap(problemDetail))
             .contains(
                 entry("type", URI.create("urn:problem-type:forbidden")),
                 entry("title", "Forbidden"),
@@ -78,8 +78,8 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response out = mapper.toResponse(new InternalServerErrorException(in));
 
-        assertThat(out.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(out.getEntity()).isSameAs(in.getEntity());
+        then(out.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(out.getEntity()).isSameAs(in.getEntity());
     }
 
     @Test void shouldMapCustomExceptionWithFields() {
@@ -95,8 +95,8 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response problemDetail = mapper.toResponse(new SomeException());
 
-        assertThat(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
-        assertThat(problemDetailAsMap(problemDetail)).containsExactly(
+        then(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(problemDetailAsMap(problemDetail)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
             entry("status", 403),
@@ -120,8 +120,8 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response problemDetail = mapper.toResponse(new SomeException());
 
-        assertThat(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
-        assertThat(problemDetailAsMap(problemDetail)).containsExactly(
+        then(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(problemDetailAsMap(problemDetail)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
             entry("status", 403),
@@ -145,8 +145,8 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response problemDetail = mapper.toResponse(new SomeException());
 
-        assertThat(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
-        assertThat(problemDetailAsMap(problemDetail)).containsExactly(
+        then(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(problemDetailAsMap(problemDetail)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
             entry("status", 403),
@@ -165,8 +165,8 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response problemDetail = mapper.toResponse(new SomeException());
 
-        assertThat(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
-        assertThat(problemDetailAsMap(problemDetail)).containsExactly(
+        then(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(problemDetail)).containsExactly(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
             entry("status", 500),

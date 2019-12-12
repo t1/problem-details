@@ -4,6 +4,7 @@ import com.github.t1.problemdetail.spring.ProblemDetailControllerAdvice;
 import com.github.t1.problemdetaildemoapp.SpringDemoBoundary;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * as presented in the rfc.
  */
 class DemoIT {
+
     private final MockMvc mockMvc = MockMvcBuilders
         .standaloneSetup(SpringDemoBoundary.class)
         .setControllerAdvice(ProblemDetailControllerAdvice.class)
@@ -35,7 +37,8 @@ class DemoIT {
                 "\"shipment-id\":\"1:cheap gadget:" + LocalDate.now() + "\"," +
                 "\"article\":\"cheap gadget\"," +
                 "\"user\":1" +
-                "}"));
+                "}"))
+            .andDo(MockMvcResultHandlers.print());
     }
 
     @Test void shouldFailToOrderExpensiveGadget() throws Exception {
@@ -52,6 +55,7 @@ class DemoIT {
                 "\"instance\":\"/account/12345/msgs/abc\"," +
                 "\"balance\":30," +
                 "\"accounts\":[\"" + ACCOUNT_1 + "\", \"" + ACCOUNT_2 + "\"]" +
-                "}"));
+                "}"))
+            .andDo(MockMvcResultHandlers.print());
     }
 }
