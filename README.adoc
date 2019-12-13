@@ -1,5 +1,7 @@
 = Problem Detail
 
+image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
+
 == Abstract
 
 Map standard and custom exceptions to a http response body

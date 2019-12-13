@@ -33,7 +33,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
             BASE_URI = URI.create(System.getProperty("testcontainer-running"));
         } else if (BASE_URI == null) {
             JeeContainer container = JeeContainer.create()
-                .withDeployment("target/jax-rs-problem-detail-test.war");
+                .withDeployment("target/problem-details-test.war");
             container.start();
             BASE_URI = container.baseUri();
         }

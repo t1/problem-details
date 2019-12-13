@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.t1</groupId>
-    <artifactId>problem-detail-ri-lib</artifactId>
+    <artifactId>problem-details-ri-lib</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <description>Code to be reused by jax-rs as well as spring impls</description>
 
@@ -47,7 +47,7 @@
 
         <dependency>
             <groupId>com.github.t1</groupId>
-            <artifactId>problem-detail-api</artifactId>
+            <artifactId>problem-details-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
