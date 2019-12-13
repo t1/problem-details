@@ -1,5 +1,6 @@
 package test;
 
+import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import com.github.t1.problemdetailmapper.ProblemDetailHandler;
 import lombok.AllArgsConstructor;
@@ -31,7 +32,7 @@ import static test.ContainerLaunchingExtension.target;
 @ExtendWith(ContainerLaunchingExtension.class)
 class DemoIT {
     static {
-        ProblemDetailHandler.CONFIG.put("https://example.com/probs/out-of-credit", OutOfCreditException.class);
+        ProblemDetailJsonToExceptionBuilder.register(OutOfCreditException.class);
     }
 
     @Test void shouldOrderCheapGadget() {
@@ -48,6 +49,7 @@ class DemoIT {
         OutOfCreditException throwable = catchThrowableOfType(() -> postOrder("expensive gadget"),
             OutOfCreditException.class);
 
+        then(throwable).describedAs("nothing thrown").isNotNull();
         then(throwable.getBalance()).isEqualTo(30);
         then(throwable.getCost()).isEqualTo(0); // not an extension, i.e. not in the body
         then(throwable.getInstance()).isEqualTo(URI.create("/account/12345/msgs/abc"));
@@ -59,7 +61,7 @@ class DemoIT {
     private Response postOrder(String article) {
         try {
             return target()
-                .register(ProblemDetailHandler.class) // this would be registered globally
+                .register(ProblemDetailHandler.class)
                 .path("/orders").request(APPLICATION_JSON_TYPE)
                 .post(Entity.form(new Form()
                     .param("user", "1")

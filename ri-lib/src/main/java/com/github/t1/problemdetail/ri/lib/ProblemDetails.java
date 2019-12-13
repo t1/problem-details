@@ -1,10 +1,10 @@
 package com.github.t1.problemdetail.ri.lib;
 
 import com.github.t1.problemdetail.Detail;
+import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.LogLevel;
 import com.github.t1.problemdetail.Logging;
-import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
@@ -93,25 +93,29 @@ public abstract class ProblemDetails {
     }
 
     protected URI buildType() {
+        return buildType(type);
+    }
+
+    public static URI buildType(Class<? extends Exception> type) {
         return URI.create(type.isAnnotationPresent(Type.class)
             ? type.getAnnotation(Type.class).value()
-            : "urn:problem-type:" + wordsFromTypeName('-').toLowerCase());
+            : "urn:problem-type:" + wordsFromTypeName(type, '-').toLowerCase());
     }
 
     protected String buildTitle() {
         return type.isAnnotationPresent(Title.class)
             ? type.getAnnotation(Title.class).value()
-            : wordsFromTypeName(' ');
+            : wordsFromTypeName(type, ' ');
     }
 
-    protected String wordsFromTypeName(char delimiter) {
+    private static String wordsFromTypeName(Class<? extends Exception> type, char delimiter) {
         String message = camelToWords(type.getSimpleName(), delimiter);
         if (message.endsWith(delimiter + "Exception"))
             message = message.substring(0, message.length() - 10);
         return message;
     }
 
-    private String camelToWords(String input, char delimiter) {
+    private static String camelToWords(String input, char delimiter) {
         StringBuilder out = new StringBuilder();
         input.codePoints().forEach(c -> {
             if (Character.isUpperCase(c) && out.length() > 0) {

@@ -24,7 +24,9 @@ These defaults can be overridden with annotations.
 * order of extensions is alphabetic (which is better for tests than random)
 * multiple extensions with the same name: undefined behavior
 * JAXB can't unmarshal a subclass with the same type and namespace
+* Security considerations: nothing dangerous in problem details (i.e. exception message); stack-trace in logs
 
+// TODO scan client classpath for @Type annotated exceptions (and document this in the spec and the annotation)
 // TODO inherited annotations
 // TODO cause annotations
 // TODO type factory, e.g. URL to OpenAPI

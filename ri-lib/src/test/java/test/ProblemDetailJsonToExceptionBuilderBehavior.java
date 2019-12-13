@@ -2,83 +2,44 @@ package test;
 
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Instance;
-import com.github.t1.problemdetailmapper.ProblemDetailHandler;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import org.junit.jupiter.api.Test;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientResponseContext;
-import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.URI;
 
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.BDDAssertions.then;
 
-class ProblemDetailHandlerBehavior {
-    private final ProblemDetailHandler handler = new ProblemDetailHandler();
-    private final ClientRequestContext requestContext = mock(ClientRequestContext.class);
-    private final ClientResponseContext responseContext = mock(ClientResponseContext.class);
-
-    private MediaType contentType = PROBLEM_DETAIL_JSON_TYPE;
+class ProblemDetailJsonToExceptionBuilderBehavior {
     private JsonObjectBuilder entity = Json.createObjectBuilder();
 
-    @BeforeEach void before() {
-        given(responseContext.getMediaType()).will(i -> contentType);
-        given(responseContext.getEntityStream()).will(i -> {
-            then(responseContext).should().getEntityStream(); // prepare no-more-interactions
-            return (entity == null) ? null
-                : new ByteArrayInputStream(entity.build().toString().getBytes(UTF_8));
-        });
-    }
-
-    @AfterEach void after() {
-        then(requestContext).shouldHaveNoMoreInteractions();
-
-        then(responseContext).should().getMediaType();
-        then(responseContext).shouldHaveNoMoreInteractions();
-    }
-
-
-    @Test void shouldNotFilterApplicationJson() {
-        entity = null;
-
-        contentType = APPLICATION_JSON_TYPE;
-
-        filter();
-    }
-
-    @Test void shouldNotFilterNullType() {
+    @Test void shouldTriggerNullType() {
         // entity = "{}"
 
-        filter();
+        IllegalArgumentException thrown = catchThrowableOfType(this::trigger, IllegalArgumentException.class);
 
-        then(responseContext).should().getEntityStream();
+        then(thrown).hasMessage("no registered exception found for `type` field in {}");
     }
 
     @Test void shouldNotFilterUnknownType() {
         entity.add("type", "unknown");
 
-        filter();
+        IllegalArgumentException thrown = catchThrowableOfType(this::trigger, IllegalArgumentException.class);
 
-        then(responseContext).should().getEntityStream();
+        then(thrown).hasMessage("no registered exception found for `type` field in {\"type\":\"unknown\"}");
     }
 
     @Test void shouldBuildNullPointer() {
         entity.add("type", "urn:problem-type:null-pointer");
 
-        NullPointerException thrown = catchThrowableOfType(this::filter, NullPointerException.class);
+        NullPointerException thrown = catchThrowableOfType(this::trigger, NullPointerException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown)
             .isInstanceOf(NullPointerException.class)
             .hasMessage(null);
@@ -87,9 +48,9 @@ class ProblemDetailHandlerBehavior {
     public static class CustomException extends RuntimeException {}
 
     @Test void shouldBuildCustomType() {
-        givenConfiguredType(CustomException.class);
+        givenRegisteredType(CustomException.class);
 
-        CustomException thrown = catchThrowableOfType(this::filter, CustomException.class);
+        CustomException thrown = catchThrowableOfType(this::trigger, CustomException.class);
 
         assertThat(thrown).hasMessage(null);
     }
@@ -99,22 +60,20 @@ class ProblemDetailHandlerBehavior {
     }
 
     @Test void shouldBuildCustomTypeWithStringInstanceFieldNotSet() {
-        givenConfiguredType(CustomWithStringInstanceException.class);
+        givenRegisteredType(CustomWithStringInstanceException.class);
 
-        CustomWithStringInstanceException thrown = catchThrowableOfType(this::filter, CustomWithStringInstanceException.class);
+        CustomWithStringInstanceException thrown = catchThrowableOfType(this::trigger, CustomWithStringInstanceException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown).hasMessage(null);
         assertThat(thrown.string).isEqualTo(null);
     }
 
     @Test void shouldBuildCustomTypeWithStringInstanceFieldSet() {
-        givenConfiguredType(CustomWithStringInstanceException.class);
+        givenRegisteredType(CustomWithStringInstanceException.class);
         entity.add("instance", SOME_URI.toString());
 
-        CustomWithStringInstanceException thrown = catchThrowableOfType(this::filter, CustomWithStringInstanceException.class);
+        CustomWithStringInstanceException thrown = catchThrowableOfType(this::trigger, CustomWithStringInstanceException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown).hasMessage(null);
         assertThat(thrown.string).isEqualTo(SOME_URI.toString());
     }
@@ -124,12 +83,11 @@ class ProblemDetailHandlerBehavior {
     }
 
     @Test void shouldBuildCustomTypeWithUriInstanceFieldSet() {
-        givenConfiguredType(CustomWithUriInstanceException.class);
+        givenRegisteredType(CustomWithUriInstanceException.class);
         entity.add("instance", SOME_URI.toString());
 
-        CustomWithUriInstanceException thrown = catchThrowableOfType(this::filter, CustomWithUriInstanceException.class);
+        CustomWithUriInstanceException thrown = catchThrowableOfType(this::trigger, CustomWithUriInstanceException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown).hasMessage(null);
         assertThat(thrown.uri).isEqualTo(SOME_URI);
     }
@@ -139,12 +97,11 @@ class ProblemDetailHandlerBehavior {
     }
 
     @Test void shouldBuildCustomTypeWithIntegerInstanceFieldSet() {
-        givenConfiguredType(CustomWithIntegerInstanceException.class);
+        givenRegisteredType(CustomWithIntegerInstanceException.class);
         entity.add("instance", "123");
 
-        CustomWithIntegerInstanceException thrown = catchThrowableOfType(this::filter, CustomWithIntegerInstanceException.class);
+        CustomWithIntegerInstanceException thrown = catchThrowableOfType(this::trigger, CustomWithIntegerInstanceException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown).hasMessage(null);
         assertThat(thrown.i).isEqualTo(123);
     }
@@ -154,12 +111,11 @@ class ProblemDetailHandlerBehavior {
     }
 
     @Test void shouldBuildCustomTypeWithLongInstanceFieldSet() {
-        givenConfiguredType(CustomWithLongInstanceException.class);
+        givenRegisteredType(CustomWithLongInstanceException.class);
         entity.add("instance", "123");
 
-        CustomWithLongInstanceException thrown = catchThrowableOfType(this::filter, CustomWithLongInstanceException.class);
+        CustomWithLongInstanceException thrown = catchThrowableOfType(this::trigger, CustomWithLongInstanceException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown).hasMessage(null);
         assertThat(thrown.l).isEqualTo(123L);
     }
@@ -186,7 +142,7 @@ class ProblemDetailHandlerBehavior {
     }
 
     @Test void shouldBuildCustomTypeWithUnnamedExtensionsFieldSetConverting() {
-        givenConfiguredType(CustomWithUnnamedExtensionsException.class);
+        givenRegisteredType(CustomWithUnnamedExtensionsException.class);
         entity.add("bo1", "true");
         entity.add("by1", "12");
         entity.add("sh1", "123");
@@ -206,9 +162,8 @@ class ProblemDetailHandlerBehavior {
         entity.add("str", "dummy-string");
         entity.add("uri", "dummy:uri");
 
-        CustomWithUnnamedExtensionsException thrown = catchThrowableOfType(this::filter, CustomWithUnnamedExtensionsException.class);
+        CustomWithUnnamedExtensionsException thrown = catchThrowableOfType(this::trigger, CustomWithUnnamedExtensionsException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown).hasMessage(null);
 
         assertThat(thrown.bo1).isEqualTo(true);
@@ -232,7 +187,7 @@ class ProblemDetailHandlerBehavior {
     }
 
     @Test void shouldBuildCustomTypeWithUnnamedExtensionsFieldSetNotConverting() {
-        givenConfiguredType(CustomWithUnnamedExtensionsException.class);
+        givenRegisteredType(CustomWithUnnamedExtensionsException.class);
         entity.add("bo1", true);
         entity.add("by1", 12);
         entity.add("sh1", 123);
@@ -249,9 +204,8 @@ class ProblemDetailHandlerBehavior {
         entity.add("fl2", 1.123f);
         entity.add("du2", 1.234567d);
 
-        CustomWithUnnamedExtensionsException thrown = catchThrowableOfType(this::filter, CustomWithUnnamedExtensionsException.class);
+        CustomWithUnnamedExtensionsException thrown = catchThrowableOfType(this::trigger, CustomWithUnnamedExtensionsException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown).hasMessage(null);
 
         assertThat(thrown.bo1).isEqualTo(true);
@@ -294,7 +248,7 @@ class ProblemDetailHandlerBehavior {
     }
 
     @Test void shouldBuildCustomTypeWithNamedExtensionsFieldSet() {
-        givenConfiguredType(CustomWithNamedExtensionsException.class);
+        givenRegisteredType(CustomWithNamedExtensionsException.class);
         entity.add("bo1", "true");
         entity.add("by1", "12");
         entity.add("sh1", "123");
@@ -314,9 +268,8 @@ class ProblemDetailHandlerBehavior {
         entity.add("str", "dummy-string");
         entity.add("uri", "dummy:uri");
 
-        CustomWithNamedExtensionsException thrown = catchThrowableOfType(this::filter, CustomWithNamedExtensionsException.class);
+        CustomWithNamedExtensionsException thrown = catchThrowableOfType(this::trigger, CustomWithNamedExtensionsException.class);
 
-        then(responseContext).should().getEntityStream();
         assertThat(thrown).hasMessage(null);
 
         assertThat(thrown.bo1x).isEqualTo(true);
@@ -340,13 +293,14 @@ class ProblemDetailHandlerBehavior {
     }
 
 
-    private void filter() {
-        handler.filter(requestContext, responseContext);
+    private void trigger() {
+        String json = entity.build().toString();
+        InputStream inputStream = new ByteArrayInputStream(json.getBytes(UTF_8));
+        new ProblemDetailJsonToExceptionBuilder(inputStream).trigger();
     }
 
-    private void givenConfiguredType(Class<? extends RuntimeException> type) {
-        String typeUri = "urn:problem-type:dummy-type-name";
-        ProblemDetailHandler.CONFIG.put(typeUri, type);
+    private void givenRegisteredType(Class<? extends RuntimeException> type) {
+        String typeUri = ProblemDetailJsonToExceptionBuilder.register(type);
         entity.add("type", typeUri);
     }
 

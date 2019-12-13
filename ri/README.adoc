@@ -9,3 +9,9 @@ b. it doesn't handle `@Valid` annotated parameters and other exceptions that the
 c. the exceptions on the client side are wrapped in a ResponseProcessingException.
 
 It implements an `ExceptionMapper` for the server side and a `ClientResponseFilter` for the client.
+
+== Client
+
+`ProblemDetailJsonToExceptionBuilder.register(OutOfCreditException.class);`
+
+`...target().register(ProblemDetailHandler.class)` (this would be registered globally in a full implementation)
