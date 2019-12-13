@@ -14,7 +14,6 @@ import java.net.URI;
 import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static lombok.AccessLevel.PRIVATE;
 
 @Type("https://example.com/probs/out-of-credit")
 @Title("You do not have enough credit.")

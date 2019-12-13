@@ -3,19 +3,14 @@ package test;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_XML;
-import static java.util.Arrays.asList;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
-import static test.ContainerLaunchingExtension.createRestTemplate;
 import static test.ContainerLaunchingExtension.testPost;
 
 /**

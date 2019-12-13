@@ -1,8 +1,8 @@
 package com.github.t1.problemdetaildemoapp;
 
 import com.github.t1.problemdetail.Detail;
-import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.Extension;
+import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;

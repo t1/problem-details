@@ -7,7 +7,6 @@ import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.util.LinkedMultiValueMap;

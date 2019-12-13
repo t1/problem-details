@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Map;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.BDDAssertions.then;
