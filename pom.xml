@@ -6,10 +6,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.t1</groupId>
-    <artifactId>jax-rs-problem-detail</artifactId>
+    <artifactId>problem-details</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <description>Problem Details for JAX-RS and Spring Boot</description>
+    <description>Problem Details [RFC-7807] API, TCK, and implementations for JAX-RS and Spring Boot</description>
 
     <repositories>
         <repository>

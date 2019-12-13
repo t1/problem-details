@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.t1</groupId>
-    <artifactId>jax-rs-problem-detail-test</artifactId>
+    <artifactId>problem-detail-test</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <description>Problem Detail test suite for JAX-RS</description>
@@ -93,12 +93,12 @@
 
         <dependency>
             <groupId>com.github.t1</groupId>
-            <artifactId>jax-rs-problem-detail-api</artifactId>
+            <artifactId>problem-detail-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.t1</groupId>
-            <artifactId>jax-rs-problem-detail-ri</artifactId>
+            <artifactId>problem-detail-ri</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
