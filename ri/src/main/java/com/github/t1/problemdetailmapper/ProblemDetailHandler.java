@@ -12,6 +12,7 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.config.PropertyVisibilityStrategy;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -31,6 +32,8 @@ public class ProblemDetailHandler implements ClientResponseFilter {
 
     static {
         CONFIG.put("urn:problem-type:null-pointer", NullPointerException.class);
+        CONFIG.put("urn:problem-type:runtime", RuntimeException.class);
+        CONFIG.put("urn:problem-type:not-found", NotFoundException.class);
     }
 
     @Override public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {

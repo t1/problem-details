@@ -1,6 +1,10 @@
 package com.github.t1.problemdetaildemoapp;
 
+import com.github.t1.problemdetail.Detail;
+import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.NotFoundException;
 import java.net.URI;
 import java.time.LocalDate;
 
@@ -18,7 +21,7 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 @Slf4j
 @RestController
 @RequestMapping(path = "/orders")
-public class SpringDemoBoundary {
+public class DemoBoundary {
     @PostMapping
     public String order(
         @RequestParam("user") int userId,
@@ -67,7 +70,7 @@ public class SpringDemoBoundary {
             case "cheap gadget":
                 return 5;
             default:
-                throw new NotFoundException("unknown article " + article);
+                throw new ArticleNotFoundException(article);
         }
     }
 
@@ -103,4 +106,11 @@ public class SpringDemoBoundary {
     @Status(FORBIDDEN) private static class CreditCardLimitExceeded extends RuntimeException {}
 
     @Status(FORBIDDEN) private static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
+
+    @AllArgsConstructor @NoArgsConstructor
+    private static class ArticleNotFoundException extends IllegalArgumentException {
+        @Extension String article;
+
+        @Detail String getDetail() { return "The article " + article + " is not in our catalog"; }
+    }
 }

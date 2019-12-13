@@ -1,6 +1,10 @@
 package com.github.t1.problemdetaildemoapp;
 
+import com.github.t1.problemdetail.Detail;
+import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.json.Json;
@@ -8,7 +12,6 @@ import javax.json.JsonObject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -71,7 +74,7 @@ public class DemoBoundary {
             case "cheap gadget":
                 return 5;
             default:
-                throw new NotFoundException("unknown article " + article);
+                throw new ArticleNotFoundException(article);
         }
     }
 
@@ -107,4 +110,11 @@ public class DemoBoundary {
     @Status(FORBIDDEN) private static class CreditCardLimitExceeded extends RuntimeException {}
 
     @Status(FORBIDDEN) private static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
+
+    @AllArgsConstructor @NoArgsConstructor
+    private static class ArticleNotFoundException extends IllegalArgumentException {
+        @Extension String article;
+
+        @Detail String getDetail() { return "The article " + article + " is not in our catalog"; }
+    }
 }

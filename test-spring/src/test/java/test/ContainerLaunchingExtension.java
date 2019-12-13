@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -20,21 +21,25 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 
 class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
-    private static URI BASE_URI = null;
+    public static URI BASE_URI = null;
 
     @SneakyThrows(InterruptedException.class)
     @Override public void beforeAll(ExtensionContext context) {
-        if (BASE_URI == null) {
+        if (System.getProperty("testcontainer-running") != null) {
+            BASE_URI = URI.create(System.getProperty("testcontainer-running"));
+        } else if (BASE_URI == null) {
             Application.main();
             BASE_URI = URI.create("http://localhost:8080/");
             waitUntilHealthy();
@@ -92,9 +97,11 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
 
     public static RestTemplate createRestTemplate() { return createRestTemplate(APPLICATION_JSON); }
 
-    private static RestTemplate createRestTemplate(MediaType accept) {
+    public static RestTemplate createRestTemplate(MediaType... accept) {
         RestTemplate template = new RestTemplate();
-        template.setMessageConverters(singletonList(messageConverterFor(accept)));
+        template.setMessageConverters(Stream.of(accept)
+            .map(ContainerLaunchingExtension::messageConverterFor)
+            .collect(toList()));
         template.setErrorHandler(new AcceptAllResponseErrorHandler());
         return template;
     }
@@ -106,6 +113,8 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
             return new Jaxb2RootElementHttpMessageConverter();
         else if (TEXT_PLAIN.equals(mediaType))
             return new StringHttpMessageConverter();
+        else if (APPLICATION_FORM_URLENCODED.equals(mediaType))
+            return new FormHttpMessageConverter();
         else
             throw new IllegalArgumentException("unsupported media type " + mediaType);
     }

@@ -1,44 +1,43 @@
 package test;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
-import com.github.t1.problemdetailmapper.ProblemDetailHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-import javax.json.bind.annotation.JsonbProperty;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.time.LocalDate;
 
 import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_1;
 import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_2;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
-import static test.ContainerLaunchingExtension.target;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static test.ContainerLaunchingExtension.BASE_URI;
+import static test.ContainerLaunchingExtension.createRestTemplate;
 
 /**
  * Demonstrate the client side when mapping exceptions to problem details
  * as presented in the rfc.
  */
 @ExtendWith(ContainerLaunchingExtension.class)
-class DemoIT {
-    static {
-        ProblemDetailHandler.CONFIG.put("https://example.com/probs/out-of-credit", OutOfCreditException.class);
-    }
+class SpringDemoIT {
 
     @Test void shouldOrderCheapGadget() {
-        Response response = postOrder("cheap gadget");
+        ResponseEntity<Shipment> response = postOrder("cheap gadget");
 
-        then(response.getStatusInfo()).isEqualTo(OK);
-        then(response.readEntity(Shipment.class)).isEqualTo(new Shipment(
+        then(response.getStatusCode()).isEqualTo(OK);
+        then(response.getBody()).isEqualTo(new Shipment(
             "1:cheap gadget:" + LocalDate.now(),
             "cheap gadget",
             1));
@@ -56,22 +55,21 @@ class DemoIT {
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
     }
 
-    private Response postOrder(String article) {
-        try {
-            return target()
-                .register(ProblemDetailHandler.class) // this would be registered globally
-                .path("/orders").request(APPLICATION_JSON_TYPE)
-                .post(Entity.form(new Form()
-                    .param("user", "1")
-                    .param("article", article)));
-        } catch (ResponseProcessingException e) {
-            throw (RuntimeException) e.getCause();
-        }
+    private ResponseEntity<Shipment> postOrder(String article) {
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("user", "1");
+        form.add("article", article);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(APPLICATION_FORM_URLENCODED);
+
+        return createRestTemplate(APPLICATION_FORM_URLENCODED, APPLICATION_JSON).postForEntity(BASE_URI + "/orders",
+            new HttpEntity<>(form, headers), Shipment.class);
     }
 
     @AllArgsConstructor @NoArgsConstructor
     public static @Data class Shipment {
-        @JsonbProperty("shipment-id") String shipmentId;
+        @JsonProperty("shipment-id") String shipmentId;
         String article;
         Integer user;
     }
