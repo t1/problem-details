@@ -4,7 +4,7 @@
 
     <groupId>com.github.t1</groupId>
     <artifactId>problem-details-api</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <description>Problem Detail API</description>
 
     <properties>
