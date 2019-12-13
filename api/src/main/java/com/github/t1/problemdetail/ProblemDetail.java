@@ -28,13 +28,13 @@ import java.util.Objects;
  * <pre><code>
  * public static class ExtendedProblemDetail extends ProblemDetail {
  *     private int balance;
- *     private List<URI> accounts;
+ *     private List&lt;URI&gt; accounts;
  *     ...
  * }
  *
  * ...
  * ProblemDetail detail = response.readEntity(ExtendedProblemDetail.class);
- * if (detail.getBalance() < 10) {
+ * if (detail.getBalance() &lt; 10) {
  *     ...
  * }
  * </code></pre>
