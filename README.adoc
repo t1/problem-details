@@ -1,4 +1,4 @@
-= JAX-RS Problem Detail
+= Problem Detail
 
 == Abstract
 
@@ -19,7 +19,7 @@ These defaults can be overridden with annotations.
 
 * MUST `application/problem+json`, `application/problem+xml`; SHOULD any, e.g. `+yaml`
 * SHOULD render `text/html`
-* map also `@Valid` JAX-RS params
+* map also `@Valid` REST params
 * logging: 4xx = DEBUG, 5xx = ERROR; configurable?
 * order of extensions is alphabetic (which is better for tests than random)
 * multiple extensions with the same name: undefined behavior
