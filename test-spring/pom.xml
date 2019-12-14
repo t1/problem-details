@@ -11,7 +11,7 @@
 
     <groupId>com.github.t1</groupId>
     <artifactId>problem-details-spring-test</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6-SNAPSHOT</version>
     <description>Problem Detail test suite for Spring Boot</description>
 
     <properties>
@@ -60,12 +60,12 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-api</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.6-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-ri-spring</artifactId>
-            <version>1.0.5</version>
+            <version>1.0.6-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -101,8 +101,4 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-  <scm>
-    <tag>1.0.5</tag>
-  </scm>
 </project>
