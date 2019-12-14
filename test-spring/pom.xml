@@ -18,6 +18,14 @@
         <java.version>11</java.version>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>bintray-t1-javaee-helpers</id>
+            <name>t1-javaee-helpers</name>
+            <url>https://api.bintray.com/maven/t1/javaee-helpers/problem-details/;publish=1</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>

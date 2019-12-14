@@ -20,6 +20,14 @@
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>bintray-t1-javaee-helpers</id>
+            <name>t1-javaee-helpers</name>
+            <url>https://api.bintray.com/maven/t1/javaee-helpers/problem-details/;publish=1</url>
+        </repository>
+    </distributionManagement>
+
     <build>
         <defaultGoal>install</defaultGoal>
         <plugins>
