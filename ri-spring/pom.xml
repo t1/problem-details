@@ -11,7 +11,7 @@
 
     <groupId>com.github.t1</groupId>
     <artifactId>problem-details-ri-spring</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <description>Problem Detail implementation for Spring Boot</description>
 
     <properties>
@@ -19,14 +19,6 @@
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>bintray-t1-javaee-helpers</id>
-            <name>t1-javaee-helpers</name>
-            <url>https://api.bintray.com/maven/t1/javaee-helpers/problem-details/;publish=1</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <defaultGoal>install</defaultGoal>
@@ -60,12 +52,12 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-api</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-ri-lib</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -11,20 +11,12 @@
 
     <groupId>com.github.t1</groupId>
     <artifactId>problem-details-spring-test</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
     <description>Problem Detail test suite for Spring Boot</description>
 
     <properties>
         <java.version>11</java.version>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>bintray-t1-javaee-helpers</id>
-            <name>t1-javaee-helpers</name>
-            <url>https://api.bintray.com/maven/t1/javaee-helpers/problem-details/;publish=1</url>
-        </repository>
-    </distributionManagement>
 
     <build>
         <plugins>
@@ -68,12 +60,12 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-api</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-ri-spring</artifactId>
-            <version>1.0.5-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
