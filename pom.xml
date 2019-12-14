@@ -27,7 +27,7 @@
         <repository>
             <id>bintray-t1-javaee-helpers</id>
             <name>t1-javaee-helpers</name>
-            <url>https://api.bintray.com/maven/t1/javaee-helpers/${project.artifactId}/;publish=1</url>
+            <url>https://api.bintray.com/maven/t1/javaee-helpers/problem-details/;publish=1</url>
         </repository>
     </distributionManagement>
     <licenses>
@@ -38,7 +38,7 @@
         </license>
     </licenses>
     <scm>
-        <developerConnection>scm:git:https://github.com/t1/${project.artifactId}</developerConnection>
+        <developerConnection>scm:git:https://github.com/t1/problem-details</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
