@@ -100,25 +100,57 @@ This will result in an exception body similar to:
 
 == Client Side Examples
 
+=== JAX-RS
 
+The ideal code would look like this:
 
-== Spec & API
+[source,java]
+---------------------------------------------------------------
+class OrderGateway {
+    public Shipment order(String articleId) {
+        try {
+            return target()
+                .register(ProblemDetailHandler.class)
+                .path("/orders").request(APPLICATION_JSON_TYPE)
+                .post(Entity.form(new Form().param("article", article)));
+        } catch (OutOfCreditException e) {
+            displayOutOfCredit(e.getBalance());
+            return null;
+        }
+    }
+}
+---------------------------------------------------------------
 
-* MUST `application/problem+json`, `application/problem+xml`; SHOULD any, e.g. `+yaml`
-* SHOULD render `text/html`
-* map also `@Valid` REST params
-* logging: 4xx = DEBUG, 5xx = ERROR; configurable?
-* order of extensions is alphabetic (which is better for tests than random)
-* multiple extensions with the same name: undefined behavior
-* JAXB can't unmarshal a subclass with the same type and namespace
-* Security considerations: nothing dangerous in problem details (i.e. exception message); stack-trace in logs
+The RI requires you to register the `OutOfCreditException` and the `ProblemDetailHandler` (see the `ri` README for details). And you have to unwrap the JAX-RS `ResponseProcessingException` exception before you can catch the `OutOfCreditException`.
 
-// TODO scan client classpath for @Type annotated exceptions (and document this in the spec and the annotation)
-// TODO can we use the exact timestamp of the log for the response header timestamp?
-// TODO inherited annotations
-// TODO cause annotations
-// TODO type factory, e.g. URL to OpenAPI
-// TODO instance factory, e.g. URL to the logging system filtering on an UUID
+Other implementations may have other requirements and limitations.
+
+=== Spring Boot
+
+In Spring, a client could look like this:
+
+[source,java]
+---------------------------------------------------------------
+class OrderGateway {
+    static {
+        ProblemDetailJsonToExceptionBuilder.register(OutOfCreditException.class);
+    }
+
+    public Shipment order(String articleId) {
+        try {
+            RestTemplate template = new RestTemplate();
+            template.setErrorHandler(new ProblemDetailErrorHandler());
+            return template.postForObject(BASE_URI + "/orders", form, Shipment.class);
+        } catch (OutOfCreditException e) {
+            displayOutOfCredit(e.getBalance());
+            return null;
+        }
+    }
+}
+---------------------------------------------------------------
+
+Note that the registration of the `OutOfCreditException` in the `ProblemDetailJsonToExceptionBuilder` and the `ProblemDetailErrorHandler` in the `RestTemplate` is specific to the Spring Boot RI. Other implementations may have other requirements and limitations.
+
 
 == Package Structure
 
@@ -134,9 +166,13 @@ On the client side, some manual registration (e.g. of a `ClientResponseFilter` o
 
 A JAX-RS implementation, called `ri` even though it's actually only a POC, and it's incomplete. See the README for details.
 
+// TODO can we use the exact timestamp of the log for the response header timestamp?
+
 === ri-spring
 
 A Spring Boot implementation. This also is just a POC, there may be better integration points that I'm not aware of.
+
+// TODO can we use the exact timestamp of the log for the response header timestamp?
 
 === ri-lib
 
