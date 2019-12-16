@@ -1,6 +1,6 @@
 package com.github.t1.problemdetailmapper;
 
-import com.github.t1.problemdetail.ProblemDetail;
+import com.github.t1.problemdetail.ri.lib.ProblemDetail;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;

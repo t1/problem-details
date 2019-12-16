@@ -9,6 +9,13 @@ import java.io.IOException;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
 
+/**
+ * This is the client side tool to turn problem details into exceptions. To use it, set
+ * a new instance of this class as an error handler on your `RestTemplate`:
+ * <pre><code>
+ * template.setErrorHandler(new ProblemDetailErrorHandler());
+ * </code></pre>
+ */
 public class ProblemDetailErrorHandler extends DefaultResponseErrorHandler {
     private static final MediaType PROBLEM_DETAIL_JSON_MEDIA_TYPE = MediaType.parseMediaType(PROBLEM_DETAIL_JSON);
 

@@ -39,8 +39,10 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
  * Tech stack independent collector. Template methods can be overridden to provide tech stack specifics.
  */
 public abstract class ProblemDetails {
+    public static final String URN_PROBLEM_TYPE_PREFIX = "urn:problem-type:";
+
     protected final Exception exception;
-    protected final Class<? extends Exception> type;
+    protected final Class<? extends Exception> exceptionType;
 
     @Getter private final StatusType status;
     @Getter private final Object body;
@@ -49,10 +51,11 @@ public abstract class ProblemDetails {
 
     public ProblemDetails(Exception exception) {
         this.exception = exception;
-        this.type = exception.getClass();
+        this.exceptionType = exception.getClass();
+
         this.status = buildStatus();
         this.body = buildBody();
-        this.mediaType = buildResponseMediaType();
+        this.mediaType = buildMediaType();
         this.logMessage = buildLogMessage();
 
         log(logMessage);
@@ -60,7 +63,7 @@ public abstract class ProblemDetails {
 
     protected Object buildBody() {
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("type", buildType());
+        body.put("type", buildTypeUri());
 
         body.put("title", buildTitle());
 
@@ -79,8 +82,8 @@ public abstract class ProblemDetails {
     }
 
     protected StatusType buildStatus() {
-        if (type.isAnnotationPresent(Status.class)) {
-            return type.getAnnotation(Status.class).value();
+        if (exceptionType.isAnnotationPresent(Status.class)) {
+            return exceptionType.getAnnotation(Status.class).value();
         } else if (exception instanceof IllegalArgumentException) {
             return BAD_REQUEST;
         } else {
@@ -92,20 +95,20 @@ public abstract class ProblemDetails {
         return INTERNAL_SERVER_ERROR;
     }
 
-    protected URI buildType() {
-        return buildType(type);
+    protected URI buildTypeUri() {
+        return buildTypeUri(exceptionType);
     }
 
-    public static URI buildType(Class<? extends Exception> type) {
+    public static URI buildTypeUri(Class<? extends Exception> type) {
         return URI.create(type.isAnnotationPresent(Type.class)
             ? type.getAnnotation(Type.class).value()
-            : "urn:problem-type:" + wordsFromTypeName(type, '-').toLowerCase());
+            : URN_PROBLEM_TYPE_PREFIX + wordsFromTypeName(type, '-').toLowerCase());
     }
 
     protected String buildTitle() {
-        return type.isAnnotationPresent(Title.class)
-            ? type.getAnnotation(Title.class).value()
-            : wordsFromTypeName(type, ' ');
+        return exceptionType.isAnnotationPresent(Title.class)
+            ? exceptionType.getAnnotation(Title.class).value()
+            : wordsFromTypeName(exceptionType, ' ');
     }
 
     private static String wordsFromTypeName(Class<? extends Exception> type, char delimiter) {
@@ -128,12 +131,12 @@ public abstract class ProblemDetails {
 
     protected String buildDetail() {
         List<Object> details = new ArrayList<>();
-        for (Method method : type.getDeclaredMethods()) {
+        for (Method method : exceptionType.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Detail.class)) {
                 details.add(invoke(method));
             }
         }
-        for (Field field : type.getDeclaredFields()) {
+        for (Field field : exceptionType.getDeclaredFields()) {
             if (field.isAnnotationPresent(Detail.class)) {
                 details.add(get(field));
             }
@@ -175,12 +178,12 @@ public abstract class ProblemDetails {
 
     protected URI buildInstance() {
         String instance = null;
-        for (Method method : type.getDeclaredMethods()) {
+        for (Method method : exceptionType.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Instance.class)) {
                 instance = invoke(method).toString();
             }
         }
-        for (Field field : type.getDeclaredFields()) {
+        for (Field field : exceptionType.getDeclaredFields()) {
             if (field.isAnnotationPresent(Instance.class)) {
                 instance = get(field).toString();
             }
@@ -203,12 +206,12 @@ public abstract class ProblemDetails {
 
     protected Map<String, Object> buildExtensions() {
         Map<String, Object> extensions = new TreeMap<>();
-        for (Method method : type.getDeclaredMethods()) {
+        for (Method method : exceptionType.getDeclaredMethods()) {
             if (method.isAnnotationPresent(Extension.class)) {
                 extensions.put(extensionName(method), invoke(method));
             }
         }
-        for (Field field : type.getDeclaredFields()) {
+        for (Field field : exceptionType.getDeclaredFields()) {
             if (field.isAnnotationPresent(Extension.class)) {
                 extensions.put(extensionName(field), get(field));
             }
@@ -221,7 +224,7 @@ public abstract class ProblemDetails {
         return annotatedName.isEmpty() ? member.getName() : annotatedName;
     }
 
-    protected String buildResponseMediaType() {
+    protected String buildMediaType() {
         String format = findMediaTypeSubtype();
 
         // browsers send, e.g., `text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8`
@@ -274,7 +277,7 @@ public abstract class ProblemDetails {
 
     private Logger buildLogger() {
         Logging logging = findLoggingAnnotation();
-        return (logging == null || logging.to().isEmpty()) ? LoggerFactory.getLogger(type)
+        return (logging == null || logging.to().isEmpty()) ? LoggerFactory.getLogger(exceptionType)
             : LoggerFactory.getLogger(logging.to());
     }
 
@@ -284,8 +287,8 @@ public abstract class ProblemDetails {
     }
 
     private Logging findLoggingAnnotation() {
-        Logging onType = type.getAnnotation(Logging.class);
-        Logging onPackage = type.getPackage().getAnnotation(Logging.class);
+        Logging onType = exceptionType.getAnnotation(Logging.class);
+        Logging onPackage = exceptionType.getPackage().getAnnotation(Logging.class);
         if (onPackage == null)
             return onType;
         if (onType == null)

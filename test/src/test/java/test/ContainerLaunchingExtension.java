@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetail.ProblemDetail;
+import com.github.t1.problemdetail.ri.lib.ProblemDetail;
 import com.github.t1.problemdetailmapper.ProblemDetailJsonMessageBodyReader;
 import com.github.t1.problemdetailmapper.ProblemDetailXmlMessageBodyReader;
 import com.github.t1.testcontainers.jee.JeeContainer;

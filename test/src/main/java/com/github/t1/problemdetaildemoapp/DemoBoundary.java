@@ -81,9 +81,9 @@ public class DemoBoundary {
     private void deduct(int cost, int userId) {
         int balance = balance(userId);
         if (balance < cost) {
-            throw new OutOfCreditException(balance, cost,
+            throw new OutOfCreditException(
                 URI.create("/account/12345/msgs/abc"),
-                asList(ACCOUNT_1, ACCOUNT_2)
+                balance, cost, asList(ACCOUNT_1, ACCOUNT_2)
             );
         }
     }

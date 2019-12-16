@@ -4,14 +4,105 @@ image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images
 
 == Abstract
 
-Map standard and custom exceptions to a http response body
+Maps standard and custom exceptions to http response bodies
 containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807].
 
-Most things work out of the box: the `type` and `title` fields are derived from the exception class name; the `detail` field is the message of the exception; the `instance` field is a random UUID URN that is also logged together with the complete stack trace.
+On the server side, you can simply throw an exception, and most things will just work. Or use annotations on the exception to override the default behavior.
 
-These defaults can be overridden with annotations.
+On the client side, you can register an extension, so a type-safe exception is thrown for your code to catch.
 
-== Motivation
+== Server Side Examples
+
+=== Default Mapping
+
+To produce a problem detail body, simply throw an exception, e.g.:
+
+[source,java]
+---------------------------------------------------------------
+throw new NotFoundException("There is no article " + articleId);
+---------------------------------------------------------------
+
+Will result in an exception body similar to this:
+
+[source,json]
+---------------------------------------------------------------
+{
+  "type": "urn:problem-type:not-found", // <1>
+  "title": "Not Found", // <2>
+  "status": 404, // <3>
+  "detail": "There is no article 862353", // <4>
+  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d" // <5>
+}
+---------------------------------------------------------------
+
+<1> The default `type` is a URN derived from the type name of the exception by converting camel case to kebap case.
+<2> The default `title` is derived from the type name of the exception by converting camel case to separate words.
+<3> The default status is `500` except for an `IllegalArgumentException`, which gets mapped to 400, and the JAX-RS exceptions, which get mapped to their responsive status code.
+<4> The default `detail` is the message of the exception. There won't be a `detail` field, if the message of the exception is null.
+<5> The default `instance` is a random UUID URN.
+
+If the first requested type (in an `Accept` header) is `application/xml`, the body will be the xml equivalent of this json document.
+
+=== Default Logging
+
+The stack trace is explicitly _never_ part of the body, as it must be considered sensitive information. To find it, look into the logs and search by the `instance` field found in the body. The logging category defaults to the fully qualified class name of the exception. By default, 4xx status codes are considered a problem of the client and are logged at `DEBUG` log level; 5xx status codes are a problem of the service, so they are logged at `ERROR`.
+
+As a logging API, http://www.slf4j.org[slf4j] is used. Depending on your application server, you may also have to package a binding like `slf4j-jdk14`.
+
+=== Annotations
+
+Each of these defaults can optionally be overridden with annotations. Additionally, custom problem detail fields (called extensions) can be defined with `@Extension` annotated fields or methods.
+
+[source,java]
+---------------------------------------------------------------
+@Type("https://example.com/probs/out-of-credit")
+@Title("You do not have enough credit.")
+@Status(FORBIDDEN) // <1>
+@Logging(at = WARNING, to = "warnings") // <2>
+@Getter @AllArgsConstructor @NoArgsConstructor(force = true) // <3>
+public class OutOfCreditException extends RuntimeException {
+    @Instance private URI instance; // <4>
+    @Extension private int balance; // <5>
+    private int cost; // <6>
+    @Extension private List<URI> accounts; // <7>
+
+    @Detail public String getDetail() { // <8>
+        return "Your current balance is " + balance + ", but that costs " + cost + ".";
+    }
+}
+---------------------------------------------------------------
+
+<1> The status is a constant from the `javax.ws.rs.core.Response.Status` enum.
+<2> The `@Logging` annotation can also be on the package (i.e. in the `package-info.java` file) to be a fallback for all exceptions in the package.
+<3> These are https://projectlombok.org[Lombok] annotations, just for demo purposes; you can write the boiler plate code by hand, of course ;-)
+<4> The `@Instance` annotation can be on a field or a no-arg method.
+<5> There can be multiple `@Extension` annotations on fields or no-arg methods.
+<6> This field is not annotated, so it won't be part of the body.
+<7> Extensions can also be complex types, i.e. lists or maps or objects containing multiple fields, as long as they are (de)serializable by JSONB.
+<8> The `@Detail` annotation can be on a field or a no-arg method.
+
+This will result in an exception body similar to:
+
+[source,json]
+---------------------------------------------------------------
+{
+  "type": "https://example.com/probs/out-of-credit",
+  "title": "Forbidden",
+  "status": 403,
+  "detail": "Your current balance is 30, but that costs 50.",
+  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d",
+  "balance": 50,
+  "accounts": [
+    "/account/12345",
+    "/account/67890"
+  ]
+}
+---------------------------------------------------------------
+
+
+== Client Side Examples
+
+
 
 
 == Spring
@@ -29,6 +120,7 @@ These defaults can be overridden with annotations.
 * Security considerations: nothing dangerous in problem details (i.e. exception message); stack-trace in logs
 
 // TODO scan client classpath for @Type annotated exceptions (and document this in the spec and the annotation)
+// TODO can we use the exact timestamp of the log for the response header timestamp?
 // TODO inherited annotations
 // TODO cause annotations
 // TODO type factory, e.g. URL to OpenAPI

@@ -20,9 +20,9 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 @Status(FORBIDDEN)
 @Getter @AllArgsConstructor @NoArgsConstructor(force = true)
 public class OutOfCreditException extends RuntimeException {
+    @Instance private URI instance;
     @Extension private int balance;
     private int cost;
-    @Instance private URI instance;
     @Extension private List<URI> accounts;
 
     @Detail public String getDetail() {

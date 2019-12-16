@@ -18,7 +18,7 @@ import javax.ws.rs.core.Response.StatusType;
 import java.util.Enumeration;
 
 /**
- * Maps exceptions to a response with a body containing problem details
+ * The server side tool to convert an exception into a response with a problem detail body
  * as specified in https://tools.ietf.org/html/rfc7807
  */
 @Slf4j
@@ -39,7 +39,7 @@ public class ProblemDetailControllerAdvice {
                 return super.buildBody();
             }
 
-            @Override protected String buildResponseMediaType() {
+            @Override protected String buildMediaType() {
                 if (exception instanceof RestClientResponseException) {
                     HttpHeaders responseHeaders = ((RestClientResponseException) exception).getResponseHeaders();
                     if (responseHeaders != null) {
@@ -50,7 +50,7 @@ public class ProblemDetailControllerAdvice {
                     }
                 }
 
-                return super.buildResponseMediaType();
+                return super.buildMediaType();
             }
 
             @Override protected String findMediaTypeSubtype() {

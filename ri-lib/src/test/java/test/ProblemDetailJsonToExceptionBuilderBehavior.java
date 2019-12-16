@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
+import javax.ws.rs.BadRequestException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
@@ -27,7 +28,7 @@ class ProblemDetailJsonToExceptionBuilderBehavior {
         then(thrown).hasMessage("no registered exception found for `type` field in {}");
     }
 
-    @Test void shouldNotFilterUnknownType() {
+    @Test void shouldNotBuildUnknownType() {
         entity.add("type", "unknown");
 
         IllegalArgumentException thrown = catchThrowableOfType(this::trigger, IllegalArgumentException.class);
@@ -40,9 +41,25 @@ class ProblemDetailJsonToExceptionBuilderBehavior {
 
         NullPointerException thrown = catchThrowableOfType(this::trigger, NullPointerException.class);
 
-        assertThat(thrown)
-            .isInstanceOf(NullPointerException.class)
-            .hasMessage(null);
+        assertThat(thrown).hasMessage(null);
+    }
+
+    @Test void shouldBuildNullPointerWithMessage() {
+        entity.add("type", "urn:problem-type:null-pointer");
+        entity.add("detail", "some-detail");
+
+        NullPointerException thrown = catchThrowableOfType(this::trigger, NullPointerException.class);
+
+        assertThat(thrown).hasMessage("some-detail");
+    }
+
+    @Test void shouldBuildBadRequest() {
+        entity.add("type", "urn:problem-type:bad-request");
+        entity.add("detail", "some-detail");
+
+        BadRequestException thrown = catchThrowableOfType(this::trigger, BadRequestException.class);
+
+        assertThat(thrown).hasMessage("some-detail");
     }
 
     public static class CustomException extends RuntimeException {}

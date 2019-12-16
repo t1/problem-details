@@ -2,6 +2,7 @@ package com.github.t1.problemdetail.ri.lib;
 
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Instance;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.json.Json;
@@ -11,34 +12,60 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.json.bind.JsonbConfig;
 import javax.json.bind.config.PropertyVisibilityStrategy;
-import javax.ws.rs.NotFoundException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static com.github.t1.problemdetail.ri.lib.ProblemDetails.URN_PROBLEM_TYPE_PREFIX;
+import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
+import static com.google.common.base.CaseFormat.UPPER_CAMEL;
+
 @Slf4j
 public class ProblemDetailJsonToExceptionBuilder extends Throwable {
     private static final Map<String, Class<? extends RuntimeException>> REGISTRY = new HashMap<>();
 
-    static {
-        register(NullPointerException.class);
-        register(RuntimeException.class);
-        register(NotFoundException.class);
-    }
-
     public static String register(Class<? extends RuntimeException> exceptionType) {
-        String typeUri = ProblemDetails.buildType(exceptionType).toString();
+        String typeUri = ProblemDetails.buildTypeUri(exceptionType).toString();
         REGISTRY.put(typeUri, exceptionType);
         return typeUri;
+    }
+
+    private static Class<? extends RuntimeException> computeFrom(String type) {
+        if (type != null && type.startsWith(URN_PROBLEM_TYPE_PREFIX)) {
+            return computeFromUrn(type.substring(URN_PROBLEM_TYPE_PREFIX.length()));
+        } else {
+            return null;
+        }
+    }
+
+    private static Class<? extends RuntimeException> computeFromUrn(String type) {
+        String camel = LOWER_HYPHEN.to(UPPER_CAMEL, type);
+        Class<? extends RuntimeException> cls = forName("java.lang." + camel + "Exception");
+        if (cls != null)
+            return cls;
+        return forName("javax.ws.rs." + camel + "Exception");
+    }
+
+    private static Class<? extends RuntimeException> forName(String name) {
+        try {
+            Class<?> t = Class.forName(name);
+            //noinspection unchecked
+            return RuntimeException.class.isAssignableFrom(t)
+                ? (Class<? extends RuntimeException>) t
+                : null;
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
     }
 
     public ProblemDetailJsonToExceptionBuilder(InputStream entityStream) {
         this.body = Json.createReader(entityStream).readObject();
         String typeUri = body.getString("type", null);
-        this.type = REGISTRY.getOrDefault(typeUri, null);
+        this.type = REGISTRY.computeIfAbsent(typeUri, ProblemDetailJsonToExceptionBuilder::computeFrom);
     }
 
     private final JsonObject body;
@@ -57,8 +84,27 @@ public class ProblemDetailJsonToExceptionBuilder extends Throwable {
         setInstance();
         setExtensions();
 
-        String json = output.build().toString();
-        throw JSONB.fromJson(json, type);
+        JsonObject json = output.build();
+        throw (json.isEmpty())
+            ? newInstance()
+            : JSONB.fromJson(json.toString(), type);
+    }
+
+    @SneakyThrows(ReflectiveOperationException.class)
+    private RuntimeException newInstance() {
+        String detail = (body == null || !body.containsKey("detail")) ? null : body.getString("detail");
+        Constructor<? extends RuntimeException> messageConstructor = findMessageConstructor();
+        if (detail == null || messageConstructor == null)
+            return type.getConstructor().newInstance();
+        return messageConstructor.newInstance(detail);
+    }
+
+    private Constructor<? extends RuntimeException> findMessageConstructor() {
+        try {
+            return type.getConstructor(String.class);
+        } catch (NoSuchMethodException e) {
+            return null;
+        }
     }
 
     private void setInstance() {
