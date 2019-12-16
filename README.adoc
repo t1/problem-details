@@ -102,15 +102,14 @@ This will result in an exception body similar to:
 
 === JAX-RS
 
-The ideal code would look like this:
+The ideal JAX-RS client code would look like this:
 
 [source,java]
 ---------------------------------------------------------------
 class OrderGateway {
     public Shipment order(String articleId) {
         try {
-            return target()
-                .register(ProblemDetailHandler.class)
+            return target() // returns a configured `WebTarget`
                 .path("/orders").request(APPLICATION_JSON_TYPE)
                 .post(Entity.form(new Form().param("article", article)));
         } catch (OutOfCreditException e) {
@@ -121,7 +120,7 @@ class OrderGateway {
 }
 ---------------------------------------------------------------
 
-The RI requires you to register the `OutOfCreditException` and the `ProblemDetailHandler` (see the `ri` README for details). And you have to unwrap the JAX-RS `ResponseProcessingException` exception before you can catch the `OutOfCreditException`.
+The RI is very limited; it requires you to register the `OutOfCreditException` and the `ProblemDetailHandler`. And you have to unwrap the JAX-RS `ResponseProcessingException` exception before you can catch the `OutOfCreditException` (see the `ri` README for details).
 
 Other implementations may have other requirements and limitations.
 
@@ -152,7 +151,7 @@ class OrderGateway {
 Note that the registration of the `OutOfCreditException` in the `ProblemDetailJsonToExceptionBuilder` and the `ProblemDetailErrorHandler` in the `RestTemplate` is specific to the Spring Boot RI. Other implementations may have other requirements and limitations.
 
 
-== Package Structure
+== Module Structure
 
 === API
 
