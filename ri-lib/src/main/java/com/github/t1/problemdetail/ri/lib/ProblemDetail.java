@@ -10,15 +10,15 @@ import java.net.URI;
  * <a href="https://tools.ietf.org/html/rfc7807">RFC-7807</a>
  */
 @Data
-@XmlType(name = "problem", propOrder = {"type", "title", "status", "detail", "instance"})
+@XmlType(name = "problem", propOrder = {"type", "title", "detail", "status", "instance"})
 public class ProblemDetail {
     @Override public String toString() {
-        return "ProblemDetail:" + type + ":" + title + ":" + status + ":" + detail + ":" + instance;
+        return "ProblemDetail:" + type + ":" + title + ":" + detail + ":" + status + ":" + instance;
     }
 
     private URI type;
     private String title;
-    private Integer status;
     private String detail;
+    private Integer status;
     private URI instance;
 }

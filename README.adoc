@@ -1,11 +1,9 @@
-= Problem Detail
+= Problem Details
+:toc:
 
 image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
 
-== Abstract
-
-Maps standard and custom exceptions to http response bodies
-containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807].
+Maps standard and custom exceptions to http response bodies containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807].
 
 On the server side, you can simply throw an exception, and most things will just work. Or use annotations on the exception to override the default behavior.
 
@@ -27,19 +25,19 @@ Will result in an exception body similar to this:
 [source,json]
 ---------------------------------------------------------------
 {
-  "type": "urn:problem-type:not-found", // <1>
-  "title": "Not Found", // <2>
-  "status": 404, // <3>
-  "detail": "There is no article 862353", // <4>
-  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d" // <5>
+  "type": "urn:problem-type:not-found",
+  "title": "Not Found",
+  "status": 404,
+  "detail": "There is no article 862353",
+  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d"
 }
 ---------------------------------------------------------------
 
-<1> The default `type` is a URN derived from the type name of the exception by converting camel case to kebap case.
-<2> The default `title` is derived from the type name of the exception by converting camel case to separate words.
-<3> The default status is `500` except for an `IllegalArgumentException`, which gets mapped to 400, and the JAX-RS exceptions, which get mapped to their responsive status code.
-<4> The default `detail` is the message of the exception. There won't be a `detail` field, if the message of the exception is null.
-<5> The default `instance` is a random UUID URN.
+`type`:: The default is a URN derived from the type name of the exception by converting camel case to kebap case.
+`title`:: The default is derived from the type name of the exception by converting camel case to separate words.
+`status`:: The default is `500` except for an `IllegalArgumentException`, which gets mapped to 400, and the JAX-RS exceptions, which get mapped to their responsive status code.
+`detail`:: The default is the message of the exception. There won't be a `detail` field, if the message of the exception is null.
+`instance`:: The default is a random UUID URN.
 
 If the first requested type (in an `Accept` header) is `application/xml`, the body will be the xml equivalent of this json document.
 
@@ -104,10 +102,6 @@ This will result in an exception body similar to:
 
 
 
-
-== Spring
-
-
 == Spec & API
 
 * MUST `application/problem+json`, `application/problem+xml`; SHOULD any, e.g. `+yaml`
@@ -126,30 +120,45 @@ This will result in an exception body similar to:
 // TODO type factory, e.g. URL to OpenAPI
 // TODO instance factory, e.g. URL to the logging system filtering on an UUID
 
-== Dummy-Impl [ri]
+== Package Structure
 
-It's called `ri`, but it's actually only a POC, and it's incomplete. See the README for details.
+=== API
 
-== Test
+This is the API your application can depend on while the implementations can vary. It contains the annotations, an enum `LogLevel` for the `@Logging` annotation, and a `Constants` class containing `PROBLEM_DETAIL_JSON` and `PROBLEM_DETAIL_XML`, and their typed equivalents for JAX-RS `MediaType`.
 
-The `test` module runs integration tests by using https://github.com/t1/jee-testcontainers[JEE Testcontainers], i.e. it can be configured to start different Docker containers with various JEE application servers. By default, it starts a Wildfly.
+On the server side, the binding happens without any application code dependencies, e.g. by an `ExceptionMapper`, a `ControllerAdvice`, or whatever mechanism is necessary for the implementation.
 
-`testcontainer-running`
+On the client side, some manual registration (e.g. of a `ClientResponseFilter` or a `ResponseErrorHandler` and the exceptions to be mapped to) may be necessary, but this will not be portable, as the mechanism to do this registration is specific to the http client api you use. Some implementations may even work without such a manual step.
 
-As the containers don't yet implement the API by themselves, the dummy implementation `ri` is hard-wired in the tests for now.
+=== Dummy-Impl [ri]
 
-=== Wildfly
+A JAX-RS implementation, called `ri` even though it's actually only a POC, and it's incomplete. See the README for details.
+
+=== ri-spring
+
+A Spring Boot implementation. This also is just a POC, there may be better integration points that I'm not aware of.
+
+=== ri-lib
+
+This is a library used by the JAX-RS RI as well as the Spring RI. It's not part of any supported public API, so you MUST NOT depend on this module directly.
+
+=== Test (JAX-RS)
+
+Builds a `war` hard-wired to the `ri`; and when using the maven profile `with-slf4j`, the `slf4j-api` and `slf4j-jdk14` are included as well. The integration tests use https://github.com/t1/jee-testcontainers[JEE Testcontainers], i.e. it can be configured to start different Docker containers with various JEE application servers (details below). By default, it starts a Wildfly.
+
+You can also specify a base URL in the system property `testcontainer-running` (e.g. `-Dtestcontainer-running=http://localhost:8080/problem-details-test`), so the tests verify a running service. This is very handy while developing the implementation. This also works when the running service is the Spring Boot Test application (see below).
+
+==== Wildfly
 
 Default `mvn` or explicitly `mvn -Djee-testcontainer=wildfly`
 
-=== Open Liberty
+==== Open Liberty
 
 `mvn -Djee-testcontainer=open-liberty:19.0.0.9-javaee8-java11 -Pwith-slf4j`
 
-needs tag for jdk11 support
-needs dependencies on slf4j-api and slf4j-jdk14
+Needs the tag for jdk11 support. Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
 
-=== TomEE
+==== TomEE
 
 `mvn -Djee-testcontainer=tomee`
 
@@ -158,9 +167,14 @@ StandardExceptionMappingIT.shouldMapWebApplicationExceptionWithoutEntityButMessa
 StandardExceptionMappingIT.shouldMapWebApplicationExceptionWithoutEntityOrMessage
 ValidationFailedExceptionMappingIT.shouldMapValidationFailedException
 
-=== Payara
+==== Payara
 
 `mvn -Djee-testcontainer=payara -Pwith-slf4j`
 
-fails due to lack of jdk11 support of the https://hub.docker.com/r/payara/server-full[`payara`] image.
-needs dependencies on slf4j-api and slf4j-jdk14
+Currently fails due to lack of jdk11 support of the https://hub.docker.com/r/payara/server-full[`payara`] image. Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
+
+=== test-spring
+
+Builds a Spring Boot application containing the RI. The integration tests also start the application.
+
+You can specify a base URL in the system property `testcontainer-running` (e.g. `-Dtestcontainer-running=http://localhost:8080`), so the tests verify a running service. This is very handy while developing the implementation. This also works when the running service is the JAX-RS Test application (see above).
