@@ -22,22 +22,22 @@ throw new NotFoundException("There is no article " + articleId);
 
 Will result in an exception body similar to this:
 
-[source,json]
+[source,yaml]
 ---------------------------------------------------------------
 {
-  "type": "urn:problem-type:not-found",
-  "title": "Not Found",
-  "status": 404,
-  "detail": "There is no article 862353",
-  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d"
+  "type": "urn:problem-type:not-found",                       # <1>
+  "title": "Not Found",                                       # <2>
+  "status": 404,                                              # <3>
+  "detail": "There is no article 862353",                     # <4>
+  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d" # <5>
 }
 ---------------------------------------------------------------
 
-`type`:: The default is a URN derived from the type name of the exception by converting camel case to kebap case.
-`title`:: The default is derived from the type name of the exception by converting camel case to separate words.
-`status`:: The default is `500` except for an `IllegalArgumentException`, which gets mapped to 400, and the JAX-RS exceptions, which get mapped to their responsive status code.
-`detail`:: The default is the message of the exception. There won't be a `detail` field, if the message of the exception is null.
-`instance`:: The default is a random UUID URN.
+<1> The default `type` is a URN derived from the type name of the exception by converting camel case to kebap case.
+<2> The default `title` is derived from the type name of the exception by converting camel case to separate words.
+<3> The default `status` is `500` except for an `IllegalArgumentException`, which gets mapped to 400, and the JAX-RS exceptions, which get mapped to their responsive status code.
+<4> The default `detail` is the message of the exception. There won't be a `detail` field, if the message of the exception is null.
+<5> The default `instance` is a random UUID URN.
 
 If the first requested type (in an `Accept` header) is `application/xml`, the body will be the xml equivalent of this json document.
 
@@ -97,7 +97,6 @@ This will result in an exception body similar to:
 }
 ---------------------------------------------------------------
 
-
 == Client Side Examples
 
 === JAX-RS
@@ -120,7 +119,7 @@ class OrderGateway {
 }
 ---------------------------------------------------------------
 
-The RI is very limited; it requires you to register the `OutOfCreditException` and the `ProblemDetailHandler`. And you have to unwrap the JAX-RS `ResponseProcessingException` exception before you can catch the `OutOfCreditException` (see the `ri` README for details).
+The current RI is based on a JAX-RS `ClientResponseFilter` which brings some boiler plate code: it requires you to register the `OutOfCreditException` and the `ProblemDetailHandler`. And you have to unwrap the JAX-RS `ResponseProcessingException` before you can catch the `OutOfCreditException` (see the `ri` README for details).
 
 Other implementations may have other requirements and limitations.
 
@@ -148,8 +147,7 @@ class OrderGateway {
 }
 ---------------------------------------------------------------
 
-Note that the registration of the `OutOfCreditException` in the `ProblemDetailJsonToExceptionBuilder` and the `ProblemDetailErrorHandler` in the `RestTemplate` is specific to the Spring Boot RI. Other implementations may have other requirements and limitations.
-
+Note that the registration of the `OutOfCreditException` with the `ProblemDetailJsonToExceptionBuilder` and the `ProblemDetailErrorHandler` in the `RestTemplate` is specific to the Spring Boot RI. Other implementations may have other requirements and limitations.
 
 == Module Structure
 
