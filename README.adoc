@@ -1,6 +1,7 @@
 = Problem Details
-:toc:
+:toc2: right
 :toc-placement: manual
+:toclevels: 1
 
 image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
 
