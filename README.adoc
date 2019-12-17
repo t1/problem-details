@@ -1,9 +1,17 @@
 = Problem Details
+:experimental:
 :toc: right
 :toc-placement: manual
+:toc-title: pass:[<b>Contents</b>]
 :toclevels: 1
 :icons: font
-:page-layout: docs
+ifdef::env-github[]
+:tip-caption: :bulb:
+endif::[]
+ifndef::env-github[]
+:idprefix:
+:idseparator: -
+endif::[]
 
 image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
 
