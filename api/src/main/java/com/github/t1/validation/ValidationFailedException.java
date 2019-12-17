@@ -17,6 +17,8 @@ import static java.util.stream.Collectors.toMap;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
+ * An exception to throw when validations fail. Simply call {@link #validate(Object, Class[])}.
+ * <p>
  * Can be mapped as <code>problem detail</code>, exposing only the violations, but not the
  * actual data. You'll find the data together with the stack trace in the logs.
  */
@@ -43,8 +45,7 @@ public class ValidationFailedException extends RuntimeException {
         return violations.size() + " violations failed";
     }
 
-    @Extension
-    public Map<String, String> violations() {
+    @Extension Map<String, String> violations() {
         return violations.stream()
             .map(violation -> new SimpleEntry<>(violation.getPropertyPath().toString(), violation.getMessage()))
             .collect(toMap(Entry::getKey, Entry::getValue));

@@ -63,7 +63,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         return target(path).request(APPLICATION_JSON_TYPE).post(null);
     }
 
-    private static WebTarget target(String path) {
+    public static WebTarget target(String path) {
         return target().path(path);
     }
 

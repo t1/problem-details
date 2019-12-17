@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Positive;
@@ -30,15 +31,19 @@ public class ValidationBoundary {
     @NoArgsConstructor(force = true) @AllArgsConstructor
     public static class Person {
         @NotNull String firstName;
-        @NotNull String lastName;
+        @NotEmpty String lastName;
         @Past LocalDate born;
         @Valid Address[] address;
     }
 
-    @PostMapping public void post() {
-        Person person = new Person(null, null, LocalDate.now().plusDays(3),
+    @PostMapping("/manual") public void postManual() {
+        Person person = new Person(null, "", LocalDate.now().plusDays(3),
             new Address[]{new Address(null, -1, null)});
 
         validate(person);
+    }
+
+    @PostMapping("/annotated") public String postAnnotated(@Valid Person person) {
+        return "valid";
     }
 }

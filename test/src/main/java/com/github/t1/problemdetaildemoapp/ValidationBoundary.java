@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Positive;
@@ -28,15 +29,19 @@ public class ValidationBoundary {
     @NoArgsConstructor(force = true) @AllArgsConstructor
     public static class Person {
         @NotNull String firstName;
-        @NotNull String lastName;
+        @NotEmpty String lastName;
         @Past LocalDate born;
         @Valid Address[] address;
     }
 
-    @POST public void post() {
-        Person person = new Person(null, null, LocalDate.now().plusDays(3),
+    @POST @Path("/manual") public void postManual() {
+        Person person = new Person(null, "", LocalDate.now().plusDays(3),
             new Address[]{new Address(null, -1, null)});
 
         validate(person);
+    }
+
+    @POST @Path("/annotated") public String postAnnotated(@Valid Person person) {
+        return "valid";
     }
 }

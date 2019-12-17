@@ -13,6 +13,8 @@ Map standard and custom exceptions to http response bodies containing problem de
 
 On the server side, you can simply throw an exception, and most things will just work. Or use annotations on the exception to override the default behavior.
 
+Simply include a dependency on `com.github.t1:problem-details-api` and a runtime dependency on `com.github.t1:problem-details-ri` for JAX-RS applications and `com.github.t1:problem-details-ri-spring` for Spring applications.
+
 === Default Mapping
 
 To produce a problem detail body, simply throw an exception, e.g.:
@@ -98,6 +100,12 @@ This will result in an exception body similar to:
   ]
 }
 ---------------------------------------------------------------
+
+=== Validations
+
+One of the most common use-cases for Bad Requests is a failing validation. You can do a verification and throw a corresponding problem detail exception simply by calling `ValidationFailedException.validate(object)`.
+
+The JAX-RS RI as well as the Spring Boot RI currently can't convert the exception thrown when a parameter to a REST boundary method is annotated as `@Valid`.
 
 == Client Side Examples
 
