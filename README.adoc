@@ -2,7 +2,7 @@
 :toc2: right
 :toc-placement: manual
 :toclevels: 1
-:icons:
+:icons: font
 
 image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
 
