@@ -16,56 +16,16 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Stream;
 
-import static com.github.t1.problemdetail.ri.lib.ProblemDetails.URN_PROBLEM_TYPE_PREFIX;
-import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
-import static com.google.common.base.CaseFormat.UPPER_CAMEL;
+import static com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry.REGISTRY;
 
 @Slf4j
 public class ProblemDetailJsonToExceptionBuilder extends Throwable {
-    private static final Map<String, Class<? extends RuntimeException>> REGISTRY = new HashMap<>();
-
-    public static String register(Class<? extends RuntimeException> exceptionType) {
-        String typeUri = ProblemDetails.buildTypeUri(exceptionType).toString();
-        REGISTRY.put(typeUri, exceptionType);
-        return typeUri;
-    }
-
-    private static Class<? extends RuntimeException> computeFrom(String type) {
-        if (type != null && type.startsWith(URN_PROBLEM_TYPE_PREFIX)) {
-            return computeFromUrn(type.substring(URN_PROBLEM_TYPE_PREFIX.length()));
-        } else {
-            return null;
-        }
-    }
-
-    private static Class<? extends RuntimeException> computeFromUrn(String type) {
-        String camel = LOWER_HYPHEN.to(UPPER_CAMEL, type);
-        Class<? extends RuntimeException> cls = forName("java.lang." + camel + "Exception");
-        if (cls != null)
-            return cls;
-        return forName("javax.ws.rs." + camel + "Exception");
-    }
-
-    private static Class<? extends RuntimeException> forName(String name) {
-        try {
-            Class<?> t = Class.forName(name);
-            //noinspection unchecked
-            return RuntimeException.class.isAssignableFrom(t)
-                ? (Class<? extends RuntimeException>) t
-                : null;
-        } catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-
     public ProblemDetailJsonToExceptionBuilder(InputStream entityStream) {
         this.body = Json.createReader(entityStream).readObject();
         String typeUri = body.getString("type", null);
-        this.type = REGISTRY.computeIfAbsent(typeUri, ProblemDetailJsonToExceptionBuilder::computeFrom);
+        this.type = REGISTRY.computeIfAbsent(typeUri, ProblemDetailExceptionRegistry::computeFrom);
     }
 
     private final JsonObject body;
@@ -74,18 +34,22 @@ public class ProblemDetailJsonToExceptionBuilder extends Throwable {
     private final JsonObjectBuilder output = Json.createObjectBuilder();
 
     /**
-     * Throws an exception; if the type wasn't {@link #register(Class) registered},
+     * Throws an exception; if the type wasn't {@link ProblemDetailExceptionRegistry#register(Class) registered},
      * a {@link IllegalArgumentException} is thrown.
      */
     public void trigger() {
+        throw build();
+    }
+
+    public RuntimeException build() {
         if (type == null)
-            throw new IllegalArgumentException("no registered exception found for `type` field in " + body);
+            return new IllegalArgumentException("no registered exception found for `type` field in " + body);
 
         setInstance();
         setExtensions();
 
         JsonObject json = output.build();
-        throw (json.isEmpty())
+        return (json.isEmpty())
             ? newInstance()
             : JSONB.fromJson(json.toString(), type);
     }

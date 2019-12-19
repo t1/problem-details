@@ -2,6 +2,7 @@ package test;
 
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Instance;
+import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -317,7 +318,7 @@ class ProblemDetailJsonToExceptionBuilderBehavior {
     }
 
     private void givenRegisteredType(Class<? extends RuntimeException> type) {
-        String typeUri = ProblemDetailJsonToExceptionBuilder.register(type);
+        String typeUri = ProblemDetailExceptionRegistry.register(type);
         entity.add("type", typeUri);
     }
 

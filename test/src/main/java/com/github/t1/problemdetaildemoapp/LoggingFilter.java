@@ -1,16 +1,28 @@
 package com.github.t1.problemdetaildemoapp;
 
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.ws.rs.client.ClientRequestContext;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseContext;
+import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.ext.Provider;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
@@ -21,17 +33,69 @@ import static javax.ws.rs.core.MediaType.CHARSET_PARAMETER;
 
 @Slf4j
 @Provider
-public class LoggingFilter implements ContainerRequestFilter, ContainerResponseFilter {
-    public static boolean LOG_REQUEST_ENTITY = false;
+@PreMatching
+@RequiredArgsConstructor
+public class LoggingFilter implements
+    ContainerRequestFilter, ContainerResponseFilter,
+    ClientRequestFilter, ClientResponseFilter {
 
-    @Override
-    public void filter(ContainerRequestContext request) throws IOException {
-        log.info("{} request {}{}", request.getMethod(), request.getUriInfo().getPath(), entity(request));
+    public static LoggingFilter toStdErr() {
+        return new LoggingFilter(System.err::print);
     }
 
-    private String entity(ContainerRequestContext request) throws IOException {
+    public static LoggingFilter atInfo() {
+        return new LoggingFilter(log::info);
+    }
+
+    public static LoggingFilter atDebug() {
+        return new LoggingFilter(log::debug);
+    }
+
+    @SuppressWarnings("unused") public LoggingFilter() {
+        this(System.out::print);
+    }
+
+    public LoggingFilter(Consumer<String> messageConsumer) {
+        this(false, messageConsumer);
+    }
+
+    /** Should the request/response body be logged? */
+    @With private final boolean entities;
+
+    private final Consumer<String> messageConsumer;
+
+    /* container request */
+    @Override public void filter(ContainerRequestContext requestContext) {
+        new MessageBuilder(">> ", requestContext.getMethod(), requestContext.getUriInfo().getRequestUri(), null,
+            requestContext.getHeaders())
+            .log();
+        messageConsumer.accept(entity(requestContext));
+    }
+
+    /* container response */
+    @Override public void filter(ContainerRequestContext request, ContainerResponseContext response) {
+        new MessageBuilder("<< ", request.getMethod(), request.getUriInfo().getRequestUri(), response.getStatusInfo(),
+            response.getHeaders())
+            .log();
+    }
+
+    /* client request */
+    @Override public void filter(ClientRequestContext request) {
+        new MessageBuilder("> ", request.getMethod(), request.getUri(), null, request.getHeaders())
+            .log();
+    }
+
+    /* client response */
+    @Override public void filter(ClientRequestContext request, ClientResponseContext response) {
+        new MessageBuilder("< " + response.getStatusInfo(), request.getMethod(), request.getUri(), response.getStatusInfo(),
+            response.getHeaders())
+            .log();
+    }
+
+    @SneakyThrows(IOException.class)
+    private String entity(ContainerRequestContext request) {
         MediaType mediaType = request.getMediaType();
-        if (LOG_REQUEST_ENTITY && log.isDebugEnabled() && request.hasEntity() && TEXT_TYPES.stream().anyMatch(mediaType::isCompatible)) {
+        if (entities && request.hasEntity() && TEXT_TYPES.stream().anyMatch(mediaType::isCompatible)) {
             byte[] bytes = request.getEntityStream().readAllBytes();
             request.setEntityStream(new ByteArrayInputStream(bytes)); // we've just depleted the original stream
             String charset = mediaType.getParameters().getOrDefault(CHARSET_PARAMETER, UTF_8.name());
@@ -41,9 +105,37 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
         }
     }
 
-    @Override public void filter(ContainerRequestContext request, ContainerResponseContext response) {
-        log.info("{} response {} -> {}{}", request.getMethod(), request.getUriInfo().getPath(),
-            response.getStatusInfo(), response.hasEntity() ? (":\n" + response.getEntity()) : "");
+    private class MessageBuilder {
+        private final StringBuilder out = new StringBuilder();
+        private final String prefix;
+
+        public MessageBuilder(String prefix, String method, URI uri, StatusType statusInfo, MultivaluedMap<String, ?> headers) {
+            this.prefix = prefix;
+
+            printStatus(method, uri, statusInfo);
+            printHeaders(headers);
+        }
+
+        private void printStatus(String method, URI uri, StatusType statusInfo) {
+            out.append(prefix).append(method).append(' ').append(uri);
+            if (statusInfo != null)
+                out.append(" <== ").append(statusInfo.getStatusCode()).append(" ").append(statusInfo.getReasonPhrase());
+            out.append('\n');
+        }
+
+        private void printHeaders(MultivaluedMap<String, ?> headers) {
+            for (String key : headers.keySet()) {
+                out.append(prefix).append("  ").append(key).append(": ");
+                for (Object value : headers.get(key)) {
+                    out.append(value.toString());
+                }
+                out.append("\n");
+            }
+        }
+
+        public void log() {
+            messageConsumer.accept(out.toString());
+        }
     }
 
     private static final List<MediaType> TEXT_TYPES = asList(

@@ -71,6 +71,10 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         .register(ProblemDetailJsonMessageBodyReader.class)
         .register(ProblemDetailXmlMessageBodyReader.class);
 
+    public static URI baseUri(String path) {
+        return URI.create(BASE_URI + path);
+    }
+
     public static WebTarget target() {
         return CLIENT.target(BASE_URI);
     }

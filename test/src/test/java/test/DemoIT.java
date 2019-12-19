@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
+import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import com.github.t1.problemdetailmapper.ProblemDetailHandler;
 import lombok.AllArgsConstructor;
@@ -32,7 +32,7 @@ import static test.ContainerLaunchingExtension.target;
 @ExtendWith(ContainerLaunchingExtension.class)
 class DemoIT {
     static {
-        ProblemDetailJsonToExceptionBuilder.register(OutOfCreditException.class);
+        ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
     }
 
     @Test void shouldOrderCheapGadget() {
