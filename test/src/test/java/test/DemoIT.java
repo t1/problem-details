@@ -2,7 +2,7 @@ package test;
 
 import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
-import com.github.t1.problemdetailmapper.ProblemDetailHandler;
+import com.github.t1.problemdetail.ri.ProblemDetailHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

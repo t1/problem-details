@@ -2,7 +2,6 @@ package test;
 
 import com.github.t1.problemdetail.ri.ProblemDetailResponseExceptionMapper;
 import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
-import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import com.github.t1.problemdetaildemoapp.LoggingFilter;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import lombok.AllArgsConstructor;

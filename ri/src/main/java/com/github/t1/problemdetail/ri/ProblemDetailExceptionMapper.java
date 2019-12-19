@@ -1,4 +1,4 @@
-package com.github.t1.problemdetailmapper;
+package com.github.t1.problemdetail.ri;
 
 import com.github.t1.problemdetail.ri.lib.ProblemDetails;
 import lombok.extern.slf4j.Slf4j;

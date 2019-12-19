@@ -1,8 +1,8 @@
 package test;
 
 import com.github.t1.problemdetail.ri.lib.ProblemDetail;
-import com.github.t1.problemdetailmapper.ProblemDetailJsonMessageBodyReader;
-import com.github.t1.problemdetailmapper.ProblemDetailXmlMessageBodyReader;
+import com.github.t1.problemdetail.ri.ProblemDetailJsonMessageBodyReader;
+import com.github.t1.problemdetail.ri.ProblemDetailXmlMessageBodyReader;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 

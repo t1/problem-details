@@ -1,8 +1,8 @@
 package test;
 
-import com.github.t1.problemdetailmapper.ProblemDetailHtmlMessageBodyWriter;
-import com.github.t1.problemdetailmapper.ProblemDetailXmlMessageBodyWriter;
-import com.github.t1.problemdetailmapper.YamlMessageBodyWriter;
+import com.github.t1.problemdetail.ri.ProblemDetailHtmlMessageBodyWriter;
+import com.github.t1.problemdetail.ri.ProblemDetailXmlMessageBodyWriter;
+import com.github.t1.problemdetail.ri.YamlMessageBodyWriter;
 import org.junit.jupiter.api.Test;
 
 import javax.json.bind.Jsonb;

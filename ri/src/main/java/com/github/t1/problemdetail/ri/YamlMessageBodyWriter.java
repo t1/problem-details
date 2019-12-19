@@ -1,4 +1,4 @@
-package com.github.t1.problemdetailmapper;
+package com.github.t1.problemdetail.ri;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
