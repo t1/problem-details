@@ -20,7 +20,7 @@ public class ProblemDetailResponseExceptionMapper implements ResponseExceptionMa
     }
 
     private boolean isProblemDetail(Object contentType) {
-        return contentType == null // TODO there's a TODO in RestEasy PartialResponse#getMetadata(). Should be != &&
+        return contentType == null // TODO fix after release of 4.5.0.Final RESTEASY-2460 #2249: != &&
             || PROBLEM_DETAIL_JSON_TYPE.isCompatible(MediaType.valueOf(contentType.toString()));
     }
 }
