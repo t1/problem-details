@@ -6,13 +6,10 @@ import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
-import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Map;
@@ -26,10 +23,6 @@ import static org.assertj.core.api.BDDAssertions.then;
 class ProblemDetailExceptionMapperBehavior {
 
     private ProblemDetailExceptionMapper mapper = new ProblemDetailExceptionMapper();
-
-    @BeforeEach void setUp() {
-        mapper.requestHeaders = new ResteasyHttpHeaders(new MultivaluedHashMap<>());
-    }
 
     @Test void shouldMapStandardRuntimeException() {
         Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
