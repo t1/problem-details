@@ -6,14 +6,21 @@ import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
+import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Map;
 
+import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
+import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_XML;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
@@ -23,6 +30,42 @@ import static org.assertj.core.api.BDDAssertions.then;
 class ProblemDetailExceptionMapperBehavior {
 
     private ProblemDetailExceptionMapper mapper = new ProblemDetailExceptionMapper();
+    private MultivaluedHashMap<String, String> requestHeaders;
+
+    @BeforeEach void setUp() {
+        requestHeaders = new MultivaluedHashMap<>();
+        mapper.requestHeaders = new ResteasyHttpHeaders(requestHeaders);
+    }
+
+    @Test void shouldReplyWithJsonTypeByDefault() {
+        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+
+        then(problemDetail.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_JSON);
+    }
+
+    @Test void shouldReplyWithJsonTypeWhenRequested() {
+        requestHeaders.putSingle("Accept", APPLICATION_JSON);
+
+        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+
+        then(problemDetail.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_JSON);
+    }
+
+    @Test void shouldReplyWithXmlTypeWhenRequested() {
+        requestHeaders.putSingle("Accept", APPLICATION_XML);
+
+        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+
+        then(problemDetail.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_XML);
+    }
+
+    @Test void shouldReplyWithYamlTypeWhenRequested() {
+        requestHeaders.putSingle("Accept", "application/yaml");
+
+        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+
+        then(problemDetail.getHeaderString("Content-Type")).isEqualTo("application/problem+yaml");
+    }
 
     @Test void shouldMapStandardRuntimeException() {
         Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
