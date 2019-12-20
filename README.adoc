@@ -202,13 +202,9 @@ On the client side, some manual registration (e.g. of a `ClientResponseFilter` o
 
 A JAX-RS implementation, called `ri` even though it's actually only a POC, and it's incomplete. See the README for details.
 
-// TODO can we use the exact timestamp of the log for the response header timestamp?
-
 === ri-spring
 
 A Spring Boot implementation. This also is just a POC, there may be better integration points that I'm not aware of.
-
-// TODO can we use the exact timestamp of the log for the response header timestamp?
 
 === ri-lib
 
@@ -250,5 +246,3 @@ Currently fails due to lack of jdk11 support of the https://hub.docker.com/r/pay
 Builds a Spring Boot application containing the RI. The integration tests also start the application.
 
 You can specify a base URL in the system property `testcontainer-running` (e.g. `-Dtestcontainer-running=http://localhost:8080`), so the tests verify a running service. This is very handy while developing the implementation. This also works when the running service is the JAX-RS Test application (see above).
-
-// TODO OpenAPI Integration: read status codes and types from `throws`-declared exceptions

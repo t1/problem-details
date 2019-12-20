@@ -11,12 +11,6 @@ This is the API for the Problem Details.
 * JAXB can't unmarshal a subclass with the same type and namespace
 * Security considerations: nothing dangerous in problem details (i.e. exception message); stack-trace in logs
 
-// TODO scan client classpath for @Type annotated exceptions (and document this in the spec and the annotation)
-// TODO inherited annotations
-// TODO cause annotations
-// TODO type factory, e.g. URL to OpenAPI
-// TODO instance factory, e.g. URL to the logging system filtering on an UUID
-
 == Mappings
 
 === Type

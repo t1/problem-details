@@ -54,8 +54,6 @@ class SpringDemoIT {
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
     }
 
-    // TODO post article-id null -> validation error
-
     private Shipment postOrder(String article) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("user", "1");

@@ -20,7 +20,7 @@ public class ProblemDetailErrorHandler extends DefaultResponseErrorHandler {
     private static final MediaType PROBLEM_DETAIL_JSON_MEDIA_TYPE = MediaType.parseMediaType(PROBLEM_DETAIL_JSON);
 
     @Override public void handleError(ClientHttpResponse response) throws IOException {
-        // TODO XML
+        // TODO XML: https://github.com/t1/problem-details/issues/6
         if (PROBLEM_DETAIL_JSON_MEDIA_TYPE.isCompatibleWith(response.getHeaders().getContentType())) {
             new ProblemDetailJsonToExceptionBuilder(response.getBody()).trigger();
         } else {

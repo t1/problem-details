@@ -39,7 +39,8 @@ class ValidationFailedExceptionMappingIT {
             .post(entity(person, APPLICATION_JSON_TYPE));
 
         assumeThat(response.getMediaType())
-            .describedAs("@Valid annotation not yet caught by JAX-RS RI") // TODO map @Valid
+            .describedAs("@Valid annotation not yet caught by JAX-RS RI")
+            // TODO map @Valid: https://github.com/t1/problem-details/issues/7
             .isEqualTo(PROBLEM_DETAIL_JSON);
         thenValidationFailed(response);
     }

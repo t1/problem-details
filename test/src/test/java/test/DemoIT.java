@@ -58,8 +58,6 @@ class DemoIT {
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
     }
 
-    // TODO post article-id null -> validation error
-
     private Response postOrder(String article) {
         try {
             return target()

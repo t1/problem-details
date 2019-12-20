@@ -96,8 +96,7 @@ class StandardExceptionMappingIT {
             .hasUuidInstance();
     }
 
-    @Disabled("problems with jaxb on jdk11")
-    // TODO xml on jdk11
+    @Disabled("problems with jaxb on jdk11: https://github.com/t1/problem-details/issues/6")
     @Test void shouldMapToXml() {
         testPost("/standard/npe-with-message", APPLICATION_XML)
             .hasStatus(INTERNAL_SERVER_ERROR)
@@ -108,8 +107,7 @@ class StandardExceptionMappingIT {
             .hasUuidInstance();
     }
 
-    @Disabled("problems with jaxb on jdk11")
-    // TODO xml on jdk11
+    @Disabled("problems with jaxb on jdk11: https://github.com/t1/problem-details/issues/6")
     @Test void shouldMapToSecondAcceptXml() {
         testPost("/standard/npe-with-message", TEXT_PLAIN, APPLICATION_XML)
             .hasStatus(INTERNAL_SERVER_ERROR)

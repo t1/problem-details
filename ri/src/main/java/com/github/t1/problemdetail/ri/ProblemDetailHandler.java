@@ -14,7 +14,7 @@ import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
 @Provider
 public class ProblemDetailHandler implements ClientResponseFilter {
     @Override public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
-        // TODO XML
+        // TODO XML: https://github.com/t1/problem-details/issues/6
         if (PROBLEM_DETAIL_JSON_TYPE.isCompatible(responseContext.getMediaType())) {
             new ProblemDetailJsonToExceptionBuilder(responseContext.getEntityStream())
                 .trigger();

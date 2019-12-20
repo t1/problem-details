@@ -40,7 +40,8 @@ class ValidationFailedExceptionMappingIT {
             .postForEntity(BASE_URI + "/validation/annotated", person, ValidationProblemDetail.class);
 
         assumeThat(response.getStatusCode())
-            .describedAs("@Valid annotation not yet caught by Spring Boot RI") // TODO map @Valid
+            .describedAs("@Valid annotation not yet caught by Spring Boot RI")
+            // TODO map @Valid: https://github.com/t1/problem-details/issues/8
             .isEqualTo(BAD_REQUEST);
         thenValidationFailed(response);
     }
