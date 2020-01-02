@@ -4,29 +4,26 @@ import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.json.Json;
-import javax.json.JsonObject;
+import javax.json.bind.annotation.JsonbProperty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 import java.net.URI;
 import java.time.LocalDate;
 
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 @Slf4j
 @Path("/orders")
 public class DemoBoundary {
-    @Produces(APPLICATION_JSON)
-    @POST public JsonObject order(
+    @POST public Shipment order(
         @FormParam("user") int userId,
         @FormParam("article") @NotNull String article,
         @FormParam(value = "payment-method") @DefaultValue("prepaid") PaymentMethod paymentMethod) {
@@ -41,11 +38,7 @@ public class DemoBoundary {
         String shipmentId = ship(article, userId);
         log.info("ship {} id {} to {}", article, shipmentId, userId);
 
-        return Json.createObjectBuilder()
-            .add("shipment-id", shipmentId)
-            .add("article", article)
-            .add("user", userId)
-            .build();
+        return new Shipment(shipmentId, userId, article);
     }
 
     public enum PaymentMethod {
@@ -116,5 +109,12 @@ public class DemoBoundary {
         @Extension String article;
 
         @Detail String getDetail() { return "The article " + article + " is not in our catalog"; }
+    }
+
+    @AllArgsConstructor @NoArgsConstructor
+    public static @Data class Shipment {
+        @JsonbProperty("shipment-id") String shipmentId;
+        @JsonbProperty("user") int userId;
+        String article;
     }
 }

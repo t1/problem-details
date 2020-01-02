@@ -1,9 +1,11 @@
 package com.github.t1.problemdetaildemoapp;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.net.URI;
 import java.time.LocalDate;
 
@@ -23,8 +24,7 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 @RestController
 @RequestMapping(path = "/orders")
 public class DemoBoundary {
-    @PostMapping
-    public String order(
+    @PostMapping public Shipment order(
         @RequestParam("user") int userId,
         @RequestParam("article") @NotNull String article,
         @RequestParam(value = "payment-method", defaultValue = "prepaid") PaymentMethod paymentMethod) {
@@ -39,10 +39,7 @@ public class DemoBoundary {
         String shipmentId = ship(article, userId);
         log.info("ship {} id {} to {}", article, shipmentId, userId);
 
-        return "{" +
-            "\"shipment-id\":\"" + shipmentId + "\"," +
-            "\"article\":\"" + article + "\"," +
-            "\"user\":" + userId + "}";
+        return new Shipment(shipmentId, userId, article);
     }
 
     public enum PaymentMethod {
@@ -78,9 +75,8 @@ public class DemoBoundary {
     private void deduct(int cost, int userId) {
         int balance = balance(userId);
         if (balance < cost) {
-            throw new OutOfCreditException(balance, cost,
-                URI.create("/account/12345/msgs/abc"),
-                asList(ACCOUNT_1, ACCOUNT_2)
+            throw new OutOfCreditException(URI.create("/account/12345/msgs/abc"),
+                balance, cost, asList(ACCOUNT_1, ACCOUNT_2)
             );
         }
     }
@@ -113,5 +109,12 @@ public class DemoBoundary {
         @Extension String article;
 
         @Detail String getDetail() { return "The article " + article + " is not in our catalog"; }
+    }
+
+    @AllArgsConstructor @NoArgsConstructor
+    public static @Data class Shipment {
+        @JsonProperty("shipment-id") String shipmentId;
+        @JsonProperty("user") int userId;
+        String article;
     }
 }

@@ -35,7 +35,9 @@ public class MpRestClientDemoIT {
     public interface OrderApi {
         @POST Shipment order(
             @FormParam("user") int userId,
-            @FormParam("article") @NotNull String article);
+            @FormParam("article") @NotNull String article
+            // payment-method defaults to 'prepaid'
+        );
     }
 
     @AllArgsConstructor @NoArgsConstructor

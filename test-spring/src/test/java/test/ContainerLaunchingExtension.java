@@ -57,7 +57,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
                 break;
             }
             if (System.currentTimeMillis() - start > 30_000) {
-                throw new IllegalStateException("spring didn't start in 30 secs");
+                throw new IllegalStateException("spring didn't start in 30 secs: " + response);
             }
         }
     }
