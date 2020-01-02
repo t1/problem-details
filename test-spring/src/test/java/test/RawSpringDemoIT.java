@@ -2,6 +2,7 @@ package test;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import com.github.t1.problemdetaildemoapp.RawDemoBoundary.OutOfCreditProblemDetail;
@@ -39,7 +40,7 @@ import static test.ContainerLaunchingExtension.BASE_URI;
 class RawSpringDemoIT {
 
     @Test void shouldOrderCheapGadget() {
-        Shipment shipment = postOrder("cheap gadget");
+        Shipment shipment = postOrder("1", "cheap gadget", null);
 
         then(shipment).isEqualTo(new Shipment(
             "1:cheap gadget:" + LocalDate.now(),
@@ -47,8 +48,15 @@ class RawSpringDemoIT {
             1));
     }
 
+    @Test void shouldFailToOrderGadgetWhenUserNotEntitledToOrderOnAccount() {
+        UserNotEntitledToOrderOnAccount throwable = catchThrowableOfType(() -> postOrder("2", "cheap gadget", "on_account"),
+            UserNotEntitledToOrderOnAccount.class);
+
+        then(throwable).describedAs("nothing thrown").isNotNull();
+    }
+
     @Test void shouldFailToOrderExpensiveGadgetWhenOutOfCredit() {
-        OutOfCreditException throwable = catchThrowableOfType(() -> postOrder("expensive gadget"),
+        OutOfCreditException throwable = catchThrowableOfType(() -> postOrder("1", "expensive gadget", null),
             OutOfCreditException.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
@@ -60,10 +68,11 @@ class RawSpringDemoIT {
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
     }
 
-    private Shipment postOrder(String article) {
+    private Shipment postOrder(String userId, String article, String paymentMethod) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("user", "1");
+        form.add("user", userId);
         form.add("article", article);
+        form.add("payment-method", paymentMethod);
 
         RestTemplate template = new RestTemplate();
         try {
@@ -82,8 +91,10 @@ class RawSpringDemoIT {
                         detail.getAccounts()
                     );
                 }
-                case "foo":
-                    throw new RuntimeException();
+
+                case "https://api.myshop.example/problems/not-entitled-for-payment-method":
+                    throw new UserNotEntitledToOrderOnAccount();
+
                 default:
                     log.warn("unknown problem detail type" + problemDetail.getType() + ":\n" + problemDetail);
                     throw e;

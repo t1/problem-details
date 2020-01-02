@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
+import com.github.t1.problemdetail.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -95,7 +96,8 @@ public class DemoService {
 
     @Status(FORBIDDEN) private static class CreditCardLimitExceeded extends RuntimeException {}
 
-    @Status(FORBIDDEN) private static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
+    @Type("https://api.myshop.example/problems/not-entitled-for-payment-method")
+    @Status(FORBIDDEN) public static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
 
     @AllArgsConstructor @NoArgsConstructor
     private static class ArticleNotFoundException extends IllegalArgumentException {
