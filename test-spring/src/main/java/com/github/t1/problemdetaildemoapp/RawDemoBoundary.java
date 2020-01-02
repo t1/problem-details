@@ -1,6 +1,8 @@
 package com.github.t1.problemdetaildemoapp;
 
 import com.github.t1.problemdetaildemoapp.DemoService.PaymentMethod;
+import com.github.t1.problemdetaildemoapp.DemoService.Shipment;
+import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 
+import static com.github.t1.problemdetaildemoapp.DemoService.PROBLEM_INSTANCE;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController
@@ -30,7 +33,16 @@ public class RawDemoBoundary {
         @RequestParam(value = "payment-method", defaultValue = "prepaid") PaymentMethod paymentMethod) {
 
         try {
-            return ResponseEntity.ok(service.order(userId, article, paymentMethod));
+            Shipment shipment = service.order(userId, article, paymentMethod);
+            return ResponseEntity.ok(shipment);
+
+        } catch (UserNotEntitledToOrderOnAccount e) {
+            ProblemDetail detail = new ProblemDetail();
+            detail.setType(URI.create("https://api.myshop.example/problems/not-entitled-for-payment-method"));
+            detail.setTitle("You do not have enough credit.");
+            detail.setInstance(PROBLEM_INSTANCE);
+            return ResponseEntity.status(FORBIDDEN).contentType(PROBLEM_DETAIL).body(detail);
+
         } catch (OutOfCreditException e) {
             OutOfCreditProblemDetail detail = new OutOfCreditProblemDetail();
             detail.setType(URI.create("https://example.com/probs/out-of-credit"));

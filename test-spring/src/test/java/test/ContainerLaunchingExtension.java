@@ -1,7 +1,7 @@
 package test;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetail;
 import com.github.t1.problemdetaildemoapp.Application;
+import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.Extension;

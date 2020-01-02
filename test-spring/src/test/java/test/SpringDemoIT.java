@@ -3,6 +3,7 @@ package test;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetail.spring.ProblemDetailErrorHandler;
+import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,10 +31,11 @@ import static test.ContainerLaunchingExtension.BASE_URI;
 class SpringDemoIT {
     static {
         ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
+        ProblemDetailExceptionRegistry.register(UserNotEntitledToOrderOnAccount.class);
     }
 
     @Test void shouldOrderCheapGadget() {
-        Shipment shipment = postOrder("cheap gadget");
+        Shipment shipment = postOrder("1", "cheap gadget", null);
 
         then(shipment).isEqualTo(new Shipment(
             "1:cheap gadget:" + LocalDate.now(),
@@ -41,8 +43,15 @@ class SpringDemoIT {
             1));
     }
 
+    @Test void shouldFailToOrderGadgetWhenUserNotEntitledToOrderOnAccount() {
+        UserNotEntitledToOrderOnAccount throwable = catchThrowableOfType(() -> postOrder("2", "cheap gadget", "on_account"),
+            UserNotEntitledToOrderOnAccount.class);
+
+        then(throwable).describedAs("nothing thrown").isNotNull();
+    }
+
     @Test void shouldFailToOrderExpensiveGadgetWhenOutOfCredit() {
-        OutOfCreditException throwable = catchThrowableOfType(() -> postOrder("expensive gadget"),
+        OutOfCreditException throwable = catchThrowableOfType(() -> postOrder("1", "expensive gadget", null),
             OutOfCreditException.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
@@ -54,10 +63,11 @@ class SpringDemoIT {
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
     }
 
-    private Shipment postOrder(String article) {
+    private Shipment postOrder(String userId, String article, String paymentMethod) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-        form.add("user", "1");
+        form.add("user", userId);
         form.add("article", article);
+        form.add("payment-method", paymentMethod);
 
         RestTemplate template = new RestTemplate();
         template.setErrorHandler(new ProblemDetailErrorHandler());

@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetail;
+import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import com.github.t1.problemdetaildemoapp.ValidationBoundary.Address;
 import com.github.t1.problemdetaildemoapp.ValidationBoundary.Person;
 import lombok.Data;
