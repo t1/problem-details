@@ -1,5 +1,6 @@
 package com.github.t1.problemdetaildemoapp;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
@@ -7,13 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-import javax.json.bind.annotation.JsonbProperty;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import java.net.URI;
 import java.time.LocalDate;
 
@@ -21,13 +17,10 @@ import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 @Slf4j
-@Path("/orders")
-public class DemoBoundary {
-    @POST public Shipment order(
-        @FormParam("user") int userId,
-        @FormParam("article") @NotNull String article,
-        @FormParam(value = "payment-method") @DefaultValue("prepaid") PaymentMethod paymentMethod) {
+@Service
+public class DemoService {
 
+    public Shipment order(int userId, String article, PaymentMethod paymentMethod) {
         log.info("order {} for {} via {}", article, userId, paymentMethod);
 
         int cost = cost(article);
@@ -40,6 +33,7 @@ public class DemoBoundary {
 
         return new Shipment(shipmentId, userId, article);
     }
+
 
     public enum PaymentMethod {
         prepaid, credit_card, on_account
@@ -112,8 +106,8 @@ public class DemoBoundary {
 
     @AllArgsConstructor @NoArgsConstructor
     public static @Data class Shipment {
-        @JsonbProperty("shipment-id") String shipmentId;
-        @JsonbProperty("user") int userId;
+        @JsonProperty("shipment-id") String shipmentId;
+        @JsonProperty("user") int userId;
         String article;
     }
 }

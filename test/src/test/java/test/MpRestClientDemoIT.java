@@ -21,6 +21,7 @@ import java.time.LocalDate;
 
 import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_1;
 import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_2;
+import static com.github.t1.problemdetaildemoapp.DemoBoundary.PROBLEM_INSTANCE;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 import static test.ContainerLaunchingExtension.baseUri;
@@ -69,7 +70,7 @@ public class MpRestClientDemoIT {
         then(throwable).describedAs("nothing thrown").isNotNull();
         then(throwable.getBalance()).isEqualTo(30);
         then(throwable.getCost()).isEqualTo(0); // not an extension, i.e. not in the body
-        then(throwable.getInstance()).isEqualTo(URI.create("/account/12345/msgs/abc"));
+        then(throwable.getInstance()).isEqualTo(PROBLEM_INSTANCE);
         // detail is not settable, i.e. it's recreated in the method and the cost is 0
         then(throwable.getDetail()).isEqualTo("Your current balance is 30, but that costs 0.");
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
