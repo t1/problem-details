@@ -65,9 +65,11 @@ class RawSpringDemoIT extends AbstractSpringDemoIT {
                 case "https://api.myshop.example/problems/not-entitled-for-payment-method":
                     throw new UserNotEntitledToOrderOnAccount();
 
+                case "urn:problem-type:credit-card-limit-exceeded":
                 case "https://api.myshop.example/problems/com/github/t1/problemdetaildemoapp/DemoService.CreditCardLimitExceeded.html":
                     throw new CreditCardLimitExceeded();
 
+                case "urn:problem-type:article-not-found":
                 case "https://api.myshop.example/problems/com/github/t1/problemdetaildemoapp/DemoService.ArticleNotFoundException.html":
                     throw new ArticleNotFoundException();
 
