@@ -1,6 +1,8 @@
 package test;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.github.t1.problemdetaildemoapp.DemoService.ArticleNotFoundException;
+import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,7 @@ import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_1;
 import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_2;
 import static com.github.t1.problemdetaildemoapp.DemoService.PROBLEM_INSTANCE;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -63,6 +66,23 @@ public abstract class AbstractSpringDemoIT {
         // detail is not settable, i.e. it's recreated in the method and the cost is 0
         then(throwable.getDetail()).isEqualTo("Your current balance is 30, but that costs 0.");
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
+    }
+
+    @Test void shouldFailToOrderWhenCreditCardLimitIsReached() {
+        CreditCardLimitExceeded throwable = catchThrowableOfType(() -> postOrder("1", "expensive gadget", "credit_card"),
+            CreditCardLimitExceeded.class);
+
+        then(throwable).describedAs("nothing thrown").isNotNull();
+    }
+
+    @Test void shouldFailToOrderUnknownArticle() {
+        ArticleNotFoundException throwable = catchThrowableOfType(() -> postOrder("1", "unknown article", null),
+            ArticleNotFoundException.class);
+
+        then(throwable).describedAs("nothing thrown").isNotNull();
+        assumeThat(throwable.getArticle())
+            .describedAs("extension fields are not supported by all demos")
+            .isEqualTo("unknown article");
     }
 
     protected abstract Shipment postOrder(String userId, String articleId, String paymentType);

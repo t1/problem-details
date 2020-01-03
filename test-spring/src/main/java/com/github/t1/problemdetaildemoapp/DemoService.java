@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -48,7 +49,7 @@ public class DemoService {
             case prepaid:
                 break;
             case credit_card:
-                if (cost > 1000)
+                if (cost > 20)
                     throw new CreditCardLimitExceeded();
                 break;
             case on_account:
@@ -99,10 +100,12 @@ public class DemoService {
     public static final URI ACCOUNT_1 = URI.create("/account/12345");
     public static final URI ACCOUNT_2 = URI.create("/account/67890");
 
-    @Status(FORBIDDEN) private static class CreditCardLimitExceeded extends RuntimeException {}
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    // for the raw handling
+    @Status(FORBIDDEN) public static class CreditCardLimitExceeded extends DemoException {}
 
     @Type("https://api.myshop.example/problems/not-entitled-for-payment-method")
-    @Status(FORBIDDEN) public static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
+    @Status(FORBIDDEN) public static class UserNotEntitledToOrderOnAccount extends DemoException {}
 
     @ResponseStatus(value = NOT_FOUND, reason = "article not found")
     @AllArgsConstructor @NoArgsConstructor
