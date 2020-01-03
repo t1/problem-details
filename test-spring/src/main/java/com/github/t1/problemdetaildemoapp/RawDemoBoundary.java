@@ -18,7 +18,6 @@ import java.net.URI;
 import java.util.List;
 
 import static com.github.t1.problemdetaildemoapp.DemoService.PROBLEM_INSTANCE;
-import static com.github.t1.problemdetaildemoapp.ProblemDetail.JSON_MEDIA_TYPE;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController

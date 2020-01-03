@@ -2,15 +2,12 @@ package test;
 
 import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetail.spring.ProblemDetailErrorHandler;
-import com.github.t1.problemdetaildemoapp.DemoService.ArticleNotFoundException;
 import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
 
 import static test.ContainerLaunchingExtension.BASE_URI;
 

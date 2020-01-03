@@ -1,7 +1,6 @@
 package test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.t1.problemdetaildemoapp.DemoService.ArticleNotFoundException;
 import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;

@@ -107,7 +107,7 @@ public class DemoBoundary {
     private static class ArticleNotFoundException extends IllegalArgumentException {
         @Extension String article;
 
-        @Detail String getDetail() { return "The article " + article + " is not in our catalog"; }
+        @Detail String getDetail() { return "There is no article [" + article + "]"; }
     }
 
     @AllArgsConstructor @NoArgsConstructor

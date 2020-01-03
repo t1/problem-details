@@ -17,14 +17,22 @@ Simply include a dependency on `com.github.t1:problem-details-api` and a runtime
 
 === Default Mapping
 
-To produce a problem detail body, simply throw an exception, e.g.:
+To produce a problem detail body, simply throw an exception, e.g. in JAX-RS:
 
 [source,java]
 ---------------------------------------------------------------
-throw new NotFoundException("There is no article " + articleId);
+throw new NotFoundException("There is no article [" + articleId + "]");
 ---------------------------------------------------------------
 
-Will result in an exception body similar to this:
+In Spring, you do:
+
+[source,java]
+---------------------------------------------------------------
+throw HttpClientErrorException.create("There is no article [" + articleId + "]",
+    NOT_FOUND, NOT_FOUND.getReasonPhrase(), null, null, null);
+---------------------------------------------------------------
+
+Both will result in an exception body similar to this:
 
 [source,yaml]
 ---------------------------------------------------------------
@@ -32,7 +40,7 @@ Will result in an exception body similar to this:
   "type": "urn:problem-type:not-found",                       # <1>
   "title": "Not Found",                                       # <2>
   "status": 404,                                              # <3>
-  "detail": "There is no article 862353",                     # <4>
+  "detail": "There is no article [862353]",                   # <4>
   "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d" # <5>
 }
 ---------------------------------------------------------------

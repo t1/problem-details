@@ -1,18 +1,16 @@
 package com.github.t1.problemdetaildemoapp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.t1.problemdetail.Detail;
-import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -68,7 +66,9 @@ public class DemoService {
             case "cheap gadget":
                 return 5;
             default:
-                throw new ArticleNotFoundException(article);
+                //noinspection ConstantConditions // the `headers` arg is missing `@Nullable`
+                throw HttpClientErrorException.create("There is no article [" + article + "]",
+                    NOT_FOUND, NOT_FOUND.getReasonPhrase(), null, null, null);
         }
     }
 
@@ -106,14 +106,6 @@ public class DemoService {
 
     @Type("https://api.myshop.example/problems/not-entitled-for-payment-method")
     @Status(FORBIDDEN) public static class UserNotEntitledToOrderOnAccount extends DemoException {}
-
-    @ResponseStatus(value = NOT_FOUND, reason = "article not found")
-    @AllArgsConstructor @NoArgsConstructor
-    public static class ArticleNotFoundException extends DemoException {
-        @Extension @Getter String article;
-
-        @Detail String getDetail() { return "The article " + article + " is not in our catalog"; }
-    }
 
     public static class DemoException extends RuntimeException {}
 
