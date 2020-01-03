@@ -255,14 +255,14 @@ public abstract class ProblemDetails {
                 if (CLIENT_ERROR.equals(status.getFamily())) {
                     logger.debug(message);
                 } else {
-                    logger.error(message);
+                    logger.error(message, exception);
                 }
                 break;
             case ERROR:
-                logger.error(message);
+                logger.error(message, exception);
                 break;
             case WARNING:
-                logger.warn(message);
+                logger.warn(message, exception);
                 break;
             case INFO:
                 logger.info(message);

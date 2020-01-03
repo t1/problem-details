@@ -54,6 +54,15 @@ class ProblemDetailJsonToExceptionBuilderBehavior {
         assertThat(thrown).hasMessage("some-detail");
     }
 
+    @Test void shouldBuildNullPointerWithNullDetail() {
+        entity.add("type", "urn:problem-type:null-pointer");
+        entity.addNull("detail");
+
+        NullPointerException thrown = catchThrowableOfType(this::trigger, NullPointerException.class);
+
+        assertThat(thrown).hasMessage(null);
+    }
+
     @Test void shouldBuildBadRequest() {
         entity.add("type", "urn:problem-type:bad-request");
         entity.add("detail", "some-detail");
@@ -318,8 +327,8 @@ class ProblemDetailJsonToExceptionBuilderBehavior {
     }
 
     private void givenRegisteredType(Class<? extends RuntimeException> type) {
-        String typeUri = ProblemDetailExceptionRegistry.register(type);
-        entity.add("type", typeUri);
+        URI typeUri = ProblemDetailExceptionRegistry.register(type);
+        entity.add("type", typeUri.toString());
     }
 
     private static final URI SOME_URI = URI.create("some:uri");

@@ -7,22 +7,25 @@ import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.net.URI;
 import java.time.LocalDate;
 
 import static java.util.Arrays.asList;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j
 @Service
 public class DemoService {
 
     public Shipment order(int userId, String article, PaymentMethod paymentMethod) {
-        log.info("order {} for {} via {}", article, userId, paymentMethod);
+        log.info("order [{}] for [{}] via [{}]", article, userId, paymentMethod);
 
         int cost = cost(article);
 
@@ -57,6 +60,8 @@ public class DemoService {
 
     private int cost(String article) {
         switch (article) {
+            case "oom bomb":
+                throw new OutOfMemoryError("not really");
             case "expensive gadget":
                 return 50;
             case "cheap gadget":
@@ -99,12 +104,15 @@ public class DemoService {
     @Type("https://api.myshop.example/problems/not-entitled-for-payment-method")
     @Status(FORBIDDEN) public static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
 
+    @ResponseStatus(value = NOT_FOUND, reason = "article not found")
     @AllArgsConstructor @NoArgsConstructor
-    private static class ArticleNotFoundException extends IllegalArgumentException {
-        @Extension String article;
+    public static class ArticleNotFoundException extends DemoException {
+        @Extension @Getter String article;
 
         @Detail String getDetail() { return "The article " + article + " is not in our catalog"; }
     }
+
+    public static class DemoException extends RuntimeException {}
 
     @AllArgsConstructor @NoArgsConstructor
     public static @Data class Shipment {

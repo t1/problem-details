@@ -1,11 +1,14 @@
 package com.github.t1.problemdetaildemoapp;
 
 import lombok.Data;
+import org.springframework.http.MediaType;
 
 import java.net.URI;
 
 @Data
 public class ProblemDetail {
+    public static final MediaType JSON_MEDIA_TYPE = MediaType.valueOf("application/problem+json");
+
     private URI type;
     private String title;
     private String detail;

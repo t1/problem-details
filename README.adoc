@@ -47,7 +47,9 @@ If the first requested type (in an `Accept` header) is `application/xml`, the bo
 
 === Default Logging
 
-The stack trace is explicitly _never_ part of the body, as it must be considered sensitive information. To find it, look into the logs and search by the `instance` field found in the body. The logging category defaults to the fully qualified class name of the exception. By default, 4xx status codes are considered a problem of the client and are logged at `DEBUG` log level; 5xx status codes are a problem of the service, so they are logged at `ERROR`.
+The main use of the instance is to have a reference to search for in your logs. So a appropriate log event is produced when the problem detail is produced. Then you can see all the logs that led to the problem and other details such as the stack trace, which is explicitly _never_ part of the body, as it must be considered sensitive information.
+
+The logging category defaults to the fully qualified class name of the exception. By default, 4xx status codes are considered a problem of the client and are logged at `DEBUG` log level; 5xx status codes are a problem of the service, so they are logged at `ERROR`. As the stack trace is only relevant for server problems, it's only logged at `ERROR` and `WARNING` levels, not at `INFO` or `DEBUG`.
 
 As a logging API, http://www.slf4j.org[slf4j] is used. Depending on your application server, you may also have to package a binding like `slf4j-jdk14`.
 

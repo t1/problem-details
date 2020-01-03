@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +18,7 @@ import java.net.URI;
 import java.util.List;
 
 import static com.github.t1.problemdetaildemoapp.DemoService.PROBLEM_INSTANCE;
+import static com.github.t1.problemdetaildemoapp.ProblemDetail.JSON_MEDIA_TYPE;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @RestController
@@ -39,9 +39,9 @@ public class RawDemoBoundary {
         } catch (UserNotEntitledToOrderOnAccount e) {
             ProblemDetail detail = new ProblemDetail();
             detail.setType(URI.create("https://api.myshop.example/problems/not-entitled-for-payment-method"));
-            detail.setTitle("You do not have enough credit.");
+            detail.setTitle("You're not entitled to use this payment method.");
             detail.setInstance(PROBLEM_INSTANCE);
-            return ResponseEntity.status(FORBIDDEN).contentType(PROBLEM_DETAIL).body(detail);
+            return ResponseEntity.status(FORBIDDEN).contentType(ProblemDetail.JSON_MEDIA_TYPE).body(detail);
 
         } catch (OutOfCreditException e) {
             OutOfCreditProblemDetail detail = new OutOfCreditProblemDetail();
@@ -50,7 +50,7 @@ public class RawDemoBoundary {
             detail.setInstance(e.getInstance());
             detail.setBalance(e.getBalance());
             detail.setAccounts(e.getAccounts());
-            return ResponseEntity.status(FORBIDDEN).contentType(PROBLEM_DETAIL).body(detail);
+            return ResponseEntity.status(FORBIDDEN).contentType(ProblemDetail.JSON_MEDIA_TYPE).body(detail);
         }
     }
 
@@ -60,6 +60,4 @@ public class RawDemoBoundary {
         private int cost;
         private List<URI> accounts;
     }
-
-    public static final MediaType PROBLEM_DETAIL = MediaType.valueOf("application/problem+json");
 }

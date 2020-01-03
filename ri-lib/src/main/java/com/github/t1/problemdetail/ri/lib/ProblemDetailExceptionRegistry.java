@@ -2,6 +2,7 @@ package com.github.t1.problemdetail.ri.lib;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,13 +11,17 @@ import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
 @Slf4j
-public class ProblemDetailExceptionRegistry extends Throwable {
+public class ProblemDetailExceptionRegistry {
     static final Map<String, Class<? extends RuntimeException>> REGISTRY = new HashMap<>();
 
-    public static String register(Class<? extends RuntimeException> exceptionType) {
-        String typeUri = ProblemDetails.buildTypeUri(exceptionType).toString();
-        REGISTRY.put(typeUri, exceptionType);
-        return typeUri;
+    public static URI register(Class<? extends RuntimeException> exceptionType) {
+        URI type = ProblemDetails.buildTypeUri(exceptionType);
+        register(exceptionType, type);
+        return type;
+    }
+
+    public static void register(Class<? extends RuntimeException> exceptionType, URI type) {
+        REGISTRY.put(type.toString(), exceptionType);
     }
 
     static Class<? extends RuntimeException> computeFrom(String type) {

@@ -1,74 +1,37 @@
 package test;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import com.github.t1.problemdetaildemoapp.RawDemoBoundary.OutOfCreditProblemDetail;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.net.URI;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_1;
-import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_2;
-import static com.github.t1.problemdetaildemoapp.DemoService.PROBLEM_INSTANCE;
-import static com.github.t1.problemdetaildemoapp.RawDemoBoundary.PROBLEM_DETAIL;
+import static com.github.t1.problemdetaildemoapp.ProblemDetail.JSON_MEDIA_TYPE;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static test.ContainerLaunchingExtension.BASE_URI;
 
 /**
- * Demonstrate the client side when mapping exceptions to problem details
- * as presented in the rfc.
+ * Demonstrate the manual client side mapping of problem details to exceptions without library support
  */
 @Slf4j
-@ExtendWith(ContainerLaunchingExtension.class)
-class RawSpringDemoIT {
-
-    @Test void shouldOrderCheapGadget() {
-        Shipment shipment = postOrder("1", "cheap gadget", null);
-
-        then(shipment).isEqualTo(new Shipment(
-            "1:cheap gadget:" + LocalDate.now(),
-            "cheap gadget",
-            1));
-    }
-
-    @Test void shouldFailToOrderGadgetWhenUserNotEntitledToOrderOnAccount() {
-        UserNotEntitledToOrderOnAccount throwable = catchThrowableOfType(() -> postOrder("2", "cheap gadget", "on_account"),
-            UserNotEntitledToOrderOnAccount.class);
-
-        then(throwable).describedAs("nothing thrown").isNotNull();
-    }
-
-    @Test void shouldFailToOrderExpensiveGadgetWhenOutOfCredit() {
-        OutOfCreditException throwable = catchThrowableOfType(() -> postOrder("1", "expensive gadget", null),
-            OutOfCreditException.class);
-
-        then(throwable).describedAs("nothing thrown").isNotNull();
-        then(throwable.getBalance()).isEqualTo(30);
-        then(throwable.getCost()).isEqualTo(0); // not an extension, i.e. not in the body
-        then(throwable.getInstance()).isEqualTo(PROBLEM_INSTANCE);
-        // detail is not settable, i.e. it's recreated in the method and the cost is 0
-        then(throwable.getDetail()).isEqualTo("Your current balance is 30, but that costs 0.");
-        then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
-    }
-
-    private Shipment postOrder(String userId, String article, String paymentMethod) {
+class RawSpringDemoIT extends AbstractSpringDemoIT {
+    @Override
+    protected Shipment postOrder(String userId, String article, String paymentMethod) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("user", userId);
         form.add("article", article);
@@ -81,7 +44,12 @@ class RawSpringDemoIT {
             ProblemDetail problemDetail = readProblemDetail(e);
             if (problemDetail == null)
                 throw e;
-            switch (problemDetail.getType().toString()) {
+            URI type = problemDetail.getType();
+            if (type == null) {
+                log.warn("no problem detail type in:\n" + problemDetail);
+                throw e;
+            }
+            switch (type.toString()) {
                 case "https://example.com/probs/out-of-credit": {
                     OutOfCreditProblemDetail detail = requireNonNull(readJson(e, OutOfCreditProblemDetail.class));
                     throw new OutOfCreditException(
@@ -96,7 +64,7 @@ class RawSpringDemoIT {
                     throw new UserNotEntitledToOrderOnAccount();
 
                 default:
-                    log.warn("unknown problem detail type" + problemDetail.getType() + ":\n" + problemDetail);
+                    log.warn("unknown problem detail type [" + type + "]:\n" + problemDetail);
                     throw e;
             }
         }
@@ -110,7 +78,7 @@ class RawSpringDemoIT {
 
     private boolean isProblemDetail(HttpStatusCodeException exception) {
         HttpHeaders headers = exception.getResponseHeaders();
-        return headers != null && PROBLEM_DETAIL.isCompatibleWith(headers.getContentType());
+        return headers != null && JSON_MEDIA_TYPE.isCompatibleWith(headers.getContentType());
     }
 
     private <T extends ProblemDetail> T readJson(HttpStatusCodeException exception, Class<T> type) {
@@ -123,10 +91,17 @@ class RawSpringDemoIT {
         }
     }
 
-    @AllArgsConstructor @NoArgsConstructor
-    public static @Data class Shipment {
-        @JsonProperty("shipment-id") String shipmentId;
-        String article;
-        Integer user;
+    @Test void shouldFailToOrderUnknownArticle() {
+        NotFound throwable = catchThrowableOfType(() -> postOrder("1", "unknown article", null),
+            NotFound.class);
+
+        then(throwable).describedAs("nothing thrown").isNotNull();
+        then(throwable.getStatusCode()).isEqualTo(NOT_FOUND);
+        then(throwable.getMessage())
+            .contains("\"type\":\"https://api.myshop.example/problems/com/github/t1/problemdetaildemoapp/DemoService.ArticleNotFoundException.html\"")
+            .contains("\"title\":\"ArticleNotFoundException\"")
+            .contains("\"detail\":null")
+            .contains("\"status\":404")
+            .contains("\"instance\":\""); // + random uuid
     }
 }

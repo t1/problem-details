@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import static com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry.REGISTRY;
 
 @Slf4j
-public class ProblemDetailJsonToExceptionBuilder extends Throwable {
+public class ProblemDetailJsonToExceptionBuilder {
     public ProblemDetailJsonToExceptionBuilder(InputStream entityStream) {
         this.body = Json.createReader(entityStream).readObject();
         String typeUri = body.getString("type", null);
@@ -56,7 +56,8 @@ public class ProblemDetailJsonToExceptionBuilder extends Throwable {
 
     @SneakyThrows(ReflectiveOperationException.class)
     private RuntimeException newInstance() {
-        String detail = (body == null || !body.containsKey("detail")) ? null : body.getString("detail");
+        String detail = (body == null || !body.containsKey("detail") || body.isNull("detail")) ? null
+            : body.getString("detail");
         Constructor<? extends RuntimeException> messageConstructor = findMessageConstructor();
         if (detail == null || messageConstructor == null)
             return type.getConstructor().newInstance();

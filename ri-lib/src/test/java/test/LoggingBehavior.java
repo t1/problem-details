@@ -3,7 +3,7 @@ package test;
 import com.github.t1.problemdetail.Logging;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.ri.lib.ProblemDetails;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import test.sub.SubException;
 import test.sub.SubExceptionWithCategory;
@@ -18,18 +18,20 @@ import static com.github.t1.problemdetail.LogLevel.OFF;
 import static com.github.t1.problemdetail.LogLevel.WARNING;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.then;
 import static test.MockLoggerFactory.onlyLogger;
 
 class LoggingBehavior {
-    @BeforeEach void setUp() { MockLoggerFactory.reset(); }
+    @AfterEach void cleanup() { MockLoggerFactory.reset(); }
 
     @Test void shouldLogAuto5xxAtError() {
         @Status(INTERNAL_SERVER_ERROR) class CustomException extends Exception {}
 
         ProblemDetails details = new MockProblemDetails(new CustomException());
 
-        then(onlyLogger(CustomException.class)).should().error(details.getLogMessage());
+        then(onlyLogger(CustomException.class)).should().error(eq(details.getLogMessage()), any(CustomException.class));
     }
 
     @Test void shouldLogAuto4xxAtDebug() {
@@ -45,7 +47,7 @@ class LoggingBehavior {
 
         ProblemDetails details = new MockProblemDetails(new CustomException());
 
-        then(onlyLogger(CustomException.class)).should().error(details.getLogMessage());
+        then(onlyLogger(CustomException.class)).should().error(eq(details.getLogMessage()), any(CustomException.class));
     }
 
     @Test void shouldLogExplicitlyAtWarning() {
@@ -53,7 +55,7 @@ class LoggingBehavior {
 
         ProblemDetails details = new MockProblemDetails(new CustomException());
 
-        then(onlyLogger(CustomException.class)).should().warn(details.getLogMessage());
+        then(onlyLogger(CustomException.class)).should().warn(eq(details.getLogMessage()), any(CustomException.class));
     }
 
     @Test void shouldLogExplicitlyAtInfo() {
@@ -86,14 +88,14 @@ class LoggingBehavior {
 
         ProblemDetails details = new MockProblemDetails(new CustomException());
 
-        then(onlyLogger("my-errors")).should().error(details.getLogMessage());
+        then(onlyLogger("my-errors")).should().error(eq(details.getLogMessage()), any(CustomException.class));
     }
 
 
     @Test void shouldLogToPackageAnnotatedCategory() {
         ProblemDetails details = new MockProblemDetails(new SubException());
 
-        then(onlyLogger("warnings")).should().warn(details.getLogMessage());
+        then(onlyLogger("warnings")).should().warn(eq(details.getLogMessage()), any(SubException.class));
     }
 
     @Test void shouldOverridePackageAnnotatedLogLevel() {
@@ -105,7 +107,7 @@ class LoggingBehavior {
     @Test void shouldOverridePackageAnnotatedLogCategory() {
         ProblemDetails details = new MockProblemDetails(new SubExceptionWithCategory());
 
-        then(onlyLogger("sub-cat")).should().warn(details.getLogMessage());
+        then(onlyLogger("sub-cat")).should().warn(eq(details.getLogMessage()), any(SubExceptionWithCategory.class));
     }
 
     private static class MockProblemDetails extends ProblemDetails {
