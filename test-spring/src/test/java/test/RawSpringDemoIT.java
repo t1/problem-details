@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.URI;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
-import static com.github.t1.problemdetaildemoapp.ProblemDetail.JSON_MEDIA_TYPE;
 import static java.util.Objects.requireNonNull;
 import static test.ContainerLaunchingExtension.BASE_URI;
 
@@ -40,9 +39,10 @@ class RawSpringDemoIT extends AbstractSpringDemoIT {
         } catch (HttpStatusCodeException e) {
             if (!isProblemDetail(e))
                 throw e;
-            ProblemDetail problemDetail = readJson(e, ProblemDetail.class);
+            String json = e.getResponseBodyAsString();
+            ProblemDetail problemDetail = readJson(json, ProblemDetail.class);
             if (problemDetail == null) {
-                log.warn("can't deserialize problem detail: " + e.getResponseBodyAsString(), e);
+                log.warn("can't deserialize problem detail: " + json, e);
                 throw e;
             }
             URI type = problemDetail.getType();
@@ -50,10 +50,12 @@ class RawSpringDemoIT extends AbstractSpringDemoIT {
                 log.warn("no problem detail type in:\n" + problemDetail);
                 throw e;
             }
+
             log.info("got {}", problemDetail);
+
             switch (type.toString()) {
                 case "https://example.com/probs/out-of-credit": {
-                    OutOfCreditProblemDetail detail = requireNonNull(readJson(e, OutOfCreditProblemDetail.class));
+                    OutOfCreditProblemDetail detail = requireNonNull(readJson(json, OutOfCreditProblemDetail.class));
                     throw new OutOfCreditException(
                         detail.getInstance(),
                         detail.getBalance(),
@@ -63,6 +65,7 @@ class RawSpringDemoIT extends AbstractSpringDemoIT {
                 }
 
                 case "https://api.myshop.example/problems/not-entitled-for-payment-method":
+                case "https://api.myshop.example/problems/com/github/t1/problemdetaildemoapp/DemoService.UserNotEntitledToOrderOnAccount.html":
                     throw new UserNotEntitledToOrderOnAccount();
 
                 case "urn:problem-type:credit-card-limit-exceeded":
@@ -74,7 +77,7 @@ class RawSpringDemoIT extends AbstractSpringDemoIT {
                     throw new ArticleNotFoundException();
 
                 default:
-                    log.warn("unknown problem detail type [" + type + "]:\n" + e.getResponseBodyAsString());
+                    log.warn("unknown problem detail type [" + type + "]:\n" + json);
                     throw e;
             }
         }
@@ -82,13 +85,13 @@ class RawSpringDemoIT extends AbstractSpringDemoIT {
 
     private boolean isProblemDetail(HttpStatusCodeException exception) {
         HttpHeaders headers = exception.getResponseHeaders();
-        return headers != null && JSON_MEDIA_TYPE.isCompatibleWith(headers.getContentType());
+        return headers != null && ProblemDetail.JSON_MEDIA_TYPE.isCompatibleWith(headers.getContentType());
     }
 
-    private <T extends ProblemDetail> T readJson(HttpStatusCodeException exception, Class<T> type) {
+    private <T extends ProblemDetail> T readJson(String json, Class<T> type) {
         ObjectMapper mapper = new ObjectMapper().disable(FAIL_ON_UNKNOWN_PROPERTIES);
         try {
-            return mapper.readValue(exception.getResponseBodyAsByteArray(), type);
+            return mapper.readValue(json, type);
         } catch (IOException e) {
             return null;
         }

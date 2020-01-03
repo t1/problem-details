@@ -60,7 +60,9 @@ public abstract class AbstractSpringDemoIT {
             OutOfCreditException.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
-        then(throwable.getBalance()).isEqualTo(30);
+        assumeThat(throwable.getBalance()) // eventually finishes the test as ignored
+            .describedAs("extension fields are not supported by all demos")
+            .isEqualTo(30);
         then(throwable.getCost()).isEqualTo(0); // not an extension, i.e. not in the body
         then(throwable.getInstance()).isEqualTo(PROBLEM_INSTANCE);
         // detail is not settable, i.e. it's recreated in the method and the cost is 0
