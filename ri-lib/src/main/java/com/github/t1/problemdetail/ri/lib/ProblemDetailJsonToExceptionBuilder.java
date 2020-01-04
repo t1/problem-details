@@ -21,27 +21,42 @@ import java.util.stream.Stream;
 import static com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry.REGISTRY;
 
 @Slf4j
+// TODO also support XML problem detail bodies https://github.com/t1/problem-details/issues/6
 public class ProblemDetailJsonToExceptionBuilder {
+    protected final JsonObject body;
+    protected final Class<? extends Throwable> type;
+
+    private final JsonObjectBuilder output = Json.createObjectBuilder();
+
     public ProblemDetailJsonToExceptionBuilder(InputStream entityStream) {
         this.body = Json.createReader(entityStream).readObject();
-        String typeUri = body.getString("type", null);
+        String typeUri = getTypeUri();
         this.type = REGISTRY.computeIfAbsent(typeUri, ProblemDetailExceptionRegistry::computeFrom);
     }
 
-    private final JsonObject body;
-    private final Class<? extends RuntimeException> type;
+    protected String getTypeUri() {
+        return body.getString("type", null);
+    }
 
-    private final JsonObjectBuilder output = Json.createObjectBuilder();
+    protected String getDetail() {
+        return (body == null || !body.containsKey("detail") || body.isNull("detail")) ? null
+            : body.getString("detail");
+    }
+
+    protected int getStatusCode() {
+        return body.getInt("status");
+    }
 
     /**
      * Throws an exception; if the type wasn't {@link ProblemDetailExceptionRegistry#register(Class) registered},
      * a {@link IllegalArgumentException} is thrown.
      */
+    @SneakyThrows
     public void trigger() {
         throw build();
     }
 
-    public RuntimeException build() {
+    public Throwable build() {
         if (type == null)
             return new IllegalArgumentException("no registered exception found for `type` field in " + body);
 
@@ -50,21 +65,21 @@ public class ProblemDetailJsonToExceptionBuilder {
 
         JsonObject json = output.build();
         return (json.isEmpty())
-            ? newInstance()
+            ? newInstance(getDetail(), type)
             : JSONB.fromJson(json.toString(), type);
     }
 
     @SneakyThrows(ReflectiveOperationException.class)
-    private RuntimeException newInstance() {
-        String detail = (body == null || !body.containsKey("detail") || body.isNull("detail")) ? null
-            : body.getString("detail");
-        Constructor<? extends RuntimeException> messageConstructor = findMessageConstructor();
-        if (detail == null || messageConstructor == null)
+    protected static Throwable newInstance(String detail, Class<? extends Throwable> type) {
+        if (detail == null)
             return type.getConstructor().newInstance();
-        return messageConstructor.newInstance(detail);
+        Constructor<? extends Throwable> constructorWithMessageParam = constructorWithMessageParam(type);
+        if (constructorWithMessageParam == null)
+            return type.getConstructor().newInstance();
+        return constructorWithMessageParam.newInstance(detail);
     }
 
-    private Constructor<? extends RuntimeException> findMessageConstructor() {
+    private static Constructor<? extends Throwable> constructorWithMessageParam(Class<? extends Throwable> type) {
         try {
             return type.getConstructor(String.class);
         } catch (NoSuchMethodException e) {
@@ -98,5 +113,6 @@ public class ProblemDetailJsonToExceptionBuilder {
 
         @Override public boolean isVisible(Method method) { return false; }
     };
+
     private static final Jsonb JSONB = JsonbBuilder.create(new JsonbConfig().withPropertyVisibilityStrategy(FIELD_ACCESS));
 }

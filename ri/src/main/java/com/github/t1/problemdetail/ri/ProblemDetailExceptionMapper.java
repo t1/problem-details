@@ -18,11 +18,11 @@ import javax.ws.rs.ext.Provider;
  */
 @Slf4j
 @Provider
-public class ProblemDetailExceptionMapper implements ExceptionMapper<Exception> {
+public class ProblemDetailExceptionMapper implements ExceptionMapper<Throwable> {
     @Context
     HttpHeaders requestHeaders;
 
-    @Override public Response toResponse(Exception exception) {
+    @Override public Response toResponse(Throwable exception) {
         Response response = (exception instanceof WebApplicationException)
             ? ((WebApplicationException) exception).getResponse() : null;
         if (response != null && response.hasEntity()) {

@@ -1,36 +1,32 @@
 package test;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
-import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
+import com.github.t1.problemdetaildemoapp.DemoBoundary.CreditCardLimitExceeded;
+import com.github.t1.problemdetaildemoapp.DemoBoundary.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.web.client.HttpClientErrorException.NotFound;
-import org.springframework.web.client.HttpServerErrorException.InternalServerError;
 
+import javax.json.bind.annotation.JsonbProperty;
+import javax.ws.rs.NotFoundException;
 import java.time.LocalDate;
 
-import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_1;
-import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_2;
-import static com.github.t1.problemdetaildemoapp.DemoService.PROBLEM_INSTANCE;
+import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_1;
+import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_2;
+import static com.github.t1.problemdetaildemoapp.DemoBoundary.PROBLEM_INSTANCE;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.BDDAssertions.then;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
-@ExtendWith(ContainerLaunchingExtension.class)
-public abstract class AbstractSpringDemoIT {
+public abstract class AbstractClientDemoIT {
     @Test void shouldOrderCheapGadget() {
         Shipment shipment = postOrder("1", "cheap gadget", null);
 
         then(shipment).isEqualTo(new Shipment(
             "1:cheap gadget:" + LocalDate.now(),
-            "cheap gadget",
-            1));
+            1,
+            "cheap gadget"));
     }
 
     @Test void shouldFailToOrderGadgetWhenUserNotEntitledToOrderOnAccount() {
@@ -40,19 +36,12 @@ public abstract class AbstractSpringDemoIT {
         then(throwable).describedAs("nothing thrown").isNotNull();
     }
 
-
     @Test void shouldFailToOrderOutOfMemoryBomb() {
-        InternalServerError throwable = catchThrowableOfType(() -> postOrder("1", "oom bomb", null),
-            InternalServerError.class);
+        OutOfMemoryError throwable = catchThrowableOfType(() -> postOrder("1", "oom bomb", null),
+            OutOfMemoryError.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
-        then(throwable.getStatusCode()).isEqualTo(INTERNAL_SERVER_ERROR);
-        then(throwable.getMessage())
-            .contains("\"status\":500")
-            // timestamp is not relevant
-            .contains("\"error\":\"Internal Server Error\"")
-            .contains("\"message\":\"not really\"");
-        //  // path is not relevant
+        then(throwable.getMessage()).isEqualTo("not really");
     }
 
     @Test void shouldFailToOrderExpensiveGadgetWhenOutOfCredit() {
@@ -79,21 +68,20 @@ public abstract class AbstractSpringDemoIT {
 
     /** standard Spring exception */
     @Test void shouldFailToOrderUnknownArticle() {
-        NotFound throwable = catchThrowableOfType(() -> postOrder("1", "unknown article", null),
-            NotFound.class);
+        NotFoundException throwable = catchThrowableOfType(() -> postOrder("1", "unknown article", null),
+            NotFoundException.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
-        then(throwable.getResponseBodyAsString()).startsWith(unknownArticleBody());
+        // then(throwable.getResponseBodyAsString()).startsWith(unknownArticleBody());
     }
 
-    protected abstract String unknownArticleBody();
 
-    protected abstract Shipment postOrder(String userId, String articleId, String paymentType);
+    protected abstract Shipment postOrder(String userId, String article, String paymentMethod);
 
     @AllArgsConstructor @NoArgsConstructor
     public static @Data class Shipment {
-        @JsonProperty("shipment-id") String shipmentId;
+        @JsonbProperty("shipment-id") String shipmentId;
+        @JsonbProperty("user") int userId;
         String article;
-        Integer user;
     }
 }

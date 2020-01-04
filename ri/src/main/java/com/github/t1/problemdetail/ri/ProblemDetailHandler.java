@@ -1,6 +1,5 @@
 package com.github.t1.problemdetail.ri;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.client.ClientRequestContext;
@@ -16,7 +15,7 @@ public class ProblemDetailHandler implements ClientResponseFilter {
     @Override public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
         // TODO XML: https://github.com/t1/problem-details/issues/6
         if (PROBLEM_DETAIL_JSON_TYPE.isCompatible(responseContext.getMediaType())) {
-            new ProblemDetailJsonToExceptionBuilder(responseContext.getEntityStream())
+            new JaxRsProblemDetailJsonToExceptionBuilder(responseContext.getEntityStream())
                 .trigger();
         }
     }

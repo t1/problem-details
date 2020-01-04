@@ -22,7 +22,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 @Service
 public class DemoService {
-
     public Shipment order(int userId, String article, PaymentMethod paymentMethod) {
         log.info("order [{}] for [{}] via [{}]", article, userId, paymentMethod);
 

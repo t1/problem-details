@@ -12,6 +12,7 @@ import javax.json.bind.annotation.JsonbProperty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.net.URI;
@@ -28,7 +29,7 @@ public class DemoBoundary {
         @FormParam("article") @NotNull String article,
         @FormParam(value = "payment-method") @DefaultValue("prepaid") PaymentMethod paymentMethod) {
 
-        log.info("order {} for {} via {}", article, userId, paymentMethod);
+        log.info("order [{}] for [{}] via [{}]", article, userId, paymentMethod);
 
         int cost = cost(article);
 
@@ -50,7 +51,7 @@ public class DemoBoundary {
             case prepaid:
                 break;
             case credit_card:
-                if (cost > 1000)
+                if (cost > 20)
                     throw new CreditCardLimitExceeded();
                 break;
             case on_account:
@@ -62,12 +63,14 @@ public class DemoBoundary {
 
     private int cost(String article) {
         switch (article) {
+            case "oom bomb":
+                throw new OutOfMemoryError("not really");
             case "expensive gadget":
                 return 50;
             case "cheap gadget":
                 return 5;
             default:
-                throw new ArticleNotFoundException(article);
+                throw new NotFoundException("There is no article [" + article + "]");
         }
     }
 
@@ -99,16 +102,9 @@ public class DemoBoundary {
     public static final URI ACCOUNT_1 = URI.create("/account/12345");
     public static final URI ACCOUNT_2 = URI.create("/account/67890");
 
-    @Status(FORBIDDEN) private static class CreditCardLimitExceeded extends RuntimeException {}
+    @Status(FORBIDDEN) public static class CreditCardLimitExceeded extends RuntimeException {}
 
-    @Status(FORBIDDEN) private static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
-
-    @AllArgsConstructor @NoArgsConstructor
-    private static class ArticleNotFoundException extends IllegalArgumentException {
-        @Extension String article;
-
-        @Detail String getDetail() { return "There is no article [" + article + "]"; }
-    }
+    @Status(FORBIDDEN) public static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
 
     @AllArgsConstructor @NoArgsConstructor
     public static @Data class Shipment {

@@ -12,40 +12,43 @@ import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
 @Slf4j
 public class ProblemDetailExceptionRegistry {
-    static final Map<String, Class<? extends RuntimeException>> REGISTRY = new HashMap<>();
+    static final Map<String, Class<? extends Throwable>> REGISTRY = new HashMap<>();
 
-    public static URI register(Class<? extends RuntimeException> exceptionType) {
+    public static URI register(Class<? extends Throwable> exceptionType) {
         URI type = ProblemDetails.buildTypeUri(exceptionType);
         register(exceptionType, type);
         return type;
     }
 
-    public static void register(Class<? extends RuntimeException> exceptionType, URI type) {
+    public static void register(Class<? extends Throwable> exceptionType, URI type) {
         REGISTRY.put(type.toString(), exceptionType);
     }
 
-    static Class<? extends RuntimeException> computeFrom(String type) {
-        if (type != null && type.startsWith(URN_PROBLEM_TYPE_PREFIX)) {
-            return computeFromUrn(type.substring(URN_PROBLEM_TYPE_PREFIX.length()));
+    static Class<? extends Throwable> computeFrom(String type) {
+        if (type == null)
+            return null;
+        return computeFrom(type, "java.lang.", type.endsWith("-error") ? "" : "Exception");
+    }
+
+    public static Class<? extends Throwable> computeFrom(String type, String prefix, String suffix) {
+        if (type.startsWith(URN_PROBLEM_TYPE_PREFIX)) {
+            return computeFromUrn(type.substring(URN_PROBLEM_TYPE_PREFIX.length()), prefix, suffix);
         } else {
             return null;
         }
     }
 
-    private static Class<? extends RuntimeException> computeFromUrn(String type) {
+    private static Class<? extends Throwable> computeFromUrn(String type, String prefix, String suffix) {
         String camel = LOWER_HYPHEN.to(UPPER_CAMEL, type);
-        Class<? extends RuntimeException> cls = forName("java.lang." + camel + "Exception");
-        if (cls != null)
-            return cls;
-        return forName("javax.ws.rs." + camel + "Exception");
+        return forName(prefix + camel + suffix);
     }
 
-    private static Class<? extends RuntimeException> forName(String name) {
+    private static Class<? extends Throwable> forName(String name) {
         try {
             Class<?> t = Class.forName(name);
             //noinspection unchecked
-            return RuntimeException.class.isAssignableFrom(t)
-                ? (Class<? extends RuntimeException>) t
+            return Throwable.class.isAssignableFrom(t)
+                ? (Class<? extends Throwable>) t
                 : null;
         } catch (ClassNotFoundException e) {
             return null;

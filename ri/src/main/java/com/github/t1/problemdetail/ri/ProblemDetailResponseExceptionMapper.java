@@ -1,6 +1,5 @@
 package com.github.t1.problemdetail.ri;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 
 import javax.ws.rs.core.MediaType;
@@ -12,7 +11,8 @@ import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
 
 public class ProblemDetailResponseExceptionMapper implements ResponseExceptionMapper<Throwable> {
     @Override public Throwable toThrowable(Response response) {
-        return new ProblemDetailJsonToExceptionBuilder(response.readEntity(InputStream.class)).build();
+        return new JaxRsProblemDetailJsonToExceptionBuilder(response.readEntity(InputStream.class))
+            .build();
     }
 
     @Override public boolean handles(int status, MultivaluedMap<String, Object> headers) {

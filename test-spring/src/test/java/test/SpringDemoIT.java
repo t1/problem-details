@@ -33,4 +33,13 @@ class SpringDemoIT extends AbstractSpringDemoIT {
         template.setErrorHandler(new ProblemDetailErrorHandler());
         return template.postForObject(BASE_URI + "/orders", form, Shipment.class);
     }
+
+    @Override protected String unknownArticleBody() {
+        return "{" +
+            "\"type\":\"urn:problem-type:not-found\"," +
+            "\"title\":\"Not Found\"," +
+            "\"status\":404," +
+            "\"detail\":\"There is no article [unknown article]\"," +
+            "\"instance\":"; // random uuid
+    }
 }

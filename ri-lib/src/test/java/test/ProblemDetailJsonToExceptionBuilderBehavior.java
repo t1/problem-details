@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
-import javax.ws.rs.BadRequestException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
@@ -63,13 +62,13 @@ class ProblemDetailJsonToExceptionBuilderBehavior {
         assertThat(thrown).hasMessage(null);
     }
 
-    @Test void shouldBuildBadRequest() {
+    @Test void shouldFailToBuildBadRequest() {
         entity.add("type", "urn:problem-type:bad-request");
         entity.add("detail", "some-detail");
 
-        BadRequestException thrown = catchThrowableOfType(this::trigger, BadRequestException.class);
+        IllegalArgumentException thrown = catchThrowableOfType(this::trigger, IllegalArgumentException.class);
 
-        assertThat(thrown).hasMessage("some-detail");
+        assertThat(thrown).hasMessage("no registered exception found for `type` field in {\"type\":\"urn:problem-type:bad-request\",\"detail\":\"some-detail\"}");
     }
 
     public static class CustomException extends RuntimeException {}

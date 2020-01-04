@@ -95,4 +95,13 @@ class RawSpringDemoIT extends AbstractSpringDemoIT {
             return null;
         }
     }
+
+    @Override protected String unknownArticleBody() {
+        return "{" +
+            "\"type\":\"urn:problem-type:not-found\"," +
+            "\"title\":\"Not Found\"," +
+            "\"status\":404," +
+            "\"detail\":\"There is no article [unknown article]\"," +
+            "\"instance\":"; // random uuid
+    }
 }

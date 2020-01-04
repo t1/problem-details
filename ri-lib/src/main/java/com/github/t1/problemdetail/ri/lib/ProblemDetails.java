@@ -41,15 +41,15 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 public abstract class ProblemDetails {
     public static final String URN_PROBLEM_TYPE_PREFIX = "urn:problem-type:";
 
-    protected final Exception exception;
-    protected final Class<? extends Exception> exceptionType;
+    protected final Throwable exception;
+    protected final Class<? extends Throwable> exceptionType;
 
     @Getter private final StatusType status;
     @Getter private final Object body;
     @Getter private final String mediaType;
     @Getter private final String logMessage;
 
-    public ProblemDetails(Exception exception) {
+    public ProblemDetails(Throwable exception) {
         this.exception = exception;
         this.exceptionType = exception.getClass();
 
@@ -99,7 +99,7 @@ public abstract class ProblemDetails {
         return buildTypeUri(exceptionType);
     }
 
-    public static URI buildTypeUri(Class<? extends Exception> type) {
+    public static URI buildTypeUri(Class<? extends Throwable> type) {
         return URI.create(type.isAnnotationPresent(Type.class)
             ? type.getAnnotation(Type.class).value()
             : URN_PROBLEM_TYPE_PREFIX + wordsFromTypeName(type, '-').toLowerCase());
@@ -111,7 +111,7 @@ public abstract class ProblemDetails {
             : wordsFromTypeName(exceptionType, ' ');
     }
 
-    private static String wordsFromTypeName(Class<? extends Exception> type, char delimiter) {
+    private static String wordsFromTypeName(Class<? extends Throwable> type, char delimiter) {
         String message = camelToWords(type.getSimpleName(), delimiter);
         if (message.endsWith(delimiter + "Exception"))
             message = message.substring(0, message.length() - 10);
