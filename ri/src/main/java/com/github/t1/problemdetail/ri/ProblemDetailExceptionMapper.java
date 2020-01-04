@@ -3,6 +3,7 @@ package com.github.t1.problemdetail.ri;
 import com.github.t1.problemdetail.ri.lib.ProblemDetails;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.Priority;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -18,6 +19,7 @@ import javax.ws.rs.ext.Provider;
  */
 @Slf4j
 @Provider
+@Priority(0)
 public class ProblemDetailExceptionMapper implements ExceptionMapper<Throwable> {
     @Context
     HttpHeaders requestHeaders;

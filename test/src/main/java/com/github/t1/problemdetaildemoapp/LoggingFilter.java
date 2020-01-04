@@ -39,6 +39,10 @@ public class LoggingFilter implements
     ContainerRequestFilter, ContainerResponseFilter,
     ClientRequestFilter, ClientResponseFilter {
 
+    public static LoggingFilter toStdOut() {
+        return new LoggingFilter(System.out::print);
+    }
+
     public static LoggingFilter toStdErr() {
         return new LoggingFilter(System.err::print);
     }
@@ -52,7 +56,7 @@ public class LoggingFilter implements
     }
 
     @SuppressWarnings("unused") public LoggingFilter() {
-        this(System.out::print);
+        this(log::debug);
     }
 
     public LoggingFilter(Consumer<String> messageConsumer) {
@@ -66,7 +70,7 @@ public class LoggingFilter implements
 
     /* container request */
     @Override public void filter(ContainerRequestContext requestContext) {
-        new MessageBuilder(">> ", requestContext.getMethod(), requestContext.getUriInfo().getRequestUri(), null,
+        new MessageBuilder("--> ", requestContext.getMethod(), requestContext.getUriInfo().getRequestUri(), null,
             requestContext.getHeaders())
             .log();
         messageConsumer.accept(entity(requestContext));
@@ -74,20 +78,20 @@ public class LoggingFilter implements
 
     /* container response */
     @Override public void filter(ContainerRequestContext request, ContainerResponseContext response) {
-        new MessageBuilder("<< ", request.getMethod(), request.getUriInfo().getRequestUri(), response.getStatusInfo(),
+        new MessageBuilder("<-- ", request.getMethod(), request.getUriInfo().getRequestUri(), response.getStatusInfo(),
             response.getHeaders())
             .log();
     }
 
     /* client request */
     @Override public void filter(ClientRequestContext request) {
-        new MessageBuilder("> ", request.getMethod(), request.getUri(), null, request.getHeaders())
+        new MessageBuilder("==> ", request.getMethod(), request.getUri(), null, request.getHeaders())
             .log();
     }
 
     /* client response */
     @Override public void filter(ClientRequestContext request, ClientResponseContext response) {
-        new MessageBuilder("< " + response.getStatusInfo(), request.getMethod(), request.getUri(), response.getStatusInfo(),
+        new MessageBuilder("<== " + response.getStatusInfo(), request.getMethod(), request.getUri(), response.getStatusInfo(),
             response.getHeaders())
             .log();
     }
@@ -119,7 +123,7 @@ public class LoggingFilter implements
         private void printStatus(String method, URI uri, StatusType statusInfo) {
             out.append(prefix).append(method).append(' ').append(uri);
             if (statusInfo != null)
-                out.append(" <== ").append(statusInfo.getStatusCode()).append(" ").append(statusInfo.getReasonPhrase());
+                out.append(" :: ").append(statusInfo.getStatusCode()).append(" ").append(statusInfo.getReasonPhrase());
             out.append('\n');
         }
 

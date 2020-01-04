@@ -91,9 +91,11 @@ public class DemoService {
     public static final URI ACCOUNT_1 = URI.create("/account/12345");
     public static final URI ACCOUNT_2 = URI.create("/account/67890");
 
-    @Status(FORBIDDEN) public static class CreditCardLimitExceeded extends RuntimeException {}
+    @Status(FORBIDDEN) public static class CreditCardLimitExceeded extends DemoException {}
 
-    @Status(FORBIDDEN) public static class UserNotEntitledToOrderOnAccount extends RuntimeException {}
+    @Status(FORBIDDEN) public static class UserNotEntitledToOrderOnAccount extends DemoException {}
+
+    public static class DemoException extends RuntimeException {}
 
     @AllArgsConstructor @NoArgsConstructor
     public static @Data class Shipment {

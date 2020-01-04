@@ -66,13 +66,13 @@ public abstract class AbstractClientDemoIT {
         then(throwable).describedAs("nothing thrown").isNotNull();
     }
 
-    /** standard Spring exception */
+    /** standard JAX-RS exception */
     @Test void shouldFailToOrderUnknownArticle() {
         NotFoundException throwable = catchThrowableOfType(() -> postOrder("1", "unknown article", null),
             NotFoundException.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
-        // then(throwable.getResponseBodyAsString()).startsWith(unknownArticleBody());
+        then(throwable.getMessage()).startsWith("There is no article [unknown article]");
     }
 
 
