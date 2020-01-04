@@ -1,7 +1,7 @@
 package test;
 
-import com.github.t1.problemdetaildemoapp.DemoBoundary.CreditCardLimitExceeded;
-import com.github.t1.problemdetaildemoapp.DemoBoundary.UserNotEntitledToOrderOnAccount;
+import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
+import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,9 +12,9 @@ import javax.json.bind.annotation.JsonbProperty;
 import javax.ws.rs.NotFoundException;
 import java.time.LocalDate;
 
-import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_1;
-import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_2;
-import static com.github.t1.problemdetaildemoapp.DemoBoundary.PROBLEM_INSTANCE;
+import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_1;
+import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_2;
+import static com.github.t1.problemdetaildemoapp.DemoService.PROBLEM_INSTANCE;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.BDDAssertions.then;

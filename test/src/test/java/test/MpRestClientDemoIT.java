@@ -2,8 +2,8 @@ package test;
 
 import com.github.t1.problemdetail.ri.ProblemDetailResponseExceptionMapper;
 import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
-import com.github.t1.problemdetaildemoapp.DemoBoundary.CreditCardLimitExceeded;
-import com.github.t1.problemdetaildemoapp.DemoBoundary.UserNotEntitledToOrderOnAccount;
+import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
+import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.LoggingFilter;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
