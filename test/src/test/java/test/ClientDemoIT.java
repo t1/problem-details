@@ -25,7 +25,7 @@ import static test.ContainerLaunchingExtension.target;
  */
 @Slf4j
 @ExtendWith(ContainerLaunchingExtension.class)
-class DemoIT extends AbstractClientDemoIT {
+class ClientDemoIT extends AbstractClientDemoIT {
     static {
         ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
         ProblemDetailExceptionRegistry.register(CreditCardLimitExceeded.class);

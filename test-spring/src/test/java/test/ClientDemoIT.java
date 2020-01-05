@@ -16,10 +16,16 @@ import static test.ContainerLaunchingExtension.BASE_URI;
 /**
  * Demonstrate the RI client side when mapping problem details back to exceptions
  */
-class DemoIT extends AbstractDemoIT {
+class ClientDemoIT extends AbstractClientDemoIT {
     static {
         ProblemDetailExceptionRegistry.register(UserNotEntitledToOrderOnAccount.class);
+        ProblemDetailExceptionRegistry.register(UserNotEntitledToOrderOnAccount.class, URI.create(
+            "https://api.myshop.example/apidocs/com/github/t1/problemdetaildemoapp/DemoService.UserNotEntitledToOrderOnAccount.html"));
+
         ProblemDetailExceptionRegistry.register(CreditCardLimitExceeded.class);
+        ProblemDetailExceptionRegistry.register(CreditCardLimitExceeded.class, URI.create(
+            "https://api.myshop.example/apidocs/com/github/t1/problemdetaildemoapp/DemoService.CreditCardLimitExceeded.html"));
+
         ProblemDetailExceptionRegistry.register(ArticleNotFoundException.class);
         ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
     }
