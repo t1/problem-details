@@ -9,12 +9,14 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+
 import static test.ContainerLaunchingExtension.BASE_URI;
 
 /**
  * Demonstrate the RI client side when mapping problem details back to exceptions
  */
-class SpringDemoIT extends AbstractSpringDemoIT {
+class DemoIT extends AbstractDemoIT {
     static {
         ProblemDetailExceptionRegistry.register(UserNotEntitledToOrderOnAccount.class);
         ProblemDetailExceptionRegistry.register(CreditCardLimitExceeded.class);

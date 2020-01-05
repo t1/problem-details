@@ -23,7 +23,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @ExtendWith(ContainerLaunchingExtension.class)
-public abstract class AbstractSpringDemoIT {
+public abstract class AbstractDemoIT {
     @Test void shouldOrderCheapGadget() {
         Shipment shipment = postOrder("1", "cheap gadget", null);
 
