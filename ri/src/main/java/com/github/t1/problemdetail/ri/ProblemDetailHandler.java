@@ -14,7 +14,7 @@ import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
 public class ProblemDetailHandler implements ClientResponseFilter {
     @Override public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) {
         // TODO XML: https://github.com/t1/problem-details/issues/6
-        if (PROBLEM_DETAIL_JSON_TYPE.isCompatible(responseContext.getMediaType())) {
+        if (PROBLEM_DETAIL_JSON_TYPE.isCompatible(responseContext.getMediaType()) && responseContext.hasEntity()) {
             new JaxRsProblemDetailJsonToExceptionBuilder(responseContext.getEntityStream())
                 .trigger();
         }

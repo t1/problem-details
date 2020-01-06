@@ -34,6 +34,7 @@ class ClientDemoIT extends AbstractClientDemoIT {
 
     @Override protected Shipment postOrder(String userId, String article, String paymentMethod) {
         log.info("post order [{}:{}:{}]", userId, article, paymentMethod);
+
         try {
             Response response = target()
                 .register(LoggingFilter.toStdErr())

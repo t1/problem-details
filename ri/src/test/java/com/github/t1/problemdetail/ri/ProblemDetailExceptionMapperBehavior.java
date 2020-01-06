@@ -38,40 +38,40 @@ class ProblemDetailExceptionMapperBehavior {
     }
 
     @Test void shouldReplyWithJsonTypeByDefault() {
-        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+        Response response = mapper.toResponse(new NullPointerException("some message"));
 
-        then(problemDetail.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_JSON);
+        then(response.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_JSON);
     }
 
     @Test void shouldReplyWithJsonTypeWhenRequested() {
         requestHeaders.putSingle("Accept", APPLICATION_JSON);
 
-        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+        Response response = mapper.toResponse(new NullPointerException("some message"));
 
-        then(problemDetail.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_JSON);
+        then(response.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_JSON);
     }
 
     @Test void shouldReplyWithXmlTypeWhenRequested() {
         requestHeaders.putSingle("Accept", APPLICATION_XML);
 
-        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+        Response response = mapper.toResponse(new NullPointerException("some message"));
 
-        then(problemDetail.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_XML);
+        then(response.getHeaderString("Content-Type")).isEqualTo(PROBLEM_DETAIL_XML);
     }
 
     @Test void shouldReplyWithYamlTypeWhenRequested() {
         requestHeaders.putSingle("Accept", "application/yaml");
 
-        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+        Response response = mapper.toResponse(new NullPointerException("some message"));
 
-        then(problemDetail.getHeaderString("Content-Type")).isEqualTo("application/problem+yaml");
+        then(response.getHeaderString("Content-Type")).isEqualTo("application/problem+yaml");
     }
 
     @Test void shouldMapStandardRuntimeException() {
-        Response problemDetail = mapper.toResponse(new NullPointerException("some message"));
+        Response response = mapper.toResponse(new NullPointerException("some message"));
 
-        then(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
-        then(problemDetailAsMap(problemDetail))
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(response))
             .contains(
                 entry("type", URI.create("urn:problem-type:null-pointer")),
                 entry("title", "Null Pointer"),
@@ -82,10 +82,10 @@ class ProblemDetailExceptionMapperBehavior {
     }
 
     @Test void shouldMapStandardIllegalArgumentException() {
-        Response problemDetail = mapper.toResponse(new IllegalArgumentException("some message"));
+        Response response = mapper.toResponse(new IllegalArgumentException("some message"));
 
-        then(problemDetail.getStatusInfo()).isEqualTo(BAD_REQUEST);
-        then(problemDetailAsMap(problemDetail))
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
+        then(problemDetailAsMap(response))
             .contains(
                 entry("type", URI.create("urn:problem-type:illegal-argument")),
                 entry("title", "Illegal Argument"),
@@ -96,10 +96,10 @@ class ProblemDetailExceptionMapperBehavior {
     }
 
     @Test void shouldMapWebApplicationException() {
-        Response problemDetail = mapper.toResponse(new ForbiddenException("some message"));
+        Response response = mapper.toResponse(new ForbiddenException("some message"));
 
-        then(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
-        then(problemDetailAsMap(problemDetail))
+        then(response.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(problemDetailAsMap(response))
             .contains(
                 entry("type", URI.create("urn:problem-type:forbidden")),
                 entry("title", "Forbidden"),
@@ -129,10 +129,10 @@ class ProblemDetailExceptionMapperBehavior {
             @Detail String detail = "some-detail";
         }
 
-        Response problemDetail = mapper.toResponse(new SomeException());
+        Response response = mapper.toResponse(new SomeException());
 
-        then(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
-        then(problemDetailAsMap(problemDetail)).containsExactly(
+        then(response.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
             entry("status", 403),
@@ -154,10 +154,10 @@ class ProblemDetailExceptionMapperBehavior {
             @Detail String detail() { return "some-detail"; }
         }
 
-        Response problemDetail = mapper.toResponse(new SomeException());
+        Response response = mapper.toResponse(new SomeException());
 
-        then(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
-        then(problemDetailAsMap(problemDetail)).containsExactly(
+        then(response.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
             entry("status", 403),
@@ -179,10 +179,10 @@ class ProblemDetailExceptionMapperBehavior {
             @Detail String detail() { throw new NullPointerException(); }
         }
 
-        Response problemDetail = mapper.toResponse(new SomeException());
+        Response response = mapper.toResponse(new SomeException());
 
-        then(problemDetail.getStatusInfo()).isEqualTo(FORBIDDEN);
-        then(problemDetailAsMap(problemDetail)).containsExactly(
+        then(response.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
             entry("status", 403),
@@ -199,10 +199,10 @@ class ProblemDetailExceptionMapperBehavior {
             @Instance private String instance() { return "spaces are invalid"; }
         }
 
-        Response problemDetail = mapper.toResponse(new SomeException());
+        Response response = mapper.toResponse(new SomeException());
 
-        then(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
-        then(problemDetailAsMap(problemDetail)).containsExactly(
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
             entry("status", 500),
@@ -210,6 +210,76 @@ class ProblemDetailExceptionMapperBehavior {
                 "source=spaces+are+invalid&exception=java.net.URISyntaxException%3A+" +
                 "Illegal+character+in+path+at+index+6%3A+spaces+are+invalid"))
         );
+    }
+
+    @Test void shouldMapCustomExceptionWithNullInstanceMethod() {
+        class SomeException extends RuntimeException {
+            @Instance private String instance() { return null; }
+        }
+
+        Response response = mapper.toResponse(new SomeException());
+
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        Map<String, Object> map = problemDetailAsMap(response);
+        then(map).contains(
+            entry("type", URI.create("urn:problem-type:some")),
+            entry("title", "Some"),
+            entry("status", 500))
+            .containsKey("instance");
+        then(map.get("instance").toString()).startsWith("urn:uuid:");
+    }
+
+    @Test void shouldMapCustomExceptionWithNullInstanceField() {
+        class SomeException extends RuntimeException {
+            @Instance private String instance = null;
+        }
+
+        Response response = mapper.toResponse(new SomeException());
+
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        Map<String, Object> map = problemDetailAsMap(response);
+        then(map).contains(
+            entry("type", URI.create("urn:problem-type:some")),
+            entry("title", "Some"),
+            entry("status", 500))
+            .containsKey("instance");
+        then(map.get("instance").toString()).startsWith("urn:uuid:");
+    }
+
+
+    @Test void shouldMapCustomExceptionWithTwoInstanceMethods() {
+        class SomeException extends RuntimeException {
+            @Instance private String instance() { return "foo"; }
+
+            @Instance private String instance2() { return "foo"; }
+        }
+
+        Response response = mapper.toResponse(new SomeException());
+
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        Map<String, Object> map = problemDetailAsMap(response);
+        then(map).contains(
+            entry("type", URI.create("urn:problem-type:some")),
+            entry("title", "Some"),
+            entry("status", 500),
+            entry("instance", URI.create("foo")));
+    }
+
+    @Test void shouldMapCustomExceptionWithTwoInstanceFields() {
+        class SomeException extends RuntimeException {
+            @Instance private String instance = "foo";
+            @Instance private String instance2 = "foo";
+        }
+
+        Response response = mapper.toResponse(new SomeException());
+
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        Map<String, Object> map = problemDetailAsMap(response);
+        then(map).contains(
+            entry("type", URI.create("urn:problem-type:some")),
+            entry("title", "Some"),
+            entry("status", 500),
+            entry("instance", URI.create("foo")));
     }
 
     @SuppressWarnings("unchecked") private Map<String, Object> problemDetailAsMap(Response problemDetail) {

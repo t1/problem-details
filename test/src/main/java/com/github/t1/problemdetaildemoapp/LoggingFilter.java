@@ -1,6 +1,5 @@
 package com.github.t1.problemdetaildemoapp;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
@@ -14,9 +13,11 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.StatusType;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,7 +35,7 @@ import static javax.ws.rs.core.MediaType.CHARSET_PARAMETER;
 @Slf4j
 @Provider
 @PreMatching
-@RequiredArgsConstructor
+@SuppressWarnings("unused")
 public class LoggingFilter implements
     ContainerRequestFilter, ContainerResponseFilter,
     ClientRequestFilter, ClientResponseFilter {
@@ -60,13 +61,21 @@ public class LoggingFilter implements
     }
 
     public LoggingFilter(Consumer<String> messageConsumer) {
-        this(false, messageConsumer);
+        this(false, messageConsumer, null);
+    }
+
+    public LoggingFilter(boolean entities, Consumer<String> messageConsumer, UriInfo uriInfo) {
+        this.entities = entities;
+        this.messageConsumer = messageConsumer;
+        this.uriInfo = uriInfo;
     }
 
     /** Should the request/response body be logged? */
     @With private final boolean entities;
 
     private final Consumer<String> messageConsumer;
+
+    @Context UriInfo uriInfo;
 
     /* container request */
     @Override public void filter(ContainerRequestContext requestContext) {
@@ -121,7 +130,12 @@ public class LoggingFilter implements
         }
 
         private void printStatus(String method, URI uri, StatusType statusInfo) {
-            out.append(prefix).append(method).append(' ').append(uri);
+            if (uriInfo != null)
+                uri = uriInfo.getBaseUri().relativize(uri);
+            out.append(prefix).append(method).append(' ');
+            if (!uri.isAbsolute())
+                out.append('/');
+            out.append(uri);
             if (statusInfo != null)
                 out.append(" :: ").append(statusInfo.getStatusCode()).append(" ").append(statusInfo.getReasonPhrase());
             out.append('\n');

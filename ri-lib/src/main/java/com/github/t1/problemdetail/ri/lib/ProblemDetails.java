@@ -12,6 +12,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
@@ -23,9 +24,11 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -149,7 +152,7 @@ public abstract class ProblemDetails {
     /** We don't want to repeat default messages like `400 Bad Request` */
     protected abstract boolean hasDefaultMessage();
 
-    private Object invoke(Method method) {
+    @Nullable private Object invoke(Method method) {
         try {
             if (method.getParameterCount() != 0)
                 return invocationFailed(method, "expected no args but got " + method.getParameterCount());
@@ -167,7 +170,7 @@ public abstract class ProblemDetails {
             + "." + method.getName() + ": " + detail;
     }
 
-    private Object get(Field field) {
+    @Nullable private Object get(Field field) {
         try {
             field.setAccessible(true);
             return field.get(exception);
@@ -177,19 +180,21 @@ public abstract class ProblemDetails {
     }
 
     protected URI buildInstance() {
-        String instance = null;
-        for (Method method : exceptionType.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Instance.class)) {
-                instance = invoke(method).toString();
-            }
-        }
-        for (Field field : exceptionType.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Instance.class)) {
-                instance = get(field).toString();
-            }
-        }
-        if (instance == null)
-            return URI.create("urn:uuid:" + UUID.randomUUID());
+        String instance = Arrays.stream(exceptionType.getDeclaredFields())
+            .filter(field -> field.isAnnotationPresent(Instance.class))
+            .map(this::get)
+            .filter(Objects::nonNull)
+            .findAny()
+            .map(Object::toString)
+            .orElseGet(
+                () -> Arrays.stream(exceptionType.getDeclaredMethods())
+                    .filter(method -> method.isAnnotationPresent(Instance.class))
+                    .map(this::invoke)
+                    .filter(Objects::nonNull)
+                    .findAny()
+                    .map(Object::toString)
+                    .orElseGet(
+                        () -> "urn:uuid:" + UUID.randomUUID()));
         return createSafeUri(instance);
     }
 
