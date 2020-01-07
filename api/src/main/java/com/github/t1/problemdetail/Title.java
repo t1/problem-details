@@ -12,7 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * camel case name into words.
  */
 @Retention(RUNTIME)
-@Target({TYPE})
+@Target(TYPE)
 public @interface Title {
     String value();
 }

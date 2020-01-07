@@ -11,7 +11,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * The default is a URN <code>urn:problem-type:[simple-class-name-with-dashes]</code>
  */
 @Retention(RUNTIME)
-@Target({TYPE})
+@Target(TYPE)
 public @interface Type {
     String value();
 }
