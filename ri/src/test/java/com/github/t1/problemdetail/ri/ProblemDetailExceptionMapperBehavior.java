@@ -187,14 +187,30 @@ class ProblemDetailExceptionMapperBehavior {
             entry("title", "some-title"),
             entry("status", 403),
             entry("detail", "could not invoke SomeException.detail: java.lang.NullPointerException"),
-            entry("instance", URI.create("urn:invalid-uri-syntax?" +
-                "source=could+not+invoke+SomeException.instance%3A+java.lang.IllegalArgumentException%3A+no+instance&" +
-                "exception=java.net.URISyntaxException%3A+Illegal+character+in+scheme+name+at+index+5%3A+could+not+invoke+SomeException.instance%3A+java.lang.IllegalArgumentException%3A+no+instance")),
+            entry("instance", URI.create("urn:could+not+invoke+SomeException.instance:+java.lang.IllegalArgumentException:+no+instance")),
             entry("f1", "could not invoke SomeException.f1: java.lang.RuntimeException: no f1")
         );
     }
 
     @Test void shouldMapCustomExceptionWithInvalidInstanceMethod() {
+        class SomeException extends RuntimeException {
+            @Instance private String instance() { return "evil\nnewlines"; }
+        }
+
+        Response response = mapper.toResponse(new SomeException());
+
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(response)).containsExactly(
+            entry("type", URI.create("urn:problem-type:some")),
+            entry("title", "Some"),
+            entry("status", 500),
+            entry("instance", URI.create("urn:invalid-uri-syntax?" +
+                "source=evil%0Anewlines&exception=java.net.URISyntaxException%3A+" +
+                "Illegal+character+in+path+at+index+4%3A+evil%0Anewlines"))
+        );
+    }
+
+    @Test void shouldMapCustomExceptionWithSpacesInInstanceMethod() {
         class SomeException extends RuntimeException {
             @Instance private String instance() { return "spaces are invalid"; }
         }
@@ -206,9 +222,23 @@ class ProblemDetailExceptionMapperBehavior {
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
             entry("status", 500),
-            entry("instance", URI.create("urn:invalid-uri-syntax?" +
-                "source=spaces+are+invalid&exception=java.net.URISyntaxException%3A+" +
-                "Illegal+character+in+path+at+index+6%3A+spaces+are+invalid"))
+            entry("instance", URI.create("urn:spaces+are+invalid"))
+        );
+    }
+
+    @Test void shouldMapCustomExceptionWithSpacesInInstanceField() {
+        class SomeException extends RuntimeException {
+            @Instance private String instance = "spaces are invalid";
+        }
+
+        Response response = mapper.toResponse(new SomeException());
+
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(response)).containsExactly(
+            entry("type", URI.create("urn:problem-type:some")),
+            entry("title", "Some"),
+            entry("status", 500),
+            entry("instance", URI.create("urn:spaces+are+invalid"))
         );
     }
 
@@ -227,6 +257,26 @@ class ProblemDetailExceptionMapperBehavior {
             entry("status", 500))
             .containsKey("instance");
         then(map.get("instance").toString()).startsWith("urn:uuid:");
+    }
+
+    @Test void shouldMapCustomExceptionWithParameterizedInstanceMethod() {
+        class SomeException extends RuntimeException {
+            @Instance private String instance(String foo) { return "bar"; }
+        }
+
+        Response response = mapper.toResponse(new SomeException());
+
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        Map<String, Object> map = problemDetailAsMap(response);
+        then(map).contains(
+            entry("type", URI.create("urn:problem-type:some")),
+            entry("title", "Some"),
+            entry("status", 500))
+            .containsKey("instance");
+        URI instance = (URI) map.get("instance");
+        then(instance.getScheme()).isEqualTo("urn");
+        then(instance.getSchemeSpecificPart())
+            .isEqualTo("could+not+invoke+SomeException.instance:+expected+no+args+but+got+1");
     }
 
     @Test void shouldMapCustomExceptionWithNullInstanceField() {

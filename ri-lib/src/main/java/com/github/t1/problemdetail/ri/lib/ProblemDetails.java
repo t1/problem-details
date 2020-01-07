@@ -202,10 +202,14 @@ public abstract class ProblemDetails {
         try {
             return new URI(string);
         } catch (URISyntaxException e) {
-            return UriBuilder.fromUri("urn:invalid-uri-syntax")
-                .queryParam("source", string)
-                .queryParam("exception", e)
-                .build();
+            try {
+                return new URI("urn:" + string.replace(' ', '+'));
+            } catch (URISyntaxException ee) {
+                return UriBuilder.fromUri("urn:invalid-uri-syntax")
+                    .queryParam("source", string)
+                    .queryParam("exception", e)
+                    .build();
+            }
         }
     }
 

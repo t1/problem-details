@@ -6,18 +6,16 @@
 image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
 
 ***************************************************************
-Map standard and custom exceptions to http response bodies containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807] and/or convert and throw problem details as exceptions.
+Map standard and custom exceptions to http response bodies containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807] and/or convert and throw problem details as exceptions. Both for JAX-RS as well as Spring Boot.
 ***************************************************************
 
 == Server Side Examples
 
-On the server side, you can simply throw an exception, and most things will just work. Or use annotations on the exception to override the default behavior.
-
-Simply include a dependency on `com.github.t1:problem-details-api` and a runtime dependency on `com.github.t1:problem-details-ri` for JAX-RS applications and `com.github.t1:problem-details-ri-spring` for Spring applications.
+On the server side, include a dependency on `com.github.t1:problem-details-api` and a runtime dependency on `com.github.t1:problem-details-ri` for JAX-RS applications and `com.github.t1:problem-details-ri-spring` for Spring applications. Then you can simply throw an exception, and things will just work with defaults. Use annotations on the exception to use custom values.
 
 === Default Mapping
 
-To produce a problem detail body, simply throw an exception, e.g. in JAX-RS:
+To produce a problem detail body, simply throw a standard exception, e.g. in JAX-RS:
 
 [source,java]
 ---------------------------------------------------------------
@@ -55,15 +53,15 @@ If the first requested type (in an `Accept` header) is `application/xml`, the bo
 
 === Default Logging
 
-The main use of the instance is to have a reference to search for in your logs. So a appropriate log event is produced when the problem detail is produced. Then you can see all the logs that led to the problem and other details such as the stack trace, which is explicitly _never_ part of the body, as it must be considered sensitive information.
+The main use of the `instance` is to have a reference to search for in the logs. So an appropriate log event is produced when the problem detail is produced. Then you can see all the logs that led to the problem and other details such as the stack trace, which is explicitly _never_ part of the body, as it must be considered sensitive information.
 
 The logging category defaults to the fully qualified class name of the exception. By default, 4xx status codes are considered a problem of the client and are logged at `DEBUG` log level; 5xx status codes are a problem of the service, so they are logged at `ERROR`. As the stack trace is only relevant for server problems, it's only logged at `ERROR` and `WARNING` levels, not at `INFO` or `DEBUG`.
 
-As a logging API, http://www.slf4j.org[slf4j] is used. Depending on your application server, you may also have to package a binding like `slf4j-jdk14`.
+http://www.slf4j.org[slf4j] is used for the logging. Depending on your application server, you may also have to package the `slf4j-api` and a binding like `slf4j-jdk14`.
 
 === Annotations
 
-Each of these defaults can optionally be overridden with annotations. Additionally, custom problem detail fields (called extensions) can be defined with `@Extension` annotated fields or methods.
+Each of these defaults can optionally be overridden with annotations. Additionally, custom problem detail fields (called extensions) can be defined with `@Extension` annotated fields or methods. E.g.:
 
 [source,java]
 ---------------------------------------------------------------
@@ -84,9 +82,9 @@ public class OutOfCreditException extends RuntimeException {
 }
 ---------------------------------------------------------------
 
-<1> The status is a constant from the `javax.ws.rs.core.Response.Status` enum.
+<1> The status is a constant from the `javax.ws.rs.core.Response.Status` enum. This works also for Spring applications.
 <2> The `@Logging` annotation can also be on the package (i.e. in the `package-info.java` file) to be a fallback for all exceptions in the package.
-<3> These are https://projectlombok.org[Lombok] annotations, just for demo purposes; you can write the boiler plate code by hand, of course ;-)
+<3> These are https://projectlombok.org[Lombok] annotations, just for demo purposes; feel free to write the boiler plate code by hand ;-)
 <4> The `@Instance` annotation can be on a field or a no-arg method.
 <5> There can be multiple `@Extension` annotations on fields or no-arg methods.
 <6> This field is not annotated, so it won't be part of the body.
