@@ -43,9 +43,9 @@ Both will result in an exception body similar to this:
 }
 ---------------------------------------------------------------
 
-<1> The default `type` is a URN derived from the type name of the exception by converting camel case to kebap case.
+<1> The default `type` is a URN derived from the type name of the exception by converting camel case to kebap case and stripping the `Exception`.
 <2> The default `title` is derived from the type name of the exception by converting camel case to separate words.
-<3> The default `status` is `500` except for an `IllegalArgumentException`, which gets mapped to 400, and the JAX-RS exceptions, which get mapped to their responsive status code.
+<3> The default `status` is `500` except for an `IllegalArgumentException`, which gets mapped to 400, and the standard http exceptions (JAX-RS: `WebApplicationException`; Spring `HttpClientErrorException`), which get mapped to their corresponding status codes.
 <4> The default `detail` is the message of the exception. There won't be a `detail` field, if the message of the exception is null.
 <5> The default `instance` is a random UUID URN.
 
@@ -53,15 +53,15 @@ If the first requested type (in an `Accept` header) is `application/xml`, the bo
 
 === Default Logging
 
-The main use of the `instance` is to have a reference to search for in the logs. So an appropriate log event is produced when the problem detail is produced. Then you can see all the logs that led to the problem and other details such as the stack trace, which is explicitly _never_ part of the body, as it must be considered sensitive information.
+The main use of the `instance` field is to have a reference to search for in the logs. So an appropriate log event is produced whenever the problem detail is created. Then you can see all the logs that led to the problem and other details, such as the stack trace. The stack trace is explicitly _never_ part of the body, as it must be considered sensitive information.
 
-The logging category defaults to the fully qualified class name of the exception. By default, 4xx status codes are considered a problem of the client and are logged at `DEBUG` log level; 5xx status codes are a problem of the service, so they are logged at `ERROR`. As the stack trace is only relevant for server problems, it's only logged at `ERROR` and `WARNING` levels, not at `INFO` or `DEBUG`.
+The logging category defaults to the fully qualified class name of the exception. By default, 4xx status codes are considered a problem of the client and are logged at `DEBUG` log level; 5xx status codes are a problem of the service, so they are logged at `ERROR`. As the stack trace is only relevant for server problems, it's only logged at `ERROR` and `WARNING` levels, not at `INFO` or `DEBUG` (see below for how to log at those levels).
 
-http://www.slf4j.org[slf4j] is used for the logging. Depending on your application server, you may also have to package the `slf4j-api` and a binding like `slf4j-jdk14`.
+http://www.slf4j.org[slf4j] is used for the logging. If this is not provided by your application server, you may also have to package the `slf4j-api` and a binding like `slf4j-jdk14`.
 
 === Annotations
 
-Each of these defaults can optionally be overridden with annotations. Additionally, custom problem detail fields (called extensions) can be defined with `@Extension` annotated fields or methods. E.g.:
+Each of the defaults above can optionally be overridden with annotations. Additionally, custom problem detail fields (called extensions) can be defined with `@Extension` annotated fields or methods. E.g.:
 
 [source,java]
 ---------------------------------------------------------------
@@ -83,15 +83,15 @@ public class OutOfCreditException extends RuntimeException {
 ---------------------------------------------------------------
 
 <1> The status is a constant from the `javax.ws.rs.core.Response.Status` enum. This works also for Spring applications.
-<2> The `@Logging` annotation can also be on the package (i.e. in the `package-info.java` file) to be a fallback for all exceptions in the package.
+<2> The `@Logging` annotation defines the log level and the category. Can also be on the package (i.e. in the `package-info.java` file) to be a fallback for all exceptions in the package.
 <3> These are https://projectlombok.org[Lombok] annotations, just for demo purposes; feel free to write the boiler plate code by hand ;-)
 <4> The `@Instance` annotation can be on a field or a no-arg method.
 <5> There can be multiple `@Extension` annotations on fields or no-arg methods.
 <6> This field is not annotated, so it won't be part of the body.
-<7> Extensions can also be complex types, i.e. lists or maps or objects containing multiple fields, as long as they are (de)serializable by JSONB.
+<7> Extensions can also be complex types, i.e. arrays/lists or maps/objects containing multiple fields, as long as they are (de)serializable.
 <8> The `@Detail` annotation can be on a field or a no-arg method.
 
-This will result in an exception body similar to:
+This will result in an problem detail body like this:
 
 [source,json]
 ---------------------------------------------------------------
@@ -113,7 +113,7 @@ This will result in an exception body similar to:
 
 One of the most common use-cases for Bad Requests is a failing validation. You can do a verification and throw a corresponding problem detail exception simply by calling `ValidationFailedException.validate(object)`.
 
-The JAX-RS RI as well as the Spring Boot RI currently can't convert the exception thrown when a parameter to a REST boundary method is annotated as `@Valid`.
+The Spring Boot RI currently also converts the exception thrown when a parameter to a REST boundary method is annotated as `@Valid`. The JAX-RS RI currently can't due to technical restrictions.
 
 == Client Side Examples
 

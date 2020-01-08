@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.ResponseEntity;
 
+import javax.json.bind.JsonbBuilder;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -39,10 +40,6 @@ class ValidationFailedExceptionMappingIT {
         ResponseEntity<ValidationProblemDetail> response = createRestTemplate()
             .postForEntity(BASE_URI + "/validation/annotated", person, ValidationProblemDetail.class);
 
-        assumeThat(response.getStatusCode())
-            .describedAs("@Valid annotation not yet caught by Spring Boot RI")
-            // TODO map @Valid: https://github.com/t1/problem-details/issues/8
-            .isEqualTo(BAD_REQUEST);
         thenValidationFailed(response);
     }
 

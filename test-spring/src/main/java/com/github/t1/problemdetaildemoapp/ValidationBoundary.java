@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,7 +44,7 @@ public class ValidationBoundary {
         validate(person);
     }
 
-    @PostMapping("/annotated") public String postAnnotated(@Valid Person person) {
-        return "valid";
+    @PostMapping("/annotated") public String postAnnotated(@Valid @RequestBody Person person) {
+        return "valid:" + person;
     }
 }

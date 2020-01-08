@@ -1,6 +1,7 @@
 package com.github.t1.problemdetaildemoapp;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
@@ -9,8 +10,10 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Positive;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import java.time.LocalDate;
 
 import static com.github.t1.validation.ValidationFailedException.validate;
@@ -42,6 +45,6 @@ public class ValidationBoundary {
     }
 
     @POST @Path("/annotated") public String postAnnotated(@Valid Person person) {
-        return "valid";
+        return "valid:" + person;
     }
 }

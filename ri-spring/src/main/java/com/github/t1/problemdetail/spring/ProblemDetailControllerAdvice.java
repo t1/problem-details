@@ -1,12 +1,16 @@
 package com.github.t1.problemdetail.spring;
 
 import com.github.t1.problemdetail.ri.lib.ProblemDetails;
+import com.github.t1.validation.ValidationFailedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -14,9 +18,15 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
+import java.lang.reflect.Field;
 import java.util.Enumeration;
+import java.util.Objects;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The server side tool to convert an exception into a response with a problem detail body
@@ -37,8 +47,16 @@ public class ProblemDetailControllerAdvice {
             exception = (Exception) cause; // other subclasses should not exist... and how should we handle them?
         }
 
+        if (exception instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException validationException = (MethodArgumentNotValidException) exception;
+            Set<ConstraintViolation<Object>> violations = violations(validationException);
+            if (!violations.isEmpty()) {
+                exception = new ValidationFailedException(violations);
+            }
+        }
+
         log.debug("handle error", exception);
-        ProblemDetails problemDetail = new ProblemDetails(exception) {
+        ProblemDetails problemDetails = new ProblemDetails(exception) {
             @Override protected Object buildBody() {
                 if (exception instanceof RestClientResponseException) {
                     byte[] body = ((RestClientResponseException) exception).getResponseBodyAsByteArray();
@@ -93,8 +111,26 @@ public class ProblemDetailControllerAdvice {
             }
         };
 
-        return ResponseEntity.status(problemDetail.getStatus().getStatusCode())
-            .contentType(MediaType.valueOf(problemDetail.getMediaType()))
-            .body(problemDetail.getBody());
+        return ResponseEntity.status(problemDetails.getStatus().getStatusCode())
+            .contentType(MediaType.valueOf(problemDetails.getMediaType()))
+            .body(problemDetails.getBody());
+    }
+
+    private Set<ConstraintViolation<Object>> violations(MethodArgumentNotValidException exception) {
+        return exception.getBindingResult().getAllErrors().stream()
+            .map(this::violation)
+            .filter(Objects::nonNull)
+            .collect(toSet());
+    }
+
+    @Nullable private ConstraintViolation<Object> violation(ObjectError objectError) {
+        try {
+            Field field = objectError.getClass().getDeclaredField("violation");
+            field.setAccessible(true);
+            //noinspection unchecked
+            return (ConstraintViolation<Object>) field.get(objectError);
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
     }
 }

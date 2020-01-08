@@ -25,9 +25,10 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 @Title("Validation Failed")
 @Status(BAD_REQUEST)
 public class ValidationFailedException extends RuntimeException {
+    private static Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
+
     public static void validate(Object object, Class<?>... groups) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<Object>> violations = validator.validate(object, groups);
+        Set<ConstraintViolation<Object>> violations = VALIDATOR.validate(object, groups);
         if (violations.isEmpty())
             return;
         throw new ValidationFailedException(violations);
