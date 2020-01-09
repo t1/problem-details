@@ -8,6 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- When updating, maybe the updated dependency on hibernate-validator can be removed -->
         <version>2.2.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
@@ -113,4 +114,15 @@
             </exclusions>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>6.1.0.Final</version>
+                <!-- spring boot brings 6.0.18.Final which has CVE-2019-10219 -->
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
