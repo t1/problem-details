@@ -3,7 +3,6 @@ package com.github.t1.problemdetail.ri.lib;
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Instance;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -20,7 +19,6 @@ import java.util.stream.Stream;
 
 import static com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry.REGISTRY;
 
-@Slf4j
 // TODO also support XML problem detail bodies https://github.com/t1/problem-details/issues/6
 public class ProblemDetailJsonToExceptionBuilder {
     protected final JsonObject body;

@@ -1,7 +1,5 @@
 package com.github.t1.problemdetail.ri.lib;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +8,6 @@ import static com.github.t1.problemdetail.ri.lib.ProblemDetails.URN_PROBLEM_TYPE
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
-@Slf4j
 public class ProblemDetailExceptionRegistry {
     static final Map<String, Class<? extends Throwable>> REGISTRY = new HashMap<>();
 
