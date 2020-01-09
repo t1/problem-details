@@ -27,7 +27,9 @@ public class MockLoggerFactory implements ILoggerFactory {
     }
 
     public static Logger onlyLogger(String name) {
-        then(LOGGERS.keySet()).containsOnly(name);
+        then(LOGGERS.keySet())
+            .describedAs("only expected logger '%s' but found: %s", name, LOGGERS)
+            .containsOnly(name);
         Logger logger = LOGGERS.remove(name);
         then(logger).isNotNull();
         return logger;
