@@ -7,9 +7,7 @@ import javax.annotation.Priority;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
@@ -21,8 +19,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Priority(0)
 public class ProblemDetailExceptionMapper implements ExceptionMapper<Throwable> {
-    @Context
-    HttpHeaders requestHeaders;
+    @Context HttpHeaders requestHeaders;
 
     @Override public Response toResponse(Throwable exception) {
         Response response = (exception instanceof WebApplicationException)
@@ -31,31 +28,8 @@ public class ProblemDetailExceptionMapper implements ExceptionMapper<Throwable> 
             return response;
         }
 
-        ProblemDetails problemDetail = new ProblemDetails(exception) {
-            @Override protected StatusType fallbackStatus() {
-                return (response != null) ? response.getStatusInfo() : super.fallbackStatus();
-            }
-
-            @Override protected boolean hasDefaultMessage() {
-                return exception.getMessage() != null
-                    && exception.getMessage().equals("HTTP " + getStatus().getStatusCode()
-                    + " " + getStatus().getReasonPhrase());
-            }
-
-            @Override protected String findMediaTypeSubtype() {
-                for (MediaType accept : requestHeaders.getAcceptableMediaTypes()) {
-                    if ("application".equals(accept.getType())) {
-                        return accept.getSubtype();
-                    }
-                }
-                return "json";
-            }
-        };
-
-        return Response
-            .status(problemDetail.getStatus())
-            .entity(problemDetail.getBody())
-            .header("Content-Type", problemDetail.getMediaType())
-            .build();
+        return new JaxRsProblemDetails(exception, requestHeaders, response)
+            .log()
+            .toResponse();
     }
 }

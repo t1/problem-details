@@ -1,5 +1,6 @@
 package test;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -91,6 +92,7 @@ class StandardExceptionMappingIT {
             .hasUuidInstance();
     }
 
+    @Disabled
     @Test void shouldMapToXml() {
         testPost("/standard/npe-with-message", APPLICATION_XML)
             .hasStatus(INTERNAL_SERVER_ERROR)
@@ -101,6 +103,7 @@ class StandardExceptionMappingIT {
             .hasUuidInstance();
     }
 
+    @Disabled
     @Test void shouldMapToSecondAcceptXml() {
         testPost("/standard/npe-with-message", TEXT_PLAIN, APPLICATION_XML)
             .hasStatus(INTERNAL_SERVER_ERROR)

@@ -111,9 +111,7 @@ This will result in an problem detail body like this:
 
 === Validations
 
-One of the most common use-cases for Bad Requests is a failing validation. You can do a verification and throw a corresponding problem detail exception simply by calling `ValidationFailedException.validate(object)`.
-
-The Spring Boot RI also converts the exception thrown when a parameter to a REST boundary method is annotated as `@Valid`. The JAX-RS RI currently can't due to technical restrictions.
+One of the most common use-cases for Bad Requests is a failing validation. You can do a verification and throw a corresponding problem detail exception simply by calling `ValidationFailedException.validate(object)`. Both implementations also convert the exception thrown when a parameter to a REST boundary method is annotated as `@Valid`.
 
 == Client Side Examples
 
@@ -154,7 +152,6 @@ class OrderGateway {
 
     private OrderApi api = RestClientBuilder.newBuilder()
         .baseUri("http://...")
-        .register(ProblemDetailResponseExceptionMapper.class)
         .build(OrderApi.class);
 
     public Shipment order(String articleId) {

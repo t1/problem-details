@@ -49,7 +49,7 @@ public class ProblemDetailControllerAdvice {
 
         if (exception instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException validationException = (MethodArgumentNotValidException) exception;
-            Set<ConstraintViolation<Object>> violations = violations(validationException);
+            Set<ConstraintViolation<?>> violations = violations(validationException);
             if (!violations.isEmpty()) {
                 exception = new ValidationFailedException(violations);
             }
@@ -111,24 +111,25 @@ public class ProblemDetailControllerAdvice {
             }
         };
 
+        problemDetails.log();
+
         return ResponseEntity.status(problemDetails.getStatus().getStatusCode())
             .contentType(MediaType.valueOf(problemDetails.getMediaType()))
             .body(problemDetails.getBody());
     }
 
-    private Set<ConstraintViolation<Object>> violations(MethodArgumentNotValidException exception) {
+    private Set<ConstraintViolation<?>> violations(MethodArgumentNotValidException exception) {
         return exception.getBindingResult().getAllErrors().stream()
             .map(this::violation)
             .filter(Objects::nonNull)
             .collect(toSet());
     }
 
-    @Nullable private ConstraintViolation<Object> violation(ObjectError objectError) {
+    @Nullable private ConstraintViolation<?> violation(ObjectError objectError) {
         try {
             Field field = objectError.getClass().getDeclaredField("violation");
             field.setAccessible(true);
-            //noinspection unchecked
-            return (ConstraintViolation<Object>) field.get(objectError);
+            return (ConstraintViolation<?>) field.get(objectError);
         } catch (ReflectiveOperationException e) {
             return null;
         }

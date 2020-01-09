@@ -29,7 +29,7 @@ class LoggingBehavior {
     @Test void shouldLogAuto5xxAtError() {
         @Status(INTERNAL_SERVER_ERROR) class CustomException extends Exception {}
 
-        ProblemDetails details = new MockProblemDetails(new CustomException());
+        ProblemDetails details = problemDetailsFor(new CustomException());
 
         then(onlyLogger(CustomException.class)).should().error(eq(details.getLogMessage()), any(CustomException.class));
     }
@@ -37,7 +37,7 @@ class LoggingBehavior {
     @Test void shouldLogAuto4xxAtDebug() {
         @Status(BAD_REQUEST) class CustomException extends Exception {}
 
-        ProblemDetails details = new MockProblemDetails(new CustomException());
+        ProblemDetails details = problemDetailsFor(new CustomException());
 
         then(onlyLogger(CustomException.class)).should().debug(details.getLogMessage());
     }
@@ -45,7 +45,7 @@ class LoggingBehavior {
     @Test void shouldLogExplicitlyAtError() {
         @Logging(at = ERROR) class CustomException extends Exception {}
 
-        ProblemDetails details = new MockProblemDetails(new CustomException());
+        ProblemDetails details = problemDetailsFor(new CustomException());
 
         then(onlyLogger(CustomException.class)).should().error(eq(details.getLogMessage()), any(CustomException.class));
     }
@@ -53,7 +53,7 @@ class LoggingBehavior {
     @Test void shouldLogExplicitlyAtWarning() {
         @Logging(at = WARNING) class CustomException extends Exception {}
 
-        ProblemDetails details = new MockProblemDetails(new CustomException());
+        ProblemDetails details = problemDetailsFor(new CustomException());
 
         then(onlyLogger(CustomException.class)).should().warn(eq(details.getLogMessage()), any(CustomException.class));
     }
@@ -61,7 +61,7 @@ class LoggingBehavior {
     @Test void shouldLogExplicitlyAtInfo() {
         @Logging(at = INFO) class CustomException extends Exception {}
 
-        ProblemDetails details = new MockProblemDetails(new CustomException());
+        ProblemDetails details = problemDetailsFor(new CustomException());
 
         then(onlyLogger(CustomException.class)).should().info(details.getLogMessage());
     }
@@ -69,7 +69,7 @@ class LoggingBehavior {
     @Test void shouldLogExplicitlyAtDebug() {
         @Logging(at = DEBUG) class CustomException extends Exception {}
 
-        ProblemDetails details = new MockProblemDetails(new CustomException());
+        ProblemDetails details = problemDetailsFor(new CustomException());
 
         then(onlyLogger(CustomException.class)).should().debug(details.getLogMessage());
     }
@@ -77,7 +77,7 @@ class LoggingBehavior {
     @Test void shouldLogExplicitlyAtOff() {
         @Logging(at = OFF) class CustomException extends Exception {}
 
-        new MockProblemDetails(new CustomException());
+        problemDetailsFor(new CustomException());
 
         then(onlyLogger(CustomException.class)).shouldHaveNoInteractions();
     }
@@ -86,28 +86,34 @@ class LoggingBehavior {
     @Test void shouldLogToExplicitCategory() {
         @Logging(to = "my-errors") class CustomException extends Exception {}
 
-        ProblemDetails details = new MockProblemDetails(new CustomException());
+        ProblemDetails details = problemDetailsFor(new CustomException());
 
         then(onlyLogger("my-errors")).should().error(eq(details.getLogMessage()), any(CustomException.class));
     }
 
 
     @Test void shouldLogToPackageAnnotatedCategory() {
-        ProblemDetails details = new MockProblemDetails(new SubException());
+        ProblemDetails details = problemDetailsFor(new SubException());
 
         then(onlyLogger("warnings")).should().warn(eq(details.getLogMessage()), any(SubException.class));
     }
 
     @Test void shouldOverridePackageAnnotatedLogLevel() {
-        ProblemDetails details = new MockProblemDetails(new SubExceptionWithLevel());
+        ProblemDetails details = problemDetailsFor(new SubExceptionWithLevel());
 
         then(onlyLogger("warnings")).should().info(details.getLogMessage());
     }
 
     @Test void shouldOverridePackageAnnotatedLogCategory() {
-        ProblemDetails details = new MockProblemDetails(new SubExceptionWithCategory());
+        ProblemDetails details = problemDetailsFor(new SubExceptionWithCategory());
 
         then(onlyLogger("sub-cat")).should().warn(eq(details.getLogMessage()), any(SubExceptionWithCategory.class));
+    }
+
+    private MockProblemDetails problemDetailsFor(Exception exception) {
+        MockProblemDetails problemDetails = new MockProblemDetails(exception);
+        problemDetails.log();
+        return problemDetails;
     }
 
     private static class MockProblemDetails extends ProblemDetails {

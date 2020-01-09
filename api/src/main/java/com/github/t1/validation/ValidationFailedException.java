@@ -6,6 +6,7 @@ import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import java.util.AbstractMap.SimpleEntry;
@@ -17,42 +18,37 @@ import static java.util.stream.Collectors.toMap;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
- * An exception to throw when validations fail. Simply call {@link #validate(Object, Class[])}.
- * <p>
- * Can be mapped as <code>problem detail</code>, exposing only the violations, but not the
+ * A variation of the {@link javax.validation.ConstraintViolationException}
+ * that can be mapped to a <code>problem detail</code>, exposing only the violations, but not the
  * actual data. You'll find the data together with the stack trace in the logs.
+ * <p>
+ * As a convenience function, simply call {@link #validate(Object, Class[])}.
  */
 @Title("Validation Failed")
 @Status(BAD_REQUEST)
-public class ValidationFailedException extends RuntimeException {
+public class ValidationFailedException extends ConstraintViolationException {
     private static Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
     public static void validate(Object object, Class<?>... groups) {
-        Set<ConstraintViolation<Object>> violations = VALIDATOR.validate(object, groups);
+        @SuppressWarnings({"unchecked", "rawtypes"})
+        Set<ConstraintViolation<?>> violations = (Set) VALIDATOR.validate(object, groups);
         if (violations.isEmpty())
             return;
         throw new ValidationFailedException(violations);
     }
 
-    private final Set<ConstraintViolation<Object>> violations;
-
-    public ValidationFailedException(Set<ConstraintViolation<Object>> violations) {
-        super(violations.size() + " violations failed on " + rootBean(violations));
-        this.violations = violations;
+    public ValidationFailedException(Set<ConstraintViolation<?>> violations) {
+        super(violations);
     }
 
     // don't expose the message:
     @Detail String detail() {
-        return violations.size() + " violations failed";
+        return getConstraintViolations().size() + " violations failed";
     }
 
     @Extension Map<String, String> violations() {
-        return violations.stream()
+        return getConstraintViolations().stream()
             .map(violation -> new SimpleEntry<>(violation.getPropertyPath().toString(), violation.getMessage()))
             .collect(toMap(Entry::getKey, Entry::getValue));
-    }
-
-    private static String rootBean(Set<ConstraintViolation<Object>> violations) {
-        return (violations.isEmpty()) ? null : violations.iterator().next().getRootBean().toString();
     }
 }

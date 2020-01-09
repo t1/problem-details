@@ -9,6 +9,7 @@ import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
 import lombok.Getter;
+import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,23 +46,16 @@ public abstract class ProblemDetails {
     public static final String URN_PROBLEM_TYPE_PREFIX = "urn:problem-type:";
 
     protected final Throwable exception;
-    protected final Class<? extends Throwable> exceptionType;
+    protected final @NonNull Class<? extends Throwable> exceptionType;
 
-    @Getter private final StatusType status;
-    @Getter private final Object body;
-    @Getter private final String mediaType;
-    @Getter private final String logMessage;
+    @Getter(lazy = true) private final StatusType status = buildStatus();
+    @Getter(lazy = true) private final Object body = buildBody();
+    @Getter(lazy = true) private final String mediaType = buildMediaType();
+    @Getter(lazy = true) private final String logMessage = buildLogMessage();
 
     public ProblemDetails(Throwable exception) {
         this.exception = exception;
         this.exceptionType = exception.getClass();
-
-        this.status = buildStatus();
-        this.body = buildBody();
-        this.mediaType = buildMediaType();
-        this.logMessage = buildLogMessage();
-
-        log(logMessage);
     }
 
     protected Object buildBody() {
@@ -70,7 +64,7 @@ public abstract class ProblemDetails {
 
         body.put("title", buildTitle());
 
-        body.put("status", status.getStatusCode());
+        body.put("status", getStatus().getStatusCode());
 
         String detail = buildDetail();
         if (detail != null) {
@@ -85,7 +79,7 @@ public abstract class ProblemDetails {
     }
 
     protected StatusType buildStatus() {
-        if (exceptionType.isAnnotationPresent(Status.class)) {
+        if (exceptionType != null && exceptionType.isAnnotationPresent(Status.class)) {
             return exceptionType.getAnnotation(Status.class).value();
         } else if (exception instanceof IllegalArgumentException) {
             return BAD_REQUEST;
@@ -257,11 +251,16 @@ public abstract class ProblemDetails {
     }
 
 
+    public ProblemDetails log() {
+        log(buildLogMessage());
+        return this;
+    }
+
     private void log(String message) {
         Logger logger = buildLogger();
         switch (buildLogLevel()) {
             case AUTO:
-                if (CLIENT_ERROR.equals(status.getFamily())) {
+                if (CLIENT_ERROR.equals(getStatus().getFamily())) {
                     logger.debug(message);
                 } else {
                     logger.error(message, exception);

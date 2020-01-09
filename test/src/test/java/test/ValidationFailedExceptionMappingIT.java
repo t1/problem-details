@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetail;
+import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import com.github.t1.problemdetaildemoapp.ValidationBoundary.Address;
 import com.github.t1.problemdetaildemoapp.ValidationBoundary.Person;
 import lombok.Data;
@@ -13,11 +13,11 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
+import static java.util.Collections.singletonList;
 import static javax.ws.rs.client.Entity.entity;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.assertj.core.api.Assertions.entry;
-import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.BDDAssertions.then;
 import static test.ContainerLaunchingExtension.target;
 import static test.ContainerLaunchingExtension.then;
@@ -33,16 +33,23 @@ class ValidationFailedExceptionMappingIT {
 
     @Test void shouldMapAnnotatedValidationFailedException() {
         Person person = new Person(null, "", LocalDate.now().plusDays(3),
-            new Address[]{new Address(null, -1, null)});
+            singletonList(new Address(null, -1, null)));
 
         Response response = target("/validation/annotated").request(APPLICATION_JSON_TYPE)
             .post(entity(person, APPLICATION_JSON_TYPE));
 
-        assumeThat(response.getMediaType())
-            .describedAs("@Valid annotation not yet caught by JAX-RS RI")
-            // TODO map @Valid: https://github.com/t1/problem-details/issues/7
-            .isEqualTo(PROBLEM_DETAIL_JSON);
-        thenValidationFailed(response);
+        // rest-easy has a different mode to validate fields
+        then(response, ValidationProblemDetail.class)
+            .hasStatus(BAD_REQUEST)
+            .hasContentType(PROBLEM_DETAIL_JSON)
+            .hasType("urn:problem-type:validation-failed")
+            .hasTitle("Validation Failed")
+            .hasDetail("2 violations failed")
+            .hasUuidInstance()
+            .checkExtensions(detail -> then(detail.violations).containsOnly(
+                entry("postAnnotated.arg0.firstName", "must not be null"),
+                entry("postAnnotated.arg0.lastName", "must not be empty")
+            ));
     }
 
     @Data @EqualsAndHashCode(callSuper = true)

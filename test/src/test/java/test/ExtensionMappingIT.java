@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetail;
+import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.junit.jupiter.api.Test;
