@@ -6,6 +6,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
+import java.net.URI;
 
 class JaxRsProblemDetails extends ProblemDetails {
     private final HttpHeaders requestHeaders;
@@ -23,6 +24,18 @@ class JaxRsProblemDetails extends ProblemDetails {
 
     @Override protected StatusType fallbackStatus() {
         return (response != null) ? response.getStatusInfo() : super.fallbackStatus();
+    }
+
+    @Override protected URI buildTypeUri() {
+        if (response != null)
+            return problemTypeUrn(response.getStatusInfo().getReasonPhrase());
+        return super.buildTypeUri();
+    }
+
+    @Override protected String fallbackTitle() {
+        if (response != null)
+            return response.getStatusInfo().getReasonPhrase();
+        return super.fallbackTitle();
     }
 
     @Override protected boolean hasDefaultMessage() {

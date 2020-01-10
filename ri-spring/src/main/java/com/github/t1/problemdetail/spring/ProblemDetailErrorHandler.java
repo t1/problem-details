@@ -36,7 +36,7 @@ public class ProblemDetailErrorHandler extends DefaultResponseErrorHandler {
         public SpringBootProblemDetailJsonToExceptionBuilder(InputStream body) { super(body); }
 
         @Override public Throwable build() {
-            if (type == null)
+            if (getType() == null)
                 return createSpringException();
             return super.build();
         }

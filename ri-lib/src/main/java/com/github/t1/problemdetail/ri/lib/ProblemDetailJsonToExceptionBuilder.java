@@ -2,6 +2,7 @@ package com.github.t1.problemdetail.ri.lib;
 
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Instance;
+import lombok.Getter;
 import lombok.SneakyThrows;
 
 import javax.json.Json;
@@ -22,14 +23,17 @@ import static com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry.
 // TODO also support XML problem detail bodies https://github.com/t1/problem-details/issues/6
 public class ProblemDetailJsonToExceptionBuilder {
     protected final JsonObject body;
-    protected final Class<? extends Throwable> type;
+    private final @Getter(lazy = true) Class<? extends Throwable> type = initType();
 
     private final JsonObjectBuilder output = Json.createObjectBuilder();
 
     public ProblemDetailJsonToExceptionBuilder(InputStream entityStream) {
         this.body = Json.createReader(entityStream).readObject();
+    }
+
+    private Class<? extends Throwable> initType() {
         String typeUri = getTypeUri();
-        this.type = REGISTRY.computeIfAbsent(typeUri, ProblemDetailExceptionRegistry::computeFrom);
+        return REGISTRY.computeIfAbsent(typeUri, ProblemDetailExceptionRegistry::computeFrom);
     }
 
     protected String getTypeUri() {
@@ -55,7 +59,7 @@ public class ProblemDetailJsonToExceptionBuilder {
     }
 
     public Throwable build() {
-        if (type == null)
+        if (getType() == null)
             return new IllegalArgumentException("no registered exception found for `type` field in " + body);
 
         setInstance();
@@ -63,8 +67,8 @@ public class ProblemDetailJsonToExceptionBuilder {
 
         JsonObject json = output.build();
         return (json.isEmpty())
-            ? newInstance(getDetail(), type)
-            : JSONB.fromJson(json.toString(), type);
+            ? newInstance(getDetail(), getType())
+            : JSONB.fromJson(json.toString(), getType());
     }
 
     @SneakyThrows(ReflectiveOperationException.class)
@@ -89,13 +93,13 @@ public class ProblemDetailJsonToExceptionBuilder {
         if (!body.containsKey("instance"))
             return;
         String value = body.getString("instance");
-        Stream.of(type.getDeclaredFields())
+        Stream.of(getType().getDeclaredFields())
             .filter(field -> field.isAnnotationPresent(Instance.class))
             .findAny().ifPresent(field -> output.add(field.getName(), value));
     }
 
     private void setExtensions() {
-        Stream.of(type.getDeclaredFields())
+        Stream.of(getType().getDeclaredFields())
             .filter(field -> field.isAnnotationPresent(Extension.class))
             .forEach(field -> {
                 String annotatedName = field.getAnnotation(Extension.class).value();

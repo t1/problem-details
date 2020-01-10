@@ -1,6 +1,5 @@
 package com.github.t1.problemdetaildemoapp;
 
-import lombok.SneakyThrows;
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,9 +19,10 @@ import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.Scanner;
 import java.util.function.Consumer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -30,7 +30,6 @@ import static java.util.Arrays.asList;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
-import static javax.ws.rs.core.MediaType.CHARSET_PARAMETER;
 
 @Slf4j
 @Provider
@@ -105,16 +104,20 @@ public class LoggingFilter implements
             .log();
     }
 
-    @SneakyThrows(IOException.class)
     private String entity(ContainerRequestContext request) {
         MediaType mediaType = request.getMediaType();
         if (entities && request.hasEntity() && TEXT_TYPES.stream().anyMatch(mediaType::isCompatible)) {
-            byte[] bytes = request.getEntityStream().readAllBytes();
-            request.setEntityStream(new ByteArrayInputStream(bytes)); // we've just depleted the original stream
-            String charset = mediaType.getParameters().getOrDefault(CHARSET_PARAMETER, UTF_8.name());
-            return " " + mediaType + ":\n" + new String(bytes, charset);
+            String body = read(request.getEntityStream());
+            request.setEntityStream(new ByteArrayInputStream(body.getBytes(UTF_8))); // we just depleted the original stream
+            return " " + mediaType + ":\n" + body;
         } else {
             return "";
+        }
+    }
+
+    private String read(InputStream inputStream) {
+        try (Scanner scanner = new Scanner(inputStream).useDelimiter("\\Z")) {
+            return scanner.next();
         }
     }
 
@@ -145,7 +148,7 @@ public class LoggingFilter implements
             for (String key : headers.keySet()) {
                 out.append(prefix).append("  ").append(key).append(": ");
                 for (Object value : headers.get(key)) {
-                    out.append(value.toString());
+                    out.append((value == null) ? null : value.toString());
                 }
                 out.append("\n");
             }

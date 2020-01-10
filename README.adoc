@@ -126,7 +126,7 @@ The ideal JAX-RS client code would look like this:
 class OrderGateway {
     public Shipment order(String articleId) {
         try {
-            return target() // returns a configured `WebTarget`
+            return target() // a configured `WebTarget`
                 .path("/orders").request(APPLICATION_JSON_TYPE)
                 .post(Entity.form(new Form().param("article", article)));
         } catch (OutOfCreditException e) {
@@ -137,26 +137,24 @@ class OrderGateway {
 }
 ---------------------------------------------------------------
 
-The current RI is based on a JAX-RS `ClientResponseFilter` which brings some boiler plate code: it requires you to register the `OutOfCreditException` and the `ProblemDetailHandler`. And you have to unwrap the JAX-RS `ResponseProcessingException` before you can catch the `OutOfCreditException` (see the `ri` README for details).
-
-Other implementations may have other requirements and limitations.
-
-=== MicroProfile REST Client
+The current RI is based on a JAX-RS `ClientResponseFilter` which requires some boiler plate code:
 
 [source,java]
 ---------------------------------------------------------------
 class OrderGateway {
     static {
-        ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
+        ProblemDetailExceptionRegistry.register(OutOfCreditException.class); // <1>
     }
-
-    private OrderApi api = RestClientBuilder.newBuilder()
-        .baseUri("http://...")
-        .build(OrderApi.class);
 
     public Shipment order(String articleId) {
         try {
-            return api.order(1, article);
+            try {
+                return target() // a configured `WebTarget`
+                    .path("/orders").request(APPLICATION_JSON_TYPE)
+                    .post(Entity.form(new Form().param("article", article)));
+            } catch (ResponseProcessingException e) { // <2>
+                throw (RuntimeException) e.getCause();
+            }
         } catch (OutOfCreditException e) {
             displayOutOfCredit(e.getBalance());
             return null;
@@ -165,7 +163,43 @@ class OrderGateway {
 }
 ---------------------------------------------------------------
 
-Note that the registration of the `OutOfCreditException` in the `ProblemDetailExceptionRegistry` and the `ProblemDetailResponseExceptionMapper` in the `RestClientBuilder` is specific to the Spring Boot RI. Other implementations may have other requirements and limitations.
+<1> Register all custom exceptions that may be thrown.
+<2> Unwrap the JAX-RS `ResponseProcessingException` before you can catch the `OutOfCreditException`
+
+Other implementations may have other requirements and limitations.
+
+
+=== MicroProfile REST Client
+
+Things look fine here:
+
+[source,java]
+---------------------------------------------------------------
+class OrderGateway {
+    @Path("/orders")
+    public interface OrderApi {
+        @POST Shipment order(@FormParam("article") @NotNull String article)
+            throws OutOfCreditException; // <1>
+    }
+
+    private OrderApi api = RestClientBuilder.newBuilder()
+        .baseUri("http://...")
+        .build(OrderApi.class);
+
+    public Shipment order(String articleId) {
+        try {
+            return api.order(article);
+        } catch (OutOfCreditException e) {
+            displayOutOfCredit(e.getBalance());
+            return null;
+        }
+    }
+}
+---------------------------------------------------------------
+
+<1> The exceptions declared on the rest client api interface are registered automatically.
+
+This automatic registration mechanism uses a magical heuristic, not an official API, so it may fail in the future or on other app containers.
 
 === Spring Boot
 

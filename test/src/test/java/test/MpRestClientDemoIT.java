@@ -1,7 +1,6 @@
 package test;
 
 import com.github.t1.problemdetail.ri.ProblemDetailResponseExceptionMapper;
-import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.LoggingFilter;
@@ -22,23 +21,18 @@ import static test.ContainerLaunchingExtension.baseUri;
  */
 @ExtendWith(ContainerLaunchingExtension.class)
 public class MpRestClientDemoIT extends AbstractClientDemoIT {
-    static {
-        ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
-        ProblemDetailExceptionRegistry.register(CreditCardLimitExceeded.class);
-        ProblemDetailExceptionRegistry.register(UserNotEntitledToOrderOnAccount.class);
-    }
-
     @Path("/orders")
     public interface OrderApi {
         @POST Shipment order(
             @FormParam("user") int userId,
             @FormParam("article") @NotNull String article,
-            @FormParam("payment-method") String paymentMethod);
+            @FormParam("payment-method") String paymentMethod)
+            throws OutOfCreditException, CreditCardLimitExceeded, UserNotEntitledToOrderOnAccount;
     }
 
     private OrderApi api = RestClientBuilder.newBuilder()
         .baseUri(baseUri(""))
-        .register(ProblemDetailResponseExceptionMapper.class)
+        .register(ProblemDetailResponseExceptionMapper.class) // not required in container
         .register(LoggingFilter.toStdErr())
         .build(OrderApi.class);
 

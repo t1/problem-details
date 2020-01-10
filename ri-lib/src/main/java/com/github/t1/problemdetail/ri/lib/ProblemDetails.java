@@ -97,33 +97,34 @@ public abstract class ProblemDetails {
     }
 
     public static URI buildTypeUri(Class<? extends Throwable> type) {
-        return URI.create(type.isAnnotationPresent(Type.class)
-            ? type.getAnnotation(Type.class).value()
-            : URN_PROBLEM_TYPE_PREFIX + wordsFromTypeName(type, '-').toLowerCase());
+        return type.isAnnotationPresent(Type.class)
+            ? URI.create(type.getAnnotation(Type.class).value())
+            : problemTypeUrn(wordsFromTypeName(type));
+    }
+
+    public static URI problemTypeUrn(String string) {
+        return URI.create(URN_PROBLEM_TYPE_PREFIX + string.replace(' ', '-').toLowerCase());
     }
 
     protected String buildTitle() {
         return exceptionType.isAnnotationPresent(Title.class)
             ? exceptionType.getAnnotation(Title.class).value()
-            : wordsFromTypeName(exceptionType, ' ');
+            : fallbackTitle();
     }
 
-    private static String wordsFromTypeName(Class<? extends Throwable> type, char delimiter) {
-        String message = camelToWords(type.getSimpleName(), delimiter);
-        if (message.endsWith(delimiter + "Exception"))
+    protected String fallbackTitle() {
+        return wordsFromTypeName(exceptionType);
+    }
+
+    private static String wordsFromTypeName(Class<? extends Throwable> type) {
+        String message = camelToWords(type.getSimpleName());
+        if (message.endsWith(" Exception"))
             message = message.substring(0, message.length() - 10);
         return message;
     }
 
-    private static String camelToWords(String input, char delimiter) {
-        StringBuilder out = new StringBuilder();
-        input.codePoints().forEach(c -> {
-            if (Character.isUpperCase(c) && out.length() > 0) {
-                out.append(delimiter);
-            }
-            out.appendCodePoint(c);
-        });
-        return out.toString();
+    private static String camelToWords(String input) {
+        return String.join(" ", input.split("(?=\\p{javaUpperCase})"));
     }
 
     protected String buildDetail() {
