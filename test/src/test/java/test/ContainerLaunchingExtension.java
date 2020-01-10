@@ -121,9 +121,13 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         }
 
         public ProblemDetailAssert<T> hasDetail(String detail) {
-            assertThat(entity.getDetail()).describedAs("problem-detail.detail")
+            assertThat(getDetail()).describedAs("problem-detail.detail")
                 .isEqualTo(detail);
             return this;
+        }
+
+        public String getDetail() {
+            return entity.getDetail();
         }
 
         public ProblemDetailAssert<T> hasUuidInstance() {
@@ -138,7 +142,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
             return this;
         }
 
-        public void checkExtensions(Consumer<T> consumer) {
+        public void check(Consumer<T> consumer) {
             consumer.accept(entity);
         }
     }

@@ -269,16 +269,15 @@ Needs the tag for jdk11 support. Needs dependencies on `slf4j-api` and `slf4j-jd
 
 `mvn -Djee-testcontainer=tomee`
 
-3 tests fail, because this version of TomEE (9.0.20 / 8.0.0-M3) doesn't write the problem detail response entity in some cases for some reason:
-StandardExceptionMappingIT.shouldMapWebApplicationExceptionWithoutEntityButMessage
-StandardExceptionMappingIT.shouldMapWebApplicationExceptionWithoutEntityOrMessage
-ValidationFailedExceptionMappingIT.shouldMapValidationFailedException
+The `latest` image is outdated. TomEE 8.0.0 was released on 2019-09-16, but the image is still 8.0.0-M3.
+
+This version doesn't write the problem detail response entity in some cases I don't understand.
 
 ==== Payara
 
 `mvn -Djee-testcontainer=payara -Pwith-slf4j`
 
-Currently fails due to lack of jdk11 support of the https://hub.docker.com/r/payara/server-full[`payara`] image. Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
+Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
 
 === test-spring
 

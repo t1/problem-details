@@ -22,7 +22,7 @@ class ExtensionMappingIT {
             .hasTitle("Some")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> then(detail.ex).isEqualTo("some extension"));
+            .check(detail -> then(detail.ex).isEqualTo("some extension"));
     }
 
     @Test void shouldMapExtensionStringMethodWithAnnotatedName() {
@@ -33,7 +33,7 @@ class ExtensionMappingIT {
             .hasTitle("Some Message")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> then(detail.foo).isEqualTo("some extension"));
+            .check(detail -> then(detail.foo).isEqualTo("some extension"));
     }
 
     @Test void shouldMapExtensionStringField() {
@@ -44,7 +44,7 @@ class ExtensionMappingIT {
             .hasTitle("Some Message")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> then(detail.ex).isEqualTo("some extension"));
+            .check(detail -> then(detail.ex).isEqualTo("some extension"));
     }
 
     @Test void shouldMapExtensionStringFieldWithAnnotatedName() {
@@ -55,7 +55,7 @@ class ExtensionMappingIT {
             .hasTitle("Some Message")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> then(detail.foo).isEqualTo("some extension"));
+            .check(detail -> then(detail.foo).isEqualTo("some extension"));
     }
 
     @Test void shouldMapMultiplePackagePrivateExtensions() {
@@ -66,7 +66,7 @@ class ExtensionMappingIT {
             .hasTitle("Some Message")
             .hasDetail(null)
             .hasUuidInstance()
-            .checkExtensions(detail -> {
+            .check(detail -> {
                 then(detail.m1).isEqualTo("method 1");
                 then(detail.m2).isEqualTo("method 2");
                 then(detail.f1).isEqualTo("field 1");

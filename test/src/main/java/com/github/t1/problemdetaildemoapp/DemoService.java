@@ -17,7 +17,7 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 @Slf4j
 public class DemoService {
     public Shipment order(int userId, String article, PaymentMethod paymentMethod) {
-        log.info("order [{}] for [{}] via [{}]", article, userId, paymentMethod);
+        log.info("order [{}] for [{}] by [{}]", article, userId, paymentMethod);
 
         int cost = cost(article);
 
