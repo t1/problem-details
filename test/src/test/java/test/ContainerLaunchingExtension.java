@@ -1,7 +1,5 @@
 package test;
 
-import com.github.t1.problemdetail.ri.ProblemDetailJsonMessageBodyReader;
-import com.github.t1.problemdetail.ri.ProblemDetailXmlMessageBodyReader;
 import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import com.github.t1.testcontainers.jee.JeeContainer;
 import org.assertj.core.api.Condition;
@@ -67,9 +65,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         return target().path(path);
     }
 
-    private static final Client CLIENT = ClientBuilder.newClient()
-        .register(ProblemDetailJsonMessageBodyReader.class)
-        .register(ProblemDetailXmlMessageBodyReader.class);
+    private static final Client CLIENT = ClientBuilder.newClient();
 
     public static URI baseUri(String path) {
         return URI.create(BASE_URI + path);

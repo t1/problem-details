@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetail.ri.ProblemDetailHandler;
+import com.github.t1.problemdetail.ri.ProblemDetailClientResponseFilter;
 import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
@@ -38,7 +38,7 @@ class ClientDemoIT extends AbstractClientDemoIT {
         try {
             Response response = target()
                 .register(LoggingFilter.toStdErr())
-                .register(ProblemDetailHandler.class)
+                .register(ProblemDetailClientResponseFilter.class)
                 .path("/orders").request(APPLICATION_JSON_TYPE)
                 .post(Entity.form(new Form()
                     .param("user", userId)

@@ -23,6 +23,10 @@ public class ProblemDetailResponseExceptionMapper implements ResponseExceptionMa
     }
 
     @Override public Throwable toThrowable(Response response) {
+        if (!response.hasEntity()) {
+            // return null should skip this ResponseExceptionMapper, but RestEasy MP throws an NPE
+            return new IllegalStateException("received problem detail without entity");
+        }
         return new JaxRsProblemDetailJsonToExceptionBuilder(response.readEntity(InputStream.class))
             .build();
     }

@@ -1,4 +1,4 @@
-package com.github.t1.problemdetail.ri;
+package test;
 
 import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Extension;
@@ -6,6 +6,7 @@ import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
+import com.github.t1.problemdetail.ri.ProblemDetailExceptionMapper;
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
