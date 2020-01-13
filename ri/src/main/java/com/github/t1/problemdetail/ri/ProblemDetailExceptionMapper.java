@@ -18,7 +18,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @Priority(0)
 public class ProblemDetailExceptionMapper implements ExceptionMapper<Throwable> {
-    @Context public HttpHeaders requestHeaders;
+    @Context HttpHeaders requestHeaders;
 
     @Override public Response toResponse(Throwable exception) {
         Response response = (exception instanceof WebApplicationException)

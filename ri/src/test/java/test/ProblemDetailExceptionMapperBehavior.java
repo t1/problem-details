@@ -6,14 +6,12 @@ import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
-import com.github.t1.problemdetail.ri.ProblemDetailExceptionMapper;
-import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
-import org.junit.jupiter.api.BeforeEach;
+import com.github.t1.problemdetail.ri.ProblemDetailExceptionMapperExtension;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Map;
@@ -30,13 +28,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 
 class ProblemDetailExceptionMapperBehavior {
 
-    private ProblemDetailExceptionMapper mapper = new ProblemDetailExceptionMapper();
-    private MultivaluedHashMap<String, String> requestHeaders;
-
-    @BeforeEach void setUp() {
-        requestHeaders = new MultivaluedHashMap<>();
-        mapper.requestHeaders = new ResteasyHttpHeaders(requestHeaders);
-    }
+    @RegisterExtension ProblemDetailExceptionMapperExtension mapper = new ProblemDetailExceptionMapperExtension();
 
     @Test void shouldReplyWithJsonTypeByDefault() {
         Response response = mapper.toResponse(new NullPointerException("some message"));
@@ -45,7 +37,7 @@ class ProblemDetailExceptionMapperBehavior {
     }
 
     @Test void shouldReplyWithJsonTypeWhenRequested() {
-        requestHeaders.putSingle("Accept", APPLICATION_JSON);
+        mapper.accepting(APPLICATION_JSON);
 
         Response response = mapper.toResponse(new NullPointerException("some message"));
 
@@ -53,7 +45,7 @@ class ProblemDetailExceptionMapperBehavior {
     }
 
     @Test void shouldReplyWithXmlTypeWhenRequested() {
-        requestHeaders.putSingle("Accept", APPLICATION_XML);
+        mapper.accepting(APPLICATION_XML);
 
         Response response = mapper.toResponse(new NullPointerException("some message"));
 
@@ -61,7 +53,7 @@ class ProblemDetailExceptionMapperBehavior {
     }
 
     @Test void shouldReplyWithYamlTypeWhenRequested() {
-        requestHeaders.putSingle("Accept", "application/yaml");
+        mapper.accepting("application/yaml");
 
         Response response = mapper.toResponse(new NullPointerException("some message"));
 
