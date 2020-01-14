@@ -113,6 +113,14 @@ This will result in an problem detail body like this:
 
 One of the most common use-cases for Bad Requests is a failing validation. You can do a verification and throw a corresponding problem detail exception simply by calling `ValidationFailedException.validate(object)`. Both implementations also convert the exception thrown when a parameter to a REST boundary method is annotated as `@Valid`.
 
+=== YAML Output
+
+More as a test, there's a generic `YamlMessageBodyWriter`, so you can request `application/yaml` for any resource (and will get it), or if there's an error, a `application/problem+yaml`.
+
+=== HTML Output
+
+A problem detail will be rendered as a simple html table, when you requested `text/html`. This will happen for any Map, actually.
+
 == Client Side Examples
 
 On the client side, a type-safe exception is thrown for your code to catch.
