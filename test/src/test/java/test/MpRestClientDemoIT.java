@@ -3,7 +3,7 @@ package test;
 import com.github.t1.problemdetail.ri.ProblemDetailResponseExceptionMapper;
 import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
-import com.github.t1.problemdetaildemoapp.LoggingFilter;
+import com.github.t1.jaxrslog.LoggingFilter;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 import org.junit.jupiter.api.extension.ExtendWith;

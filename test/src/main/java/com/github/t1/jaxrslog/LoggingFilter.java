@@ -1,4 +1,4 @@
-package com.github.t1.problemdetaildemoapp;
+package com.github.t1.jaxrslog;
 
 import lombok.With;
 import lombok.extern.slf4j.Slf4j;
@@ -13,23 +13,12 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.net.URI;
-import java.util.List;
-import java.util.Scanner;
 import java.util.function.Consumer;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Arrays.asList;
-import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
 
 @Slf4j
 @Provider
@@ -37,7 +26,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
 @SuppressWarnings("unused")
 public class LoggingFilter implements
     ContainerRequestFilter, ContainerResponseFilter,
-    ClientRequestFilter, ClientResponseFilter {
+    ClientRequestFilter, // TODO RestEasy warns: RESTEASY002190: Annotation, @PreMaching, not valid on ClientRequestFilter
+    ClientResponseFilter {
 
     public static LoggingFilter toStdOut() {
         return new LoggingFilter(System.out::print);
@@ -60,17 +50,13 @@ public class LoggingFilter implements
     }
 
     public LoggingFilter(Consumer<String> messageConsumer) {
-        this(false, messageConsumer, null);
+        this(messageConsumer, null);
     }
 
-    public LoggingFilter(boolean entities, Consumer<String> messageConsumer, UriInfo uriInfo) {
-        this.entities = entities;
+    public LoggingFilter(Consumer<String> messageConsumer, UriInfo uriInfo) {
         this.messageConsumer = messageConsumer;
         this.uriInfo = uriInfo;
     }
-
-    /** Should the request/response body be logged? */
-    @With private final boolean entities;
 
     private final Consumer<String> messageConsumer;
 
@@ -81,7 +67,6 @@ public class LoggingFilter implements
         new MessageBuilder("--> ", requestContext.getMethod(), requestContext.getUriInfo().getRequestUri(), null,
             requestContext.getHeaders())
             .log();
-        messageConsumer.accept(entity(requestContext));
     }
 
     /* container response */
@@ -102,23 +87,6 @@ public class LoggingFilter implements
         new MessageBuilder("<== " + response.getStatusInfo(), request.getMethod(), request.getUri(), response.getStatusInfo(),
             response.getHeaders())
             .log();
-    }
-
-    private String entity(ContainerRequestContext request) {
-        MediaType mediaType = request.getMediaType();
-        if (entities && request.hasEntity() && TEXT_TYPES.stream().anyMatch(mediaType::isCompatible)) {
-            String body = read(request.getEntityStream());
-            request.setEntityStream(new ByteArrayInputStream(body.getBytes(UTF_8))); // we just depleted the original stream
-            return " " + mediaType + ":\n" + body;
-        } else {
-            return "";
-        }
-    }
-
-    private String read(InputStream inputStream) {
-        try (Scanner scanner = new Scanner(inputStream).useDelimiter("\\Z")) {
-            return scanner.next();
-        }
     }
 
     private class MessageBuilder {
@@ -159,9 +127,4 @@ public class LoggingFilter implements
         }
     }
 
-    private static final List<MediaType> TEXT_TYPES = asList(
-        APPLICATION_FORM_URLENCODED_TYPE,
-        APPLICATION_JSON_TYPE,
-        APPLICATION_XML_TYPE
-    );
 }

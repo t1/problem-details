@@ -1,0 +1,42 @@
+package com.github.t1.jaxrslog;
+
+import lombok.extern.slf4j.Slf4j;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.WriterInterceptor;
+import javax.ws.rs.ext.WriterInterceptorContext;
+import java.io.ByteArrayOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
+
+// TODO RestEasy: this is not registered when it's implemented directly by the LoggingFilter
+@Slf4j
+@Provider
+public class WriteLogger implements WriterInterceptor {
+    @Override public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
+        if (PROBLEM_DETAIL_JSON_TYPE.isCompatible((MediaType) context.getHeaders().getFirst("Content-Type"))) {
+            LoggingOutputStream buffer = new LoggingOutputStream(context.getOutputStream());
+            context.setOutputStream(buffer);
+            context.proceed();
+            log.debug("<-- {}", buffer.copy.toString());
+        } else {
+            context.proceed();
+        }
+    }
+
+    private static class LoggingOutputStream extends FilterOutputStream {
+        private final ByteArrayOutputStream copy = new ByteArrayOutputStream();
+
+        public LoggingOutputStream(OutputStream out) { super(out); }
+
+        @Override public void write(int b) throws IOException {
+            super.write(b);
+            copy.write(b);
+        }
+    }
+}
