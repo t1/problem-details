@@ -19,7 +19,7 @@ import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
 @Provider
 public class WriteLogger implements WriterInterceptor {
     @Override public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
-        if (PROBLEM_DETAIL_JSON_TYPE.isCompatible((MediaType) context.getHeaders().getFirst("Content-Type"))) {
+        if (PROBLEM_DETAIL_JSON_TYPE.isCompatible(contentType(context))) {
             LoggingOutputStream buffer = new LoggingOutputStream(context.getOutputStream());
             context.setOutputStream(buffer);
             context.proceed();
@@ -27,6 +27,11 @@ public class WriteLogger implements WriterInterceptor {
         } else {
             context.proceed();
         }
+    }
+
+    private MediaType contentType(WriterInterceptorContext context) {
+        Object header = context.getHeaders().getFirst("Content-Type");
+        return (header == null) ? null : MediaType.valueOf(header.toString());
     }
 
     private static class LoggingOutputStream extends FilterOutputStream {
