@@ -42,7 +42,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 /**
  * Tech stack independent collector. Template methods can be overridden to provide tech stack specifics.
  */
-public abstract class ProblemDetails {
+public abstract class ProblemDetailBuilder {
     public static final String URN_PROBLEM_TYPE_PREFIX = "urn:problem-type:";
 
     protected final Throwable exception;
@@ -53,7 +53,7 @@ public abstract class ProblemDetails {
     @Getter(lazy = true) private final String mediaType = buildMediaType();
     @Getter(lazy = true) private final String logMessage = buildLogMessage();
 
-    public ProblemDetails(Throwable exception) {
+    public ProblemDetailBuilder(Throwable exception) {
         this.exception = exception;
         this.exceptionType = exception.getClass();
     }
@@ -252,7 +252,7 @@ public abstract class ProblemDetails {
     }
 
 
-    public ProblemDetails log() {
+    public ProblemDetailBuilder log() {
         log(buildLogMessage());
         return this;
     }

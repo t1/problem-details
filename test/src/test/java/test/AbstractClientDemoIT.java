@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 
 import javax.json.bind.annotation.JsonbProperty;
 import javax.ws.rs.NotFoundException;
@@ -44,6 +45,8 @@ public abstract class AbstractClientDemoIT {
         then(throwable.getMessage()).isEqualTo("not really");
     }
 
+    // TODO TomEE explodes the accounts-uris
+    @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldFailToOrderExpensiveGadgetWhenOutOfCredit() {
         OutOfCreditException throwable = catchThrowableOfType(() -> postOrder("1", "expensive gadget", null),
             OutOfCreditException.class);
@@ -67,6 +70,8 @@ public abstract class AbstractClientDemoIT {
     }
 
     /** standard JAX-RS exception */
+    // TODO TomEE doesn't write some problem detail entities
+    @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldFailToOrderUnknownArticle() {
         NotFoundException throwable = catchThrowableOfType(() -> postOrder("1", "unknown article", null),
             NotFoundException.class);

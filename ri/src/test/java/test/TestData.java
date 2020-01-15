@@ -6,7 +6,7 @@ import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
-import com.github.t1.problemdetail.ri.lib.ProblemDetails;
+import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
 
 import java.net.URI;
 import java.util.LinkedHashMap;
@@ -32,7 +32,7 @@ class TestData {
         @Extension String k5 = null;
     }
 
-    static final ProblemDetails PROBLEM_DETAILS = new ProblemDetails(new SomeException()) {
+    static final ProblemDetailBuilder PROBLEM_DETAILS = new ProblemDetailBuilder(new SomeException()) {
         @Override protected boolean hasDefaultMessage() { return false; }
 
         @Override protected String findMediaTypeSubtype() { return null; }

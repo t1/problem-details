@@ -24,7 +24,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
         Set<ConstraintViolation<?>> violations = constraintViolationException.getConstraintViolations();
         ValidationFailedException validationFailedException = new ValidationFailedException(violations);
 
-        return new JaxRsProblemDetails(validationFailedException, requestHeaders)
+        return new JaxRsProblemDetailBuilder(validationFailedException, requestHeaders)
             .log()
             .toResponse();
     }

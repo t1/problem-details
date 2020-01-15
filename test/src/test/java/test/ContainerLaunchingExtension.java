@@ -132,12 +132,6 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
             return this;
         }
 
-        public ProblemDetailAssert<T> hasInstance(URI instance) {
-            assertThat(entity.getInstance()).describedAs("problem-detail.instance")
-                .isEqualTo(instance);
-            return this;
-        }
-
         public void check(Consumer<T> consumer) {
             consumer.accept(entity);
         }

@@ -2,6 +2,7 @@ package test;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
@@ -15,6 +16,8 @@ import static test.ContainerLaunchingExtension.testPost;
 
 @ExtendWith(ContainerLaunchingExtension.class)
 class StandardExceptionMappingIT {
+    // TODO TomEE doesn't write some problem detail entities
+    @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldMapClientWebApplicationExceptionWithoutEntityOrMessage() {
         testPost("standard/plain-bad-request")
             .hasStatus(BAD_REQUEST)
@@ -25,6 +28,8 @@ class StandardExceptionMappingIT {
             .hasUuidInstance();
     }
 
+    // TODO TomEE doesn't write some problem detail entities
+    @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldMapClientWebApplicationExceptionWithoutEntityButMessage() {
         testPost("/standard/bad-request-with-message")
             .hasStatus(BAD_REQUEST)
@@ -42,6 +47,8 @@ class StandardExceptionMappingIT {
             .hasBody("the body");
     }
 
+    // TODO TomEE doesn't write some problem detail entities
+    @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldMapServerWebApplicationExceptionWithoutEntityOrMessage() {
         testPost("/standard/plain-service-unavailable")
             .hasStatus(SERVICE_UNAVAILABLE)

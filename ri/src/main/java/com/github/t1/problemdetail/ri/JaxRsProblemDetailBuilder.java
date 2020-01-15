@@ -1,6 +1,6 @@
 package com.github.t1.problemdetail.ri;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetails;
+import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -8,15 +8,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
 import java.net.URI;
 
-class JaxRsProblemDetails extends ProblemDetails {
+class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
     private final HttpHeaders requestHeaders;
     private final Response response;
 
-    JaxRsProblemDetails(Throwable exception, HttpHeaders requestHeaders) {
+    JaxRsProblemDetailBuilder(Throwable exception, HttpHeaders requestHeaders) {
         this(exception, requestHeaders, null);
     }
 
-    JaxRsProblemDetails(Throwable exception, HttpHeaders requestHeaders, Response response) {
+    JaxRsProblemDetailBuilder(Throwable exception, HttpHeaders requestHeaders, Response response) {
         super(exception);
         this.requestHeaders = requestHeaders;
         this.response = response;
@@ -53,7 +53,7 @@ class JaxRsProblemDetails extends ProblemDetails {
         return "json";
     }
 
-    @Override public JaxRsProblemDetails log() {
+    @Override public JaxRsProblemDetailBuilder log() {
         super.log();
         return this;
     }

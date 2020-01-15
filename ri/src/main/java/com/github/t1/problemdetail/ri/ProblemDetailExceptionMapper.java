@@ -27,7 +27,7 @@ public class ProblemDetailExceptionMapper implements ExceptionMapper<Throwable> 
             return response;
         }
 
-        return new JaxRsProblemDetails(exception, requestHeaders, response)
+        return new JaxRsProblemDetailBuilder(exception, requestHeaders, response)
             .log()
             .toResponse();
     }

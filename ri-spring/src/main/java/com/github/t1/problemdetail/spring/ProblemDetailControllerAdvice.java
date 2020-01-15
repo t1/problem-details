@@ -1,6 +1,6 @@
 package com.github.t1.problemdetail.spring;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetails;
+import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
 import com.github.t1.validation.ValidationFailedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -56,7 +56,7 @@ public class ProblemDetailControllerAdvice {
         }
 
         log.debug("handle error", exception);
-        ProblemDetails problemDetails = new ProblemDetails(exception) {
+        ProblemDetailBuilder problemDetailBuilder = new ProblemDetailBuilder(exception) {
             @Override protected Object buildBody() {
                 if (exception instanceof RestClientResponseException) {
                     byte[] body = ((RestClientResponseException) exception).getResponseBodyAsByteArray();
@@ -111,11 +111,11 @@ public class ProblemDetailControllerAdvice {
             }
         };
 
-        problemDetails.log();
+        problemDetailBuilder.log();
 
-        return ResponseEntity.status(problemDetails.getStatus().getStatusCode())
-            .contentType(MediaType.valueOf(problemDetails.getMediaType()))
-            .body(problemDetails.getBody());
+        return ResponseEntity.status(problemDetailBuilder.getStatus().getStatusCode())
+            .contentType(MediaType.valueOf(problemDetailBuilder.getMediaType()))
+            .body(problemDetailBuilder.getBody());
     }
 
     private Set<ConstraintViolation<?>> violations(MethodArgumentNotValidException exception) {

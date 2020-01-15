@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.t1.problemdetail.ri.lib.ProblemDetails.URN_PROBLEM_TYPE_PREFIX;
+import static com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder.URN_PROBLEM_TYPE_PREFIX;
 import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
 import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
@@ -12,7 +12,7 @@ public class ProblemDetailExceptionRegistry {
     static final Map<String, Class<? extends Throwable>> REGISTRY = new HashMap<>();
 
     public static URI register(Class<? extends Throwable> exceptionType) {
-        URI type = ProblemDetails.buildTypeUri(exceptionType);
+        URI type = ProblemDetailBuilder.buildTypeUri(exceptionType);
         register(exceptionType, type);
         return type;
     }
