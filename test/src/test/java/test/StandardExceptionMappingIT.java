@@ -16,7 +16,7 @@ import static test.ContainerLaunchingExtension.testPost;
 
 @ExtendWith(ContainerLaunchingExtension.class)
 class StandardExceptionMappingIT {
-    // TODO TomEE doesn't write some problem detail entities
+    // TODO TomEE doesn't write some problem detail entities https://github.com/t1/problem-details/issues/17
     @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldMapClientWebApplicationExceptionWithoutEntityOrMessage() {
         testPost("standard/plain-bad-request")
@@ -28,7 +28,7 @@ class StandardExceptionMappingIT {
             .hasUuidInstance();
     }
 
-    // TODO TomEE doesn't write some problem detail entities
+    // TODO TomEE doesn't write some problem detail entities https://github.com/t1/problem-details/issues/17
     @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldMapClientWebApplicationExceptionWithoutEntityButMessage() {
         testPost("/standard/bad-request-with-message")
@@ -47,7 +47,7 @@ class StandardExceptionMappingIT {
             .hasBody("the body");
     }
 
-    // TODO TomEE doesn't write some problem detail entities
+    // TODO TomEE doesn't write some problem detail entities https://github.com/t1/problem-details/issues/17
     @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldMapServerWebApplicationExceptionWithoutEntityOrMessage() {
         testPost("/standard/plain-service-unavailable")

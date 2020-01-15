@@ -45,7 +45,7 @@ public abstract class AbstractClientDemoIT {
         then(throwable.getMessage()).isEqualTo("not really");
     }
 
-    // TODO TomEE explodes the accounts-uris
+    // TODO TomEE explodes the accounts-uris https://github.com/t1/problem-details/issues/17
     @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldFailToOrderExpensiveGadgetWhenOutOfCredit() {
         OutOfCreditException throwable = catchThrowableOfType(() -> postOrder("1", "expensive gadget", null),
@@ -70,7 +70,7 @@ public abstract class AbstractClientDemoIT {
     }
 
     /** standard JAX-RS exception */
-    // TODO TomEE doesn't write some problem detail entities
+    // TODO TomEE doesn't write some problem detail entities https://github.com/t1/problem-details/issues/17
     @DisabledIfSystemProperty(named = "jee-testcontainer", matches = "tomee")
     @Test void shouldFailToOrderUnknownArticle() {
         NotFoundException throwable = catchThrowableOfType(() -> postOrder("1", "unknown article", null),
