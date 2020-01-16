@@ -102,7 +102,7 @@
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
-                <version>6.1.0.Final</version>
+                <version>6.1.1.Final</version>
                 <!-- spring boot brings 6.0.18.Final which has CVE-2019-10219 -->
             </dependency>
         </dependencies>
