@@ -13,7 +13,6 @@ import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
@@ -147,7 +146,7 @@ public abstract class ProblemDetailBuilder {
     /** We don't want to repeat default messages like `400 Bad Request` */
     protected abstract boolean hasDefaultMessage();
 
-    @Nullable private Object invoke(Method method) {
+    private Object invoke(Method method) {
         try {
             if (method.getParameterCount() != 0)
                 return invocationFailed(method, "expected no args but got " + method.getParameterCount());
@@ -165,7 +164,7 @@ public abstract class ProblemDetailBuilder {
             + "." + method.getName() + ": " + detail;
     }
 
-    @Nullable private Object get(Field field) {
+    private Object get(Field field) {
         try {
             field.setAccessible(true);
             return field.get(exception);

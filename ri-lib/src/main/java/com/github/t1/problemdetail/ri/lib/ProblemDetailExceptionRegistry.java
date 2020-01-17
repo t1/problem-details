@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder.URN_PROBLEM_TYPE_PREFIX;
-import static com.google.common.base.CaseFormat.LOWER_HYPHEN;
-import static com.google.common.base.CaseFormat.UPPER_CAMEL;
 
 public class ProblemDetailExceptionRegistry {
     static final Map<String, Class<? extends Throwable>> REGISTRY = new HashMap<>();
@@ -36,8 +34,24 @@ public class ProblemDetailExceptionRegistry {
     }
 
     private static Class<? extends Throwable> computeFromUrn(String type, String prefix, String suffix) {
-        String camel = LOWER_HYPHEN.to(UPPER_CAMEL, type);
-        return forName(prefix + camel + suffix);
+        return forName(prefix + kebapToCamel(type) + suffix);
+    }
+
+    private static String kebapToCamel(String string) {
+        StringBuilder out = new StringBuilder();
+        boolean upper = true;
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            if (c == '-') {
+                upper = true;
+            } else if (upper) {
+                out.append(Character.toUpperCase(c));
+                upper = false;
+            } else {
+                out.append(c);
+            }
+        }
+        return out.toString();
     }
 
     private static Class<? extends Throwable> forName(String name) {
