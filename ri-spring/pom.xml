@@ -62,7 +62,7 @@
         </dependency>
 
         <dependency>
-            <groupId>io.microprofile.sandbox</groupId>
+            <groupId>com.github.t1</groupId>
             <artifactId>problem-details-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
