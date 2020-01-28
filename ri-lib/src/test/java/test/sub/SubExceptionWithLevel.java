@@ -1,8 +1,8 @@
 package test.sub;
 
-import com.github.t1.problemdetail.Logging;
+import org.eclipse.microprofile.problemdetails.Logging;
 
-import static com.github.t1.problemdetail.LogLevel.INFO;
+import static org.eclipse.microprofile.problemdetails.LogLevel.INFO;
 
 @Logging(at = INFO)
 public class SubExceptionWithLevel extends Exception {}

@@ -1,8 +1,8 @@
 package test;
 
-import com.github.t1.problemdetail.Logging;
-import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
+import org.eclipse.microprofile.problemdetails.Logging;
+import org.eclipse.microprofile.problemdetails.Status;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import test.sub.SubException;
@@ -11,13 +11,13 @@ import test.sub.SubExceptionWithLevel;
 
 import java.net.URI;
 
-import static com.github.t1.problemdetail.LogLevel.DEBUG;
-import static com.github.t1.problemdetail.LogLevel.ERROR;
-import static com.github.t1.problemdetail.LogLevel.INFO;
-import static com.github.t1.problemdetail.LogLevel.OFF;
-import static com.github.t1.problemdetail.LogLevel.WARNING;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.eclipse.microprofile.problemdetails.LogLevel.DEBUG;
+import static org.eclipse.microprofile.problemdetails.LogLevel.ERROR;
+import static org.eclipse.microprofile.problemdetails.LogLevel.INFO;
+import static org.eclipse.microprofile.problemdetails.LogLevel.OFF;
+import static org.eclipse.microprofile.problemdetails.LogLevel.WARNING;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.then;
@@ -39,7 +39,7 @@ class LoggingBehavior {
 
         ProblemDetailBuilder details = problemDetailsFor(new CustomException());
 
-        then(onlyLogger(CustomException.class)).should().debug(details.getLogMessage());
+        then(onlyLogger(CustomException.class)).should().info(details.getLogMessage());
     }
 
     @Test void shouldLogExplicitlyAtError() {
@@ -88,7 +88,7 @@ class LoggingBehavior {
 
         ProblemDetailBuilder details = problemDetailsFor(new CustomException());
 
-        then(onlyLogger("my-errors")).should().error(eq(details.getLogMessage()), any(CustomException.class));
+        then(onlyLogger("my-errors")).should().info(eq(details.getLogMessage()));
     }
 
 

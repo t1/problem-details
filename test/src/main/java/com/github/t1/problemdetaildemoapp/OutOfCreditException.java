@@ -1,14 +1,14 @@
 package com.github.t1.problemdetaildemoapp;
 
-import com.github.t1.problemdetail.Detail;
-import com.github.t1.problemdetail.Extension;
-import com.github.t1.problemdetail.Instance;
-import com.github.t1.problemdetail.Status;
-import com.github.t1.problemdetail.Title;
-import com.github.t1.problemdetail.Type;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.eclipse.microprofile.problemdetails.Detail;
+import org.eclipse.microprofile.problemdetails.Extension;
+import org.eclipse.microprofile.problemdetails.Instance;
+import org.eclipse.microprofile.problemdetails.Status;
+import org.eclipse.microprofile.problemdetails.Title;
+import org.eclipse.microprofile.problemdetails.Type;
 
 import java.net.URI;
 import java.util.List;

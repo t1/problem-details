@@ -1,15 +1,14 @@
 package com.github.t1.problemdetail.ri.lib;
 
-import com.github.t1.problemdetail.Detail;
-import com.github.t1.problemdetail.Extension;
-import com.github.t1.problemdetail.Instance;
-import com.github.t1.problemdetail.LogLevel;
-import com.github.t1.problemdetail.Logging;
-import com.github.t1.problemdetail.Status;
-import com.github.t1.problemdetail.Title;
-import com.github.t1.problemdetail.Type;
-import lombok.Getter;
 import lombok.NonNull;
+import org.eclipse.microprofile.problemdetails.Detail;
+import org.eclipse.microprofile.problemdetails.Extension;
+import org.eclipse.microprofile.problemdetails.Instance;
+import org.eclipse.microprofile.problemdetails.LogLevel;
+import org.eclipse.microprofile.problemdetails.Logging;
+import org.eclipse.microprofile.problemdetails.Status;
+import org.eclipse.microprofile.problemdetails.Title;
+import org.eclipse.microprofile.problemdetails.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +31,11 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import static com.github.t1.problemdetail.LogLevel.AUTO;
 import static java.util.stream.Collectors.joining;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.eclipse.microprofile.problemdetails.LogLevel.AUTO;
 
 /**
  * Tech stack independent collector. Template methods can be overridden to provide tech stack specifics.
@@ -47,14 +46,21 @@ public abstract class ProblemDetailBuilder {
     protected final Throwable exception;
     protected final @NonNull Class<? extends Throwable> exceptionType;
 
-    @Getter(lazy = true) private final StatusType status = buildStatus();
-    @Getter(lazy = true) private final Object body = buildBody();
-    @Getter(lazy = true) private final String mediaType = buildMediaType();
-    @Getter(lazy = true) private final String logMessage = buildLogMessage();
+    private StatusType status;
+    private String mediaType;
+    private Object body;
+    private String logMessage;
 
     public ProblemDetailBuilder(Throwable exception) {
         this.exception = exception;
         this.exceptionType = exception.getClass();
+    }
+
+    public Object getBody() {
+        if (body == null) {
+            body = buildBody();
+        }
+        return body;
     }
 
     protected Object buildBody() {
@@ -77,18 +83,25 @@ public abstract class ProblemDetailBuilder {
         return body;
     }
 
+    public StatusType getStatus() {
+        if (status == null) {
+            status = buildStatus();
+        }
+        return status;
+    }
+
     protected StatusType buildStatus() {
         if (exceptionType != null && exceptionType.isAnnotationPresent(Status.class)) {
             return exceptionType.getAnnotation(Status.class).value();
-        } else if (exception instanceof IllegalArgumentException) {
-            return BAD_REQUEST;
+        } else if (exception instanceof NullPointerException) {
+            return INTERNAL_SERVER_ERROR;
         } else {
             return fallbackStatus();
         }
     }
 
     protected StatusType fallbackStatus() {
-        return INTERNAL_SERVER_ERROR;
+        return BAD_REQUEST;
     }
 
     protected URI buildTypeUri() {
@@ -227,6 +240,13 @@ public abstract class ProblemDetailBuilder {
         return annotatedName.isEmpty() ? member.getName() : annotatedName;
     }
 
+    public String getMediaType() {
+        if (mediaType == null) {
+            mediaType = buildMediaType();
+        }
+        return mediaType;
+    }
+
     protected String buildMediaType() {
         String format = findMediaTypeSubtype();
 
@@ -237,22 +257,28 @@ public abstract class ProblemDetailBuilder {
 
     protected abstract String findMediaTypeSubtype();
 
-    private String buildLogMessage() {
-        return "ProblemDetail:\n" + formatBody() + "\n"
-            + "Exception";
+    public String getLogMessage() {
+        if (logMessage == null) {
+            logMessage = "ProblemDetail:" + formatBody(getBody());
+        }
+        return logMessage;
     }
 
-    private Object formatBody() {
-        return (body instanceof Map)
-            ? ((Map<?, ?>) body).entrySet().stream()
-            .map(entry -> "  " + entry.getKey() + ": " + entry.getValue())
-            .collect(joining("\n"))
-            : String.valueOf(body);
+    private Object formatBody(Object body) {
+        if (body == null) {
+            return " - ";
+        } else if (body instanceof Map) {
+            return ((Map<?, ?>) body).entrySet().stream()
+                .map(entry -> "  " + entry.getKey() + ": " + entry.getValue())
+                .collect(joining("\n", "\n", "\n"));
+        } else {
+            return "\n" + body + "\n";
+        }
     }
 
 
     public ProblemDetailBuilder log() {
-        log(buildLogMessage());
+        log(getLogMessage());
         return this;
     }
 
@@ -261,7 +287,7 @@ public abstract class ProblemDetailBuilder {
         switch (buildLogLevel()) {
             case AUTO:
                 if (CLIENT_ERROR.equals(getStatus().getFamily())) {
-                    logger.debug(message);
+                    logger.info(message);
                 } else {
                     logger.error(message, exception);
                 }

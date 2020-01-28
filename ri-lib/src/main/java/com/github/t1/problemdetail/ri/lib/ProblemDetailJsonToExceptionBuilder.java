@@ -1,9 +1,9 @@
 package com.github.t1.problemdetail.ri.lib;
 
-import com.github.t1.problemdetail.Extension;
-import com.github.t1.problemdetail.Instance;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.eclipse.microprofile.problemdetails.Extension;
+import org.eclipse.microprofile.problemdetails.Instance;
 
 import javax.json.Json;
 import javax.json.JsonObject;

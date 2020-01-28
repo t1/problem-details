@@ -7,7 +7,7 @@ import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.ext.Provider;
 
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON_TYPE;
+import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON_TYPE;
 
 @Slf4j
 @Provider

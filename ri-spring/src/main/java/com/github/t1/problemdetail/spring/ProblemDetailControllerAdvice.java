@@ -1,8 +1,11 @@
 package com.github.t1.problemdetail.spring;
 
 import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
-import com.github.t1.validation.ValidationFailedException;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.problemdetails.Detail;
+import org.eclipse.microprofile.problemdetails.Extension;
+import org.eclipse.microprofile.problemdetails.Status;
+import org.eclipse.microprofile.problemdetails.Title;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,14 +22,20 @@ import org.springframework.web.util.NestedServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
-import javax.ws.rs.core.Response.Status;
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.Response.StatusType;
 import java.lang.reflect.Field;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Enumeration;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.fromStatusCode;
 
 /**
  * The server side tool to convert an exception into a response with a problem detail body
@@ -95,7 +104,7 @@ public class ProblemDetailControllerAdvice {
 
             @Override protected StatusType buildStatus() {
                 if (exception instanceof HttpStatusCodeException) {
-                    return Status.fromStatusCode(((HttpStatusCodeException) exception).getStatusCode().value());
+                    return fromStatusCode(((HttpStatusCodeException) exception).getStatusCode().value());
                 } else {
                     return super.buildStatus();
                 }
@@ -132,6 +141,25 @@ public class ProblemDetailControllerAdvice {
             return (ConstraintViolation<?>) field.get(objectError);
         } catch (ReflectiveOperationException e) {
             return null;
+        }
+    }
+
+    @Title("Validation Failed")
+    @Status(BAD_REQUEST)
+    public static class ValidationFailedException extends ConstraintViolationException {
+        public ValidationFailedException(Set<ConstraintViolation<?>> violations) {
+            super(violations);
+        }
+
+        // don't expose the message:
+        @Detail String detail() {
+            return getConstraintViolations().size() + " violations failed";
+        }
+
+        @Extension Map<String, String> violations() {
+            return getConstraintViolations().stream()
+                .map(violation -> new SimpleEntry<>(violation.getPropertyPath().toString(), violation.getMessage()))
+                .collect(toMap(Entry::getKey, Entry::getValue));
         }
     }
 }

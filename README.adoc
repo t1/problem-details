@@ -45,7 +45,7 @@ Both will result in an exception body similar to this:
 
 <1> The default `type` is a URN derived from the type name of the exception by converting camel case to kebap case and stripping the `Exception`.
 <2> The default `title` is derived from the type name of the exception by converting camel case to separate words.
-<3> The default `status` is `500` except for an `IllegalArgumentException`, which gets mapped to 400, and the standard http exceptions (JAX-RS: `WebApplicationException`; Spring `HttpClientErrorException`), which get mapped to their corresponding status codes.
+<3> The default `status` is `400 Bad Request` except for standard http exceptions (JAX-RS: `WebApplicationException`; Spring `HttpClientErrorException`), which get mapped to their corresponding status codes, and `NullPointerException`, which gets mapped to `500 Internal Server Error`.
 <4> The default `detail` is the message of the exception. There won't be a `detail` field, if the message of the exception is null.
 <5> The default `instance` is a random UUID URN.
 
@@ -175,7 +175,6 @@ class OrderGateway {
 <2> Unwrap the JAX-RS `ResponseProcessingException` before you can catch the `OutOfCreditException`
 
 Other implementations may have other requirements and limitations.
-
 
 === MicroProfile REST Client
 

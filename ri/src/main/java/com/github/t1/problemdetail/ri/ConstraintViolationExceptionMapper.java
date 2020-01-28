@@ -1,6 +1,9 @@
 package com.github.t1.problemdetail.ri;
 
-import com.github.t1.validation.ValidationFailedException;
+import org.eclipse.microprofile.problemdetails.Detail;
+import org.eclipse.microprofile.problemdetails.Extension;
+import org.eclipse.microprofile.problemdetails.Status;
+import org.eclipse.microprofile.problemdetails.Title;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -9,7 +12,13 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toMap;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
  * Separate exception mapper for {@link ConstraintViolationException}s, as the
@@ -27,5 +36,24 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
         return new JaxRsProblemDetailBuilder(validationFailedException, requestHeaders)
             .log()
             .toResponse();
+    }
+
+    @Title("Validation Failed")
+    @Status(BAD_REQUEST)
+    public static class ValidationFailedException extends ConstraintViolationException {
+        public ValidationFailedException(Set<ConstraintViolation<?>> violations) {
+            super(violations);
+        }
+
+        // don't expose the message:
+        @Detail String detail() {
+            return getConstraintViolations().size() + " violations failed";
+        }
+
+        @Extension Map<String, String> violations() {
+            return getConstraintViolations().stream()
+                .map(violation -> new SimpleEntry<>(violation.getPropertyPath().toString(), violation.getMessage()))
+                .collect(toMap(Entry::getKey, Entry::getValue));
+        }
     }
 }

@@ -1,6 +1,6 @@
 package test.sub;
 
-import com.github.t1.problemdetail.Logging;
+import org.eclipse.microprofile.problemdetails.Logging;
 
 @Logging(to = "sub-cat")
 public class SubExceptionWithCategory extends Exception {}

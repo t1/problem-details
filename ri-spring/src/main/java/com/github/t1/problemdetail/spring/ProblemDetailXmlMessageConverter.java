@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_XML;
+import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_XML;
 
 @Component
 public class ProblemDetailXmlMessageConverter extends AbstractGenericHttpMessageConverter<LinkedHashMap<String, Object>> {

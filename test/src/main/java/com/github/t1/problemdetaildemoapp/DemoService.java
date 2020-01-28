@@ -1,10 +1,10 @@
 package com.github.t1.problemdetaildemoapp;
 
-import com.github.t1.problemdetail.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.problemdetails.Status;
 
 import javax.json.bind.annotation.JsonbProperty;
 import javax.ws.rs.NotFoundException;

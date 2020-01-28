@@ -1,12 +1,12 @@
 package test;
 
-import com.github.t1.problemdetail.Detail;
-import com.github.t1.problemdetail.Extension;
-import com.github.t1.problemdetail.Instance;
-import com.github.t1.problemdetail.Status;
-import com.github.t1.problemdetail.Title;
-import com.github.t1.problemdetail.Type;
 import com.github.t1.problemdetail.ri.ProblemDetailExceptionMapperExtension;
+import org.eclipse.microprofile.problemdetails.Detail;
+import org.eclipse.microprofile.problemdetails.Extension;
+import org.eclipse.microprofile.problemdetails.Instance;
+import org.eclipse.microprofile.problemdetails.Status;
+import org.eclipse.microprofile.problemdetails.Title;
+import org.eclipse.microprofile.problemdetails.Type;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -16,8 +16,6 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Map;
 
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_XML;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -25,6 +23,8 @@ import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON;
+import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_XML;
 
 class ProblemDetailExceptionMapperBehavior {
 
@@ -192,11 +192,11 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
-            entry("status", 500),
+            entry("status", 400),
             entry("instance", URI.create("urn:invalid-uri-syntax?" +
                 "source=evil%0Anewlines&exception=java.net.URISyntaxException%3A+" +
                 "Illegal+character+in+path+at+index+4%3A+evil%0Anewlines"))
@@ -210,11 +210,11 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
-            entry("status", 500),
+            entry("status", 400),
             entry("instance", URI.create("urn:spaces+are+invalid"))
         );
     }
@@ -226,11 +226,11 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
-            entry("status", 500),
+            entry("status", 400),
             entry("instance", URI.create("urn:spaces+are+invalid"))
         );
     }
@@ -242,12 +242,12 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         Map<String, Object> map = problemDetailAsMap(response);
         then(map).contains(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
-            entry("status", 500))
+            entry("status", 400))
             .containsKey("instance");
         then(map.get("instance").toString()).startsWith("urn:uuid:");
     }
@@ -259,12 +259,12 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         Map<String, Object> map = problemDetailAsMap(response);
         then(map).contains(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
-            entry("status", 500))
+            entry("status", 400))
             .containsKey("instance");
         URI instance = (URI) map.get("instance");
         then(instance.getScheme()).isEqualTo("urn");
@@ -279,12 +279,12 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         Map<String, Object> map = problemDetailAsMap(response);
         then(map).contains(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
-            entry("status", 500))
+            entry("status", 400))
             .containsKey("instance");
         then(map.get("instance").toString()).startsWith("urn:uuid:");
     }
@@ -299,12 +299,12 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         Map<String, Object> map = problemDetailAsMap(response);
         then(map).contains(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
-            entry("status", 500),
+            entry("status", 400),
             entry("instance", URI.create("foo")));
     }
 
@@ -316,12 +316,12 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
         Map<String, Object> map = problemDetailAsMap(response);
         then(map).contains(
             entry("type", URI.create("urn:problem-type:some")),
             entry("title", "Some"),
-            entry("status", 500),
+            entry("status", 400),
             entry("instance", URI.create("foo")));
     }
 

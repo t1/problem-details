@@ -1,4 +1,4 @@
-package com.github.t1.problemdetaildemoapp;
+package test;
 
 import lombok.Data;
 

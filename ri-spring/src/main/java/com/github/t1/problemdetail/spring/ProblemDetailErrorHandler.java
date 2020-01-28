@@ -10,8 +10,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON;
 
 /**
  * This is the client side tool to turn problem details into exceptions. To use it, set

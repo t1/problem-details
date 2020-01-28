@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetaildemoapp.Application;
+import com.github.t1.problemdetaildemoapp.SpringTestApplication;
 import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -40,7 +40,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         if (System.getProperty("testcontainer-running") != null) {
             BASE_URI = URI.create(System.getProperty("testcontainer-running"));
         } else if (BASE_URI == null) {
-            Application.main();
+            SpringTestApplication.main();
             BASE_URI = URI.create("http://localhost:8080/");
             waitUntilHealthy();
         }

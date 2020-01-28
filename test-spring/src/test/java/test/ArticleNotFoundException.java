@@ -1,11 +1,11 @@
 package test;
 
-import com.github.t1.problemdetail.Detail;
-import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetaildemoapp.DemoService.DemoException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.eclipse.microprofile.problemdetails.Detail;
+import org.eclipse.microprofile.problemdetails.Extension;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;

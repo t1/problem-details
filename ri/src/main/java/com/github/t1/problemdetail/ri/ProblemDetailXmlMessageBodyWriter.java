@@ -12,7 +12,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_XML_TYPE;
+import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_XML_TYPE;
 
 @Provider
 public class ProblemDetailXmlMessageBodyWriter implements MessageBodyWriter<Map<String, Object>> {

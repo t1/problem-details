@@ -1,12 +1,12 @@
 package com.github.t1.problemdetaildemoapp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.t1.problemdetail.Status;
-import com.github.t1.problemdetail.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.microprofile.problemdetails.Status;
+import org.eclipse.microprofile.problemdetails.Type;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseStatus;

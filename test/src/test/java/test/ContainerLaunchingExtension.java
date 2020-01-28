@@ -1,6 +1,5 @@
 package test;
 
-import com.github.t1.problemdetaildemoapp.ProblemDetail;
 import com.github.t1.testcontainers.jee.JeeContainer;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
