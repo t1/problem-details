@@ -13,7 +13,7 @@ import org.eclipse.microprofile.problemdetails.Type;
 import java.net.URI;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.FORBIDDEN;
 
 @Type("https://example.com/probs/out-of-credit")
 @Title("You do not have enough credit.")

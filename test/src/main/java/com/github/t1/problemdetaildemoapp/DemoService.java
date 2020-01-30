@@ -12,7 +12,7 @@ import java.net.URI;
 import java.time.LocalDate;
 
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.FORBIDDEN;
 
 @Slf4j
 public class DemoService {

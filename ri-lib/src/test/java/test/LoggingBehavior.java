@@ -11,13 +11,13 @@ import test.sub.SubExceptionWithLevel;
 
 import java.net.URI;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.eclipse.microprofile.problemdetails.LogLevel.DEBUG;
 import static org.eclipse.microprofile.problemdetails.LogLevel.ERROR;
 import static org.eclipse.microprofile.problemdetails.LogLevel.INFO;
 import static org.eclipse.microprofile.problemdetails.LogLevel.OFF;
 import static org.eclipse.microprofile.problemdetails.LogLevel.WARNING;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.INTERNAL_SERVER_ERROR;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.then;

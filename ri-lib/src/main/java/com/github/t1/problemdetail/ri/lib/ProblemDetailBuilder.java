@@ -6,13 +6,13 @@ import org.eclipse.microprofile.problemdetails.Extension;
 import org.eclipse.microprofile.problemdetails.Instance;
 import org.eclipse.microprofile.problemdetails.LogLevel;
 import org.eclipse.microprofile.problemdetails.Logging;
+import org.eclipse.microprofile.problemdetails.ResponseStatus;
 import org.eclipse.microprofile.problemdetails.Status;
 import org.eclipse.microprofile.problemdetails.Title;
 import org.eclipse.microprofile.problemdetails.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -32,10 +32,9 @@ import java.util.TreeMap;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.joining;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.eclipse.microprofile.problemdetails.LogLevel.AUTO;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * Tech stack independent collector. Template methods can be overridden to provide tech stack specifics.
@@ -46,7 +45,7 @@ public abstract class ProblemDetailBuilder {
     protected final Throwable exception;
     protected final @NonNull Class<? extends Throwable> exceptionType;
 
-    private StatusType status;
+    private ResponseStatus status;
     private String mediaType;
     private Object body;
     private String logMessage;
@@ -69,7 +68,7 @@ public abstract class ProblemDetailBuilder {
 
         body.put("title", buildTitle());
 
-        body.put("status", getStatus().getStatusCode());
+        body.put("status", getStatus().code);
 
         String detail = buildDetail();
         if (detail != null) {
@@ -83,14 +82,14 @@ public abstract class ProblemDetailBuilder {
         return body;
     }
 
-    public StatusType getStatus() {
+    public ResponseStatus getStatus() {
         if (status == null) {
             status = buildStatus();
         }
         return status;
     }
 
-    protected StatusType buildStatus() {
+    protected ResponseStatus buildStatus() {
         if (exceptionType != null && exceptionType.isAnnotationPresent(Status.class)) {
             return exceptionType.getAnnotation(Status.class).value();
         } else if (exception instanceof NullPointerException) {
@@ -100,7 +99,7 @@ public abstract class ProblemDetailBuilder {
         }
     }
 
-    protected StatusType fallbackStatus() {
+    protected ResponseStatus fallbackStatus() {
         return BAD_REQUEST;
     }
 
@@ -286,7 +285,7 @@ public abstract class ProblemDetailBuilder {
         Logger logger = buildLogger();
         switch (buildLogLevel()) {
             case AUTO:
-                if (CLIENT_ERROR.equals(getStatus().getFamily())) {
+                if (getStatus().code < 500) {
                     logger.info(message);
                 } else {
                     logger.error(message, exception);

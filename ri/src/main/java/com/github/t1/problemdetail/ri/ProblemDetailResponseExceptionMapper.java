@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.io.InputStream;
 
-import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON_TYPE;
+import static com.github.t1.problemdetail.ri.ProblemDetailClientResponseFilter.PROBLEM_DETAIL_JSON_TYPE;
 
 @Provider
 public class ProblemDetailResponseExceptionMapper implements ResponseExceptionMapper<Throwable> {

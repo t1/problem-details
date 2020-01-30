@@ -12,10 +12,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_XML_TYPE;
+import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_XML;
 
 @Provider
 public class ProblemDetailXmlMessageBodyWriter implements MessageBodyWriter<Map<String, Object>> {
+    private static final MediaType PROBLEM_DETAIL_XML_TYPE = MediaType.valueOf(PROBLEM_DETAIL_XML);
+
     @Override public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return PROBLEM_DETAIL_XML_TYPE.isCompatible(mediaType);
     }

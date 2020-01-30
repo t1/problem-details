@@ -1,11 +1,12 @@
 package com.github.t1.problemdetail.ri;
 
 import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
+import org.eclipse.microprofile.problemdetails.ResponseStatus;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.StatusType;
+import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 
 class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
@@ -22,8 +23,8 @@ class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
         this.response = response;
     }
 
-    @Override protected StatusType fallbackStatus() {
-        return (response != null) ? response.getStatusInfo() : super.fallbackStatus();
+    @Override protected ResponseStatus fallbackStatus() {
+        return (response != null) ? ResponseStatus.valueOf(response.getStatus()) : super.fallbackStatus();
     }
 
     @Override protected URI buildTypeUri() {
@@ -39,9 +40,9 @@ class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
     }
 
     @Override protected boolean hasDefaultMessage() {
-        return exception.getMessage() != null
-            && exception.getMessage().equals("HTTP " + getStatus().getStatusCode()
-            + " " + getStatus().getReasonPhrase());
+        int statusCode = getStatus().code;
+        String defaultMessage = "HTTP " + statusCode + " " + Status.fromStatusCode(statusCode);
+        return defaultMessage.equals(exception.getMessage());
     }
 
     @Override protected String findMediaTypeSubtype() {
@@ -60,7 +61,7 @@ class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
 
     public Response toResponse() {
         return Response
-            .status(getStatus())
+            .status(getStatus().code)
             .entity(getBody())
             .header("Content-Type", getMediaType())
             .build();

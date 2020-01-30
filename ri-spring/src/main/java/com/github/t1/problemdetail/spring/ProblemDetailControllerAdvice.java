@@ -4,6 +4,7 @@ import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.problemdetails.Detail;
 import org.eclipse.microprofile.problemdetails.Extension;
+import org.eclipse.microprofile.problemdetails.ResponseStatus;
 import org.eclipse.microprofile.problemdetails.Status;
 import org.eclipse.microprofile.problemdetails.Title;
 import org.springframework.core.annotation.Order;
@@ -23,7 +24,6 @@ import org.springframework.web.util.NestedServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.ws.rs.core.Response.StatusType;
 import java.lang.reflect.Field;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Enumeration;
@@ -34,8 +34,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.fromStatusCode;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
 
 /**
  * The server side tool to convert an exception into a response with a problem detail body
@@ -102,9 +101,9 @@ public class ProblemDetailControllerAdvice {
                 return "json";
             }
 
-            @Override protected StatusType buildStatus() {
+            @Override protected ResponseStatus buildStatus() {
                 if (exception instanceof HttpStatusCodeException) {
-                    return fromStatusCode(((HttpStatusCodeException) exception).getStatusCode().value());
+                    return ResponseStatus.valueOf(((HttpStatusCodeException) exception).getStatusCode().value());
                 } else {
                     return super.buildStatus();
                 }
@@ -122,7 +121,7 @@ public class ProblemDetailControllerAdvice {
 
         problemDetailBuilder.log();
 
-        return ResponseEntity.status(problemDetailBuilder.getStatus().getStatusCode())
+        return ResponseEntity.status(problemDetailBuilder.getStatus().code)
             .contentType(MediaType.valueOf(problemDetailBuilder.getMediaType()))
             .body(problemDetailBuilder.getBody());
     }

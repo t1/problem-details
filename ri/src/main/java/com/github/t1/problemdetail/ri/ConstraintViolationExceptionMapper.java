@@ -18,7 +18,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
 
 /**
  * Separate exception mapper for {@link ConstraintViolationException}s, as the

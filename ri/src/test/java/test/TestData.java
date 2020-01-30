@@ -16,7 +16,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
 
 class TestData {
     @Type("urn:some-type")

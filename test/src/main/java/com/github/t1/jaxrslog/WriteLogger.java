@@ -12,7 +12,7 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON_TYPE;
+import static com.github.t1.problemdetail.ri.ProblemDetailClientResponseFilter.PROBLEM_DETAIL_JSON_TYPE;
 
 // TODO RestEasy: this is not registered when it's implemented directly by the LoggingFilter
 @Slf4j

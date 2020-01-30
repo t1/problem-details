@@ -16,7 +16,7 @@ import java.net.URI;
 import java.time.LocalDate;
 
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Slf4j

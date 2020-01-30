@@ -19,12 +19,12 @@ import java.util.Map;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON;
 import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_XML;
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.FORBIDDEN;
 
 class ProblemDetailExceptionMapperBehavior {
 
@@ -91,7 +91,7 @@ class ProblemDetailExceptionMapperBehavior {
     @Test void shouldMapWebApplicationException() {
         Response response = mapper.toResponse(new ForbiddenException("some message"));
 
-        then(response.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(response.getStatusInfo()).isEqualTo(Response.Status.FORBIDDEN);
         then(problemDetailAsMap(response))
             .contains(
                 entry("type", URI.create("urn:problem-type:forbidden")),
@@ -119,12 +119,12 @@ class ProblemDetailExceptionMapperBehavior {
             @Extension private final int f1 = 123;
             @SuppressWarnings("unused") private final int unmapped = 456;
             @Instance private final URI instance = URI.create("https://some.domain/some/path");
-            @Detail String detail = "some-detail";
+            @Detail final String detail = "some-detail";
         }
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(response.getStatusInfo()).isEqualTo(Response.Status.FORBIDDEN);
         then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
@@ -149,7 +149,7 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(response.getStatusInfo()).isEqualTo(Response.Status.FORBIDDEN);
         then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
@@ -174,7 +174,7 @@ class ProblemDetailExceptionMapperBehavior {
 
         Response response = mapper.toResponse(new SomeException());
 
-        then(response.getStatusInfo()).isEqualTo(FORBIDDEN);
+        then(response.getStatusInfo()).isEqualTo(Response.Status.FORBIDDEN);
         then(problemDetailAsMap(response)).containsExactly(
             entry("type", URI.create("some-type")),
             entry("title", "some-title"),
@@ -221,7 +221,7 @@ class ProblemDetailExceptionMapperBehavior {
 
     @Test void shouldMapCustomExceptionWithSpacesInInstanceField() {
         class SomeException extends RuntimeException {
-            @Instance private String instance = "spaces are invalid";
+            @Instance private final String instance = "spaces are invalid";
         }
 
         Response response = mapper.toResponse(new SomeException());
@@ -274,7 +274,7 @@ class ProblemDetailExceptionMapperBehavior {
 
     @Test void shouldMapCustomExceptionWithNullInstanceField() {
         class SomeException extends RuntimeException {
-            @Instance private String instance = null;
+            @Instance private final String instance = null;
         }
 
         Response response = mapper.toResponse(new SomeException());
@@ -310,8 +310,8 @@ class ProblemDetailExceptionMapperBehavior {
 
     @Test void shouldMapCustomExceptionWithTwoInstanceFields() {
         class SomeException extends RuntimeException {
-            @Instance private String instance = "foo";
-            @Instance private String instance2 = "foo";
+            @Instance private final String instance = "foo";
+            @Instance private final String instance2 = "foo";
         }
 
         Response response = mapper.toResponse(new SomeException());
