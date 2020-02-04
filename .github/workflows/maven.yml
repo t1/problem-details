@@ -3,47 +3,23 @@ name: Java CI
 on: [push]
 
 jobs:
-  wildfly:
+  build:
+    strategy:
+      matrix:
+        container:
+        - wildfly
+        - payara
+        - open-liberty:19.0.0.9-javaee8-java11
+        # TODO TomEE enable when fixed https://github.com/t1/problem-details/issues/17
+        #- tomee
+        jdk: [8, 11]
+
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Set up JDK 11
+    - uses: actions/checkout@v2
+    - name: Set up JDK ${{ matrix.jdk }}
       uses: actions/setup-java@v1
       with:
-        java-version: 11
+        java-version: ${{ matrix.jdk }}
     - name: Build with Maven
-      run: mvn --batch-mode verify -Djee-testcontainer=wildfly
-
-  openliberty:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up JDK 11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11
-    - name: Build with Maven
-      run: mvn --batch-mode verify -Djee-testcontainer=open-liberty:19.0.0.9-javaee8-java11
-
-  payara:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up JDK 11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 11
-    - name: Build with Maven
-      run: mvn --batch-mode verify -Djee-testcontainer=payara
-
-# TODO TomEE enable when fixed https://github.com/t1/problem-details/issues/17
-#  tomee:
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@v1
-#    - name: Set up JDK 11
-#      uses: actions/setup-java@v1
-#      with:
-#        java-version: 11
-#    - name: Build with Maven
-#      run: mvn --batch-mode verify -Djee-testcontainer=tomee
+      run: mvn --batch-mode verify -Djee-testcontainer=${{ matrix.container }}

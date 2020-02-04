@@ -18,10 +18,6 @@
     <version>2.0.0-SNAPSHOT</version>
     <description>Problem Detail test suite for Spring Boot</description>
 
-    <properties>
-        <java.version>11</java.version>
-    </properties>
-
     <distributionManagement>
         <repository>
             <id>bintray-t1-javaee-helpers</id>
