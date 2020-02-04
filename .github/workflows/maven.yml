@@ -23,7 +23,7 @@ jobs:
       with:
         java-version: 11
     - name: Build with Maven
-      run: mvn --batch-mode verify -Djee-testcontainer=open-liberty:19.0.0.9-javaee8-java11 -Pwith-slf4j
+      run: mvn --batch-mode verify -Djee-testcontainer=open-liberty:19.0.0.9-javaee8-java11
 
   payara:
     runs-on: ubuntu-latest
@@ -34,7 +34,7 @@ jobs:
       with:
         java-version: 11
     - name: Build with Maven
-      run: mvn --batch-mode verify -Djee-testcontainer=payara -Pwith-slf4j
+      run: mvn --batch-mode verify -Djee-testcontainer=payara
 
 # TODO TomEE enable when fixed https://github.com/t1/problem-details/issues/17
 #  tomee:

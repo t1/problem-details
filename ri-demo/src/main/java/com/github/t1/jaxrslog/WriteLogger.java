@@ -12,18 +12,20 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static com.github.t1.problemdetail.ri.ProblemDetailClientResponseFilter.PROBLEM_DETAIL_JSON_TYPE;
+import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON;
 
 // TODO RestEasy: this is not registered when it's implemented directly by the LoggingFilter
 @Slf4j
 @Provider
 public class WriteLogger implements WriterInterceptor {
+    public static final MediaType PROBLEM_DETAIL_JSON_TYPE = MediaType.valueOf(PROBLEM_DETAIL_JSON);
+
     @Override public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
         if (PROBLEM_DETAIL_JSON_TYPE.isCompatible(contentType(context))) {
             LoggingOutputStream buffer = new LoggingOutputStream(context.getOutputStream());
             context.setOutputStream(buffer);
             context.proceed();
-            log.debug("<-- {}", buffer.copy.toString());
+            log.info("<-- {}", buffer.copy.toString());
         } else {
             context.proceed();
         }

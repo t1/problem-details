@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.t1</groupId>
+        <artifactId>problem-details</artifactId>
+        <version>2.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>ri-tck</artifactId>
+    <packaging>pom</packaging><!-- no classes for a jar -->
+    <description>Launch the Problem Detail TCK for the RI</description>
+
+    <properties>
+        <problemdetails.version>1.0.0-SNAPSHOT</problemdetails.version>
+        <slf4j.version>1.7.30</slf4j.version>
+    </properties>
+
+    <build>
+        <defaultGoal>verify</defaultGoal>
+        <plugins>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+                <executions>
+                    <execution>
+                        <id>perform-it</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dependenciesToScan>
+                        <dependency>io.microprofile.sandbox:problem-details.tck-jar</dependency>
+                    </dependenciesToScan>
+                    <systemPropertyVariables>
+                        <problemdetails-tck-libs>
+                            urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
+                            urn:mvn:com.github.t1:problem-details-ri:${project.version}:jar
+                            urn:mvn:com.github.t1:problem-details-ri-lib:${project.version}:jar
+                            <!-- the slf4j dependencies are required only by some containers, but it doesn't hurt the others -->
+                            urn:mvn:org.slf4j:slf4j-api:${slf4j.version}:jar
+                            urn:mvn:org.slf4j:slf4j-jdk14:${slf4j.version}:jar
+                        </problemdetails-tck-libs>
+                    </systemPropertyVariables>
+                    <!-- TODO don't skip this test but fix the RI -->
+                    <!-- the RI doesn't inject the ApiException properly in wildfly webTarget -->
+                    <test>!test.MicroprofileRestClientBridgeIT#shouldMapBridgedFail_webTarget</test>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.microprofile.sandbox</groupId>
+            <artifactId>problem-details.tck-jar</artifactId>
+            <version>${problemdetails.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

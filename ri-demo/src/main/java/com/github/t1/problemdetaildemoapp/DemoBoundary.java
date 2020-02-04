@@ -2,11 +2,6 @@ package com.github.t1.problemdetaildemoapp;
 
 import com.github.t1.problemdetaildemoapp.DemoService.PaymentMethod;
 import com.github.t1.problemdetaildemoapp.DemoService.Shipment;
-import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
-import org.eclipse.microprofile.openapi.annotations.info.Info;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -17,10 +12,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_HTML;
+
 @Path("/orders")
 public class DemoBoundary {
     @Inject DemoService service;
 
+    // I hate doing this, but otherwise, e.g. Wildfly replies to a browser with a
+    // application/octet-stream, even without a proper MessageBodyWriter => 500 :-/
+    @Produces(APPLICATION_JSON)
     @POST public Shipment order(
         @FormParam("user") int userId,
         @FormParam("article") @NotNull String article,

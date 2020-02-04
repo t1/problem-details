@@ -1,5 +1,5 @@
 = Problem Details JAX-RS Test Suite
 
-This is the test suite for JAX-RS, i.e. a JEE app exposing various problem detail errors and a set of integration tests using the client side api to check it.
+This is demos the JAX-RS impl, i.e. a JEE app exposing various problem detail errors and a set of integration tests using the client side api to check it.
 
 Note that the tests can check various Testcontainers or an already running service, which can also be the Spring Boot test app.

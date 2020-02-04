@@ -11,12 +11,11 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>problem-details-test</artifactId>
+    <artifactId>ri-demo</artifactId>
     <packaging>war</packaging>
-    <description>Problem Detail test suite for JAX-RS</description>
+    <description>Problem Detail demos for JAX-RS</description>
 
     <properties>
-        <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
 
         <slf4j.version>1.7.30</slf4j.version>
@@ -179,7 +178,7 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>jee-testcontainers</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

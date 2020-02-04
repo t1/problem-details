@@ -27,7 +27,21 @@ public class ProblemDetailResponseExceptionMapper implements ResponseExceptionMa
             // return null should skip this ResponseExceptionMapper, but RestEasy MP throws an NPE
             return new IllegalStateException("received problem detail without entity");
         }
-        return new JaxRsProblemDetailJsonToExceptionBuilder(response.readEntity(InputStream.class))
-            .build();
+        try {
+            return new JaxRsProblemDetailJsonToExceptionBuilder(response.readEntity(InputStream.class)).build();
+        } catch (RuntimeException e) {
+            throw new RuntimeException("can't read json body from " + response.getStatus() + " " + response.getStatusInfo()
+                + " response" + stringBody(response));
+        }
+    }
+
+    private String stringBody(Response response) {
+        if (response.hasEntity()) {
+            String entity = response.readEntity(String.class);
+            if (!entity.isEmpty()) {
+                return ":\n" + entity;
+            }
+        }
+        return "";
     }
 }

@@ -26,11 +26,11 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
      * https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers
      */
     @Override public void beforeAll(ExtensionContext context) {
-        if (System.getProperty("testcontainer-running") != null) {
-            BASE_URI = URI.create(System.getProperty("testcontainer-running"));
+        if (System.getProperty("ri-demo-running") != null) {
+            BASE_URI = URI.create(System.getProperty("ri-demo-running"));
         } else if (BASE_URI == null) {
             JeeContainer container = JeeContainer.create()
-                .withDeployment("target/problem-details-test.war");
+                .withDeployment("target/ri-demo.war");
             container.start();
             BASE_URI = container.baseUri();
         }

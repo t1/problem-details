@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
 
@@ -36,15 +37,16 @@ class ClientDemoIT extends AbstractClientDemoIT {
         log.info("post order [{}:{}:{}]", userId, article, paymentMethod);
 
         try {
-            Response response = target()
+            WebTarget target = target()
+                .path("/orders")
                 .register(LoggingFilter.toStdErr())
-                .register(ProblemDetailClientResponseFilter.class)
-                .path("/orders").request(APPLICATION_JSON_TYPE)
+                .register(ProblemDetailClientResponseFilter.class);
+            Response response = target.request(APPLICATION_JSON_TYPE)
                 .post(Entity.form(new Form()
                     .param("user", userId)
                     .param("article", article)
                     .param("payment-method", paymentMethod)));
-            then(response.getStatusInfo()).isEqualTo(OK);
+            then(response.getStatusInfo()).as("POST on %s", target.getUri()).isEqualTo(OK);
             return response.readEntity(Shipment.class);
         } catch (ResponseProcessingException e) {
             Throwable cause = e.getCause();

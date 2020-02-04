@@ -113,10 +113,6 @@ This will result in an problem detail body like this:
 
 One of the most common use-cases for Bad Requests is a failing validation. You can do a verification and throw a corresponding problem detail exception simply by calling `ValidationFailedException.validate(object)`. Both implementations also convert the exception thrown when a parameter to a REST boundary method is annotated as `@Valid`.
 
-=== YAML Output
-
-More as a test, there's a generic `YamlMessageBodyWriter`, so you can request `application/yaml` for any resource (and will get it), or if there's an error, a `application/problem+yaml`.
-
 === HTML Output
 
 A problem detail will be rendered as a simple html table, when you requested `text/html`. This will happen for any Map, actually.
@@ -256,11 +252,11 @@ A Spring Boot implementation. This also is just a POC, there may be better integ
 
 This is a library used by the JAX-RS RI as well as the Spring RI. It's not part of any supported public API, so you MUST NOT depend on this module directly.
 
-=== Test (JAX-RS)
+=== ri-demo
 
 Builds a `war` hard-wired to the `ri`; and when using the maven profile `with-slf4j`, the `slf4j-api` and `slf4j-jdk14` are included as well. The integration tests use https://github.com/t1/jee-testcontainers[JEE Testcontainers], i.e. it can be configured to start different Docker containers with various JEE application servers (details below). By default, it starts a Wildfly.
 
-You can also specify a base URL in the system property `testcontainer-running` (e.g. `-Dtestcontainer-running=http://localhost:8080/problem-details-test`), so the tests verify a running service. This is very handy while developing the implementation. This also works when the running service is the Spring Boot Test application (see below).
+You can also specify a base URL in the system property `testcontainer-running` (e.g. `-Dtestcontainer-running=http://localhost:8080/ri-demo`), so the tests verify a running service. This is very handy while developing. This also works when the running service is the Spring Boot Test application (see below).
 
 ==== Wildfly
 
@@ -268,7 +264,7 @@ Default `mvn` or explicitly `mvn -Djee-testcontainer=wildfly`
 
 ==== Open Liberty
 
-`mvn -Djee-testcontainer=open-liberty:19.0.0.9-javaee8-java11 -Pwith-slf4j`
+`mvn -Djee-testcontainer=open-liberty:19.0.0.9-javaee8-java11`
 
 Needs the tag for jdk11 support. Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
 
@@ -282,7 +278,7 @@ This version doesn't write the problem detail response entity in some cases I do
 
 ==== Payara
 
-`mvn -Djee-testcontainer=payara -Pwith-slf4j`
+`mvn -Djee-testcontainer=payara`
 
 Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
 
