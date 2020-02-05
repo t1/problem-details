@@ -51,7 +51,7 @@
                     </systemPropertyVariables>
                     <!-- TODO don't skip this test but fix the RI -->
                     <!-- the RI doesn't inject the ApiException properly in wildfly webTarget -->
-                    <test>!test.MicroprofileRestClientBridgeIT#shouldMapBridgedFail_webTarget</test>
+                    <test>!org.eclipse.microprofile.problemdetails.tck.MicroprofileRestClientBridgeIT#shouldMapBridgedFail_webTarget</test>
                 </configuration>
             </plugin>
         </plugins>
