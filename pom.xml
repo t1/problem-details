@@ -22,11 +22,6 @@
             <name>jcenter</name>
             <url>https://jcenter.bintray.com</url>
         </repository>
-        <repository>
-            <id>bintray-t1-javaee-helpers</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/t1/javaee-helpers</url>
-        </repository>
     </repositories>
     <distributionManagement>
         <repository>
