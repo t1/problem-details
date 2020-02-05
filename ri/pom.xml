@@ -14,11 +14,6 @@
     <artifactId>problem-details-ri</artifactId>
     <description>An implementation for JAX-RS using an ExceptionMapper</description>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
-
     <build>
         <defaultGoal>verify</defaultGoal>
         <finalName>${project.artifactId}</finalName>

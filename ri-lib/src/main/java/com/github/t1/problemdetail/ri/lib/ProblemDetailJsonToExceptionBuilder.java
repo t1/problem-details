@@ -1,6 +1,5 @@
 package com.github.t1.problemdetail.ri.lib;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import org.eclipse.microprofile.problemdetails.Extension;
 import org.eclipse.microprofile.problemdetails.Instance;
@@ -23,7 +22,7 @@ import static com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry.
 // TODO also support XML problem detail bodies https://github.com/t1/problem-details/issues/6
 public class ProblemDetailJsonToExceptionBuilder {
     protected final JsonObject body;
-    private final @Getter(lazy = true) Class<? extends Throwable> type = initType();
+    private Class<? extends Throwable> type = null;
 
     private final JsonObjectBuilder output = Json.createObjectBuilder();
 
@@ -31,9 +30,12 @@ public class ProblemDetailJsonToExceptionBuilder {
         this.body = Json.createReader(entityStream).readObject();
     }
 
-    private Class<? extends Throwable> initType() {
-        String typeUri = getTypeUri();
-        return REGISTRY.computeIfAbsent(typeUri, ProblemDetailExceptionRegistry::computeFrom);
+    public Class<? extends Throwable> getType() {
+        if (type == null) {
+            String typeUri = getTypeUri();
+            type = REGISTRY.computeIfAbsent(typeUri, ProblemDetailExceptionRegistry::computeFrom);
+        }
+        return type;
     }
 
     protected String getTypeUri() {
@@ -71,14 +73,17 @@ public class ProblemDetailJsonToExceptionBuilder {
             : JSONB.fromJson(json.toString(), getType());
     }
 
-    @SneakyThrows(ReflectiveOperationException.class)
     protected static Throwable newInstance(String detail, Class<? extends Throwable> type) {
-        if (detail == null)
-            return type.getConstructor().newInstance();
-        Constructor<? extends Throwable> constructorWithMessageParam = constructorWithMessageParam(type);
-        if (constructorWithMessageParam == null)
-            return type.getConstructor().newInstance();
-        return constructorWithMessageParam.newInstance(detail);
+        try {
+            if (detail == null)
+                return type.getConstructor().newInstance();
+            Constructor<? extends Throwable> constructorWithMessageParam = constructorWithMessageParam(type);
+            if (constructorWithMessageParam == null)
+                return type.getConstructor().newInstance();
+            return constructorWithMessageParam.newInstance(detail);
+        } catch (Throwable e) {
+            throw new RuntimeException("can't create new instance of " + type + " with detail [" + detail + "]", e);
+        }
     }
 
     private static Constructor<? extends Throwable> constructorWithMessageParam(Class<? extends Throwable> type) {

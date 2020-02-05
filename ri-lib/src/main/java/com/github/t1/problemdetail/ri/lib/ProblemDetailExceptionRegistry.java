@@ -54,10 +54,9 @@ public class ProblemDetailExceptionRegistry {
         return out.toString();
     }
 
-    private static Class<? extends Throwable> forName(String name) {
+    @SuppressWarnings("unchecked") private static Class<? extends Throwable> forName(String name) {
         try {
             Class<?> t = Class.forName(name);
-            //noinspection unchecked
             return Throwable.class.isAssignableFrom(t)
                 ? (Class<? extends Throwable>) t
                 : null;

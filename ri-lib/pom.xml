@@ -14,11 +14,6 @@
     <artifactId>problem-details-ri-lib</artifactId>
     <description>Code to be reused by jax-rs as well as spring impls</description>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
-
     <build>
         <defaultGoal>install</defaultGoal>
         <plugins>
