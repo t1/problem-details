@@ -12,13 +12,14 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: 8
-    - run: |
+    - name: mvn build
+      run: |
         cd proposals/problem-details
         mvn --batch-mode install
     - uses: actions/upload-artifact@v1
       with:
         name: mp-problemdetails
-        path: ~/.m2/repository/io/microprofile/sandbox/
+        path: ${{ env.HOME }}/.m2/repository/io/microprofile/sandbox/
 
   build:
     strategy:
