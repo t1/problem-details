@@ -3,7 +3,7 @@ name: Java CI
 on: [push]
 
 jobs:
-  build-mp:
+  build-microprofile-artifacts:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -43,8 +43,13 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: ${{ matrix.jdk }}
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: maven-${{ hashFiles('**/pom.xml') }}
     - uses: actions/download-artifact@v1
       with:
         name: mp-problemdetails
+        path: /home/runner/.m2/repository/io/microprofile/sandbox/
     - name: Build with Maven
       run: mvn --batch-mode verify -Djee-testcontainer=${{ matrix.container }}
