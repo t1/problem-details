@@ -18,7 +18,7 @@ public class ProblemDetailResponseExceptionMapper implements ResponseExceptionMa
 
     private boolean isProblemDetail(Object contentType) {
         // TODO also support XML problem detail bodies https://github.com/t1/problem-details/issues/6
-        return contentType == null // TODO fix after release of RESTEASY-2460 #2249: != &&
+        return contentType == null // TODO fix after release of RESTEASY-2460 #2249 4.5.0: != &&
             || PROBLEM_DETAIL_JSON_TYPE.isCompatible(MediaType.valueOf(contentType.toString()));
     }
 
