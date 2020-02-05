@@ -22,14 +22,6 @@
         <resteasy.version>4.4.2.Final</resteasy.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>bintray-t1-javaee-helpers</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/t1/javaee-helpers</url>
-        </repository>
-    </repositories>
-
     <build>
         <defaultGoal>verify</defaultGoal>
         <finalName>${project.artifactId}</finalName>
