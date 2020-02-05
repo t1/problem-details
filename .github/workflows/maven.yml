@@ -12,6 +12,10 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: 8
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: maven-${{ hashFiles('**/pom.xml') }}
     - name: mvn build
       run: |
         cd proposals/problem-details
@@ -19,7 +23,7 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: mp-problemdetails
-        path: ${{ env.HOME }}/.m2/repository/io/microprofile/sandbox/
+        path: /home/runner/.m2/repository/io/microprofile/sandbox/
 
   build:
     strategy:
