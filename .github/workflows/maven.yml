@@ -6,6 +6,14 @@ jobs:
   build-mp:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
+      with:
+        repository: t1/microprofile-sandbox
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 8
+    - run: cd proposals/problem-details
+    - run: mvn --batch-mode verify -Djee-testcontainer=${{ matrix.container }}
     - uses: actions/upload-artifact@v1
       with:
         name: mp-problemdetails
