@@ -67,6 +67,9 @@ public class DemoService {
     @Inject @RestClient PriceService prices;
 
     private int cost(String article) {
+        if ("oom bomb".equals(article)) {
+            throw new OutOfMemoryError("not really");
+        }
         return prices.get(article);
     }
 

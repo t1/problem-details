@@ -3,7 +3,8 @@
 :numbered:
 :icons: font
 
-image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
+image:https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
+image:https://github.com/t1/problem-details/workflows/Java%20CI/badge.svg[Java CI]
 
 ***************************************************************
 Map standard and custom exceptions to http response bodies containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807] and/or convert and throw problem details as exceptions. Both for JAX-RS as well as Spring Boot.

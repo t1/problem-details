@@ -10,8 +10,6 @@ public class PriceBoundary {
     @Path("/{article}")
     @GET public int get(@PathParam("article") String article) {
         switch (article) {
-            case "oom bomb":
-                throw new OutOfMemoryError("not really");
             case "expensive gadget":
                 return 50;
             case "cheap gadget":
