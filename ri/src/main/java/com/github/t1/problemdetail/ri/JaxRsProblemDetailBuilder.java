@@ -9,6 +9,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 
+import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
+
 class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
     private final HttpHeaders requestHeaders;
     private final Response response;
@@ -23,8 +25,12 @@ class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
         this.response = response;
     }
 
-    @Override protected ResponseStatus fallbackStatus() {
-        return (response != null) ? ResponseStatus.valueOf(response.getStatus()) : super.fallbackStatus();
+    @Override protected ResponseStatus buildStatus() {
+        ResponseStatus responseStatus = super.buildStatus();
+        if (response != null && responseStatus == BAD_REQUEST) {
+            return ResponseStatus.valueOf(response.getStatus());
+        }
+        return responseStatus;
     }
 
     @Override protected URI buildTypeUri() {

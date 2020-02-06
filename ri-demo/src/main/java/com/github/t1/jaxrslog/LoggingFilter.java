@@ -101,7 +101,11 @@ public class LoggingFilter implements
 
         private void printStatus(String method, URI uri, StatusType statusInfo) {
             if (uriInfo != null)
-                uri = uriInfo.getBaseUri().relativize(uri);
+                try {
+                    uri = uriInfo.getBaseUri().relativize(uri);
+                } catch (Exception e) {
+                    // ignore
+                }
             out.append(prefix).append(method).append(' ');
             if (!uri.isAbsolute())
                 out.append('/');

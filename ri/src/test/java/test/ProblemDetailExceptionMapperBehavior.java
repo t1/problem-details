@@ -77,12 +77,12 @@ class ProblemDetailExceptionMapperBehavior {
     @Test void shouldMapStandardIllegalArgumentException() {
         Response response = mapper.toResponse(new IllegalArgumentException("some message"));
 
-        then(response.getStatusInfo()).isEqualTo(BAD_REQUEST);
+        then(response.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
         then(problemDetailAsMap(response))
             .contains(
                 entry("type", URI.create("urn:problem-type:illegal-argument")),
                 entry("title", "Illegal Argument"),
-                entry("status", 400),
+                entry("status", 500),
                 entry("detail", "some message"))
             .hasSize(5) // the URN is random
             .containsKey("instance");

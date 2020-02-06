@@ -1,6 +1,7 @@
 package com.github.t1.problemdetail.ri.lib;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.microprofile.problemdetails.Detail;
 import org.eclipse.microprofile.problemdetails.Extension;
 import org.eclipse.microprofile.problemdetails.Instance;
@@ -39,21 +40,16 @@ import static org.eclipse.microprofile.problemdetails.ResponseStatus.INTERNAL_SE
 /**
  * Tech stack independent collector. Template methods can be overridden to provide tech stack specifics.
  */
+@RequiredArgsConstructor
 public abstract class ProblemDetailBuilder {
     public static final String URN_PROBLEM_TYPE_PREFIX = "urn:problem-type:";
 
-    protected final Throwable exception;
-    protected final @NonNull Class<? extends Throwable> exceptionType;
+    protected final @NonNull Throwable exception;
 
     private ResponseStatus status;
     private String mediaType;
     private Object body;
     private String logMessage;
-
-    public ProblemDetailBuilder(Throwable exception) {
-        this.exception = exception;
-        this.exceptionType = exception.getClass();
-    }
 
     public Object getBody() {
         if (body == null) {
@@ -90,21 +86,22 @@ public abstract class ProblemDetailBuilder {
     }
 
     protected ResponseStatus buildStatus() {
-        if (exceptionType != null && exceptionType.isAnnotationPresent(Status.class)) {
-            return exceptionType.getAnnotation(Status.class).value();
-        } else if (exception instanceof NullPointerException) {
-            return INTERNAL_SERVER_ERROR;
-        } else {
-            return fallbackStatus();
-        }
-    }
+        for (Throwable e = exception; e != null; e = e.getCause()) {
+            Class<? extends @NonNull Throwable> exceptionType = exception.getClass();
+            if (exceptionType.isAnnotationPresent(Status.class)) {
+                return exceptionType.getAnnotation(Status.class).value();
+            }
 
-    protected ResponseStatus fallbackStatus() {
+            if ("java.lang".equals(exceptionType.getPackage().getName())) {
+                return INTERNAL_SERVER_ERROR;
+            }
+        }
+
         return BAD_REQUEST;
     }
 
     protected URI buildTypeUri() {
-        return buildTypeUri(exceptionType);
+        return buildTypeUri(exception.getClass());
     }
 
     public static URI buildTypeUri(Class<? extends Throwable> type) {
@@ -118,13 +115,13 @@ public abstract class ProblemDetailBuilder {
     }
 
     protected String buildTitle() {
-        return exceptionType.isAnnotationPresent(Title.class)
-            ? exceptionType.getAnnotation(Title.class).value()
+        return exception.getClass().isAnnotationPresent(Title.class)
+            ? exception.getClass().getAnnotation(Title.class).value()
             : fallbackTitle();
     }
 
     protected String fallbackTitle() {
-        return wordsFromTypeName(exceptionType);
+        return wordsFromTypeName(exception.getClass());
     }
 
     private static String wordsFromTypeName(Class<? extends Throwable> type) {
@@ -140,12 +137,12 @@ public abstract class ProblemDetailBuilder {
 
     protected String buildDetail() {
         List<Object> details = new ArrayList<>();
-        for (Method method : exceptionType.getDeclaredMethods()) {
+        for (Method method : exception.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(Detail.class)) {
                 details.add(invoke(method));
             }
         }
-        for (Field field : exceptionType.getDeclaredFields()) {
+        for (Field field : exception.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(Detail.class)) {
                 details.add(get(field));
             }
@@ -186,14 +183,14 @@ public abstract class ProblemDetailBuilder {
     }
 
     protected URI buildInstance() {
-        String instance = Arrays.stream(exceptionType.getDeclaredFields())
+        String instance = Arrays.stream(exception.getClass().getDeclaredFields())
             .filter(field -> field.isAnnotationPresent(Instance.class))
             .map(this::get)
             .filter(Objects::nonNull)
             .findAny()
             .map(Object::toString)
             .orElseGet(
-                () -> Arrays.stream(exceptionType.getDeclaredMethods())
+                () -> Arrays.stream(exception.getClass().getDeclaredMethods())
                     .filter(method -> method.isAnnotationPresent(Instance.class))
                     .map(this::invoke)
                     .filter(Objects::nonNull)
@@ -221,12 +218,12 @@ public abstract class ProblemDetailBuilder {
 
     protected Map<String, Object> buildExtensions() {
         Map<String, Object> extensions = new TreeMap<>();
-        for (Method method : exceptionType.getDeclaredMethods()) {
+        for (Method method : exception.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(Extension.class)) {
                 extensions.put(extensionName(method), invoke(method));
             }
         }
-        for (Field field : exceptionType.getDeclaredFields()) {
+        for (Field field : exception.getClass().getDeclaredFields()) {
             if (field.isAnnotationPresent(Extension.class)) {
                 extensions.put(extensionName(field), get(field));
             }
@@ -310,7 +307,7 @@ public abstract class ProblemDetailBuilder {
 
     private Logger buildLogger() {
         Logging logging = findLoggingAnnotation();
-        return (logging == null || logging.to().isEmpty()) ? LoggerFactory.getLogger(exceptionType)
+        return (logging == null || logging.to().isEmpty()) ? LoggerFactory.getLogger(exception.getClass())
             : LoggerFactory.getLogger(logging.to());
     }
 
@@ -320,8 +317,8 @@ public abstract class ProblemDetailBuilder {
     }
 
     private Logging findLoggingAnnotation() {
-        Logging onType = exceptionType.getAnnotation(Logging.class);
-        Logging onPackage = exceptionType.getPackage().getAnnotation(Logging.class);
+        Logging onType = exception.getClass().getAnnotation(Logging.class);
+        Logging onPackage = exception.getClass().getPackage().getAnnotation(Logging.class);
         if (onPackage == null)
             return onType;
         if (onType == null)
