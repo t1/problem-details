@@ -5,13 +5,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.problemdetails.Status;
+import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import javax.inject.Inject;
 import javax.json.bind.annotation.JsonbProperty;
-import javax.ws.rs.NotFoundException;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import java.net.URI;
 import java.time.LocalDate;
 
 import static java.util.Arrays.asList;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.FORBIDDEN;
 
 @Slf4j
@@ -50,22 +57,22 @@ public class DemoService {
         }
     }
 
+    @Path("/prices/{articleId}")
+    @RegisterRestClient
+    @Produces(APPLICATION_JSON)
+    public interface PriceService {
+        @GET int get(@PathParam("articleId") String articleId);
+    }
+
+    @Inject @RestClient PriceService prices;
+
     private int cost(String article) {
-        switch (article) {
-            case "oom bomb":
-                throw new OutOfMemoryError("not really");
-            case "expensive gadget":
-                return 50;
-            case "cheap gadget":
-                return 5;
-            default:
-                throw new NotFoundException("There is no article [" + article + "]");
-        }
+        return prices.get(article);
     }
 
     private void deduct(int cost, int userId) {
         int balance = balance(userId);
-        if (balance < cost) {
+        if (cost > balance) {
             throw new OutOfCreditException(PROBLEM_INSTANCE, balance, cost, asList(ACCOUNT_1, ACCOUNT_2));
         }
     }
