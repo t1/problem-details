@@ -56,7 +56,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         return new ResponseAssert<>(target(path).request(MediaType.valueOf(accept)).post(null), type);
     }
 
-    private static Response post(String path) {
+    public static Response post(String path) {
         return target(path).request(APPLICATION_JSON_TYPE).post(null);
     }
 
