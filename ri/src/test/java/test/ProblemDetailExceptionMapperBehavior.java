@@ -68,9 +68,8 @@ class ProblemDetailExceptionMapperBehavior {
             .contains(
                 entry("type", URI.create("urn:problem-type:null-pointer")),
                 entry("title", "Null Pointer"),
-                entry("status", 500),
-                entry("detail", "some message"))
-            .hasSize(5) // the URN is random
+                entry("status", 500))
+            .hasSize(4) // the URN is random
             .containsKey("instance");
     }
 
@@ -82,9 +81,8 @@ class ProblemDetailExceptionMapperBehavior {
             .contains(
                 entry("type", URI.create("urn:problem-type:illegal-argument")),
                 entry("title", "Illegal Argument"),
-                entry("status", 500),
-                entry("detail", "some message"))
-            .hasSize(5) // the URN is random
+                entry("status", 500))
+            .hasSize(4) // the URN is random
             .containsKey("instance");
     }
 
@@ -96,9 +94,8 @@ class ProblemDetailExceptionMapperBehavior {
             .contains(
                 entry("type", URI.create("urn:problem-type:forbidden")),
                 entry("title", "Forbidden"),
-                entry("status", 403),
-                entry("detail", "some message"))
-            .hasSize(5) // the URN is random
+                entry("status", 403))
+            .hasSize(4) // the URN is random
             .containsKey("instance");
     }
 
