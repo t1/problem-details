@@ -33,8 +33,6 @@ class TestData {
     }
 
     static final ProblemDetailBuilder PROBLEM_DETAILS = new ProblemDetailBuilder(new SomeException()) {
-        @Override protected boolean hasDefaultMessage() { return false; }
-
         @Override protected String findMediaTypeSubtype() { return null; }
     };
 

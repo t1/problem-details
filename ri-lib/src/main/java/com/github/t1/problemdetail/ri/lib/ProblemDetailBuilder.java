@@ -147,13 +147,9 @@ public abstract class ProblemDetailBuilder {
                 details.add(get(field));
             }
         }
-        return (details.isEmpty())
-            ? hasDefaultMessage() ? null : exception.getMessage()
+        return (details.isEmpty()) ? null
             : details.stream().map(Object::toString).collect(joining(". "));
     }
-
-    /** We don't want to repeat default messages like `400 Bad Request` */
-    protected abstract boolean hasDefaultMessage();
 
     private Object invoke(Method method) {
         try {

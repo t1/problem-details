@@ -108,15 +108,6 @@ public class ProblemDetailControllerAdvice {
                     return super.buildStatus();
                 }
             }
-
-            @Override protected boolean hasDefaultMessage() {
-                if (exception instanceof HttpStatusCodeException) {
-                    HttpStatus status = ((HttpStatusCodeException) exception).getStatusCode();
-                    return exception.getMessage().equals(status.value() + " " + status.getReasonPhrase());
-                } else {
-                    return false;
-                }
-            }
         };
 
         problemDetailBuilder.log();

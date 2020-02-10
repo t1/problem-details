@@ -45,12 +45,6 @@ class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
         return super.fallbackTitle();
     }
 
-    @Override protected boolean hasDefaultMessage() {
-        int statusCode = getStatus().code;
-        String defaultMessage = "HTTP " + statusCode + " " + Status.fromStatusCode(statusCode);
-        return defaultMessage.equals(exception.getMessage());
-    }
-
     @Override protected String findMediaTypeSubtype() {
         for (MediaType accept : requestHeaders.getAcceptableMediaTypes()) {
             if ("application".equals(accept.getType())) {

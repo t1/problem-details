@@ -119,8 +119,6 @@ class LoggingBehavior {
     private static class MockProblemDetailBuilder extends ProblemDetailBuilder {
         public MockProblemDetailBuilder(Exception exception) { super(exception); }
 
-        @Override protected boolean hasDefaultMessage() { return false; }
-
         @Override protected String findMediaTypeSubtype() { return "json"; }
 
         @Override protected URI buildInstance() { return URI.create("urn:some-instance"); }
