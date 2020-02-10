@@ -68,7 +68,6 @@ class ClientDemoIT {
             OutOfMemoryError.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
-        then(throwable.getMessage()).isEqualTo("not really");
     }
 
     // TODO TomEE explodes the accounts-uris https://github.com/t1/problem-details/issues/17
@@ -103,7 +102,6 @@ class ClientDemoIT {
             NotFoundException.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
-        then(throwable.getMessage()).startsWith("There is no article [unknown article]");
     }
 
 

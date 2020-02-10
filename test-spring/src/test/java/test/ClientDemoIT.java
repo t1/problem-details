@@ -26,7 +26,6 @@ class ClientDemoIT extends AbstractClientDemoIT {
         ProblemDetailExceptionRegistry.register(CreditCardLimitExceeded.class, URI.create(
             "https://api.myshop.example/apidocs/com/github/t1/problemdetaildemoapp/DemoService.CreditCardLimitExceeded.html"));
 
-        ProblemDetailExceptionRegistry.register(ArticleNotFoundException.class);
         ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
     }
 
@@ -47,7 +46,6 @@ class ClientDemoIT extends AbstractClientDemoIT {
             "\"type\":\"urn:problem-type:not-found\"," +
             "\"title\":\"Not Found\"," +
             "\"status\":404," +
-            "\"detail\":\"There is no article [unknown article]\"," +
             "\"instance\":"; // random uuid
     }
 }
