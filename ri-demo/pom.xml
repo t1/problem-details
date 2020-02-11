@@ -89,10 +89,12 @@
             <artifactId>problem-details-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-ri</artifactId>
             <version>2.0.0-SNAPSHOT</version>
+            <!-- if the client runs in a container: <scope>runtime</scope>-->
         </dependency>
 
         <dependency>

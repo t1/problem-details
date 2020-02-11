@@ -6,242 +6,105 @@
 image:https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
 image:https://github.com/t1/problem-details/workflows/Java%20CI/badge.svg[Java CI]
 
-***************************************************************
-Map standard and custom exceptions to http response bodies containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807] and/or convert and throw problem details as exceptions. Both for JAX-RS as well as Spring Boot.
-***************************************************************
+== Intro
 
-== Server Side Examples
+Implements the https://github.com/eclipse/microprofile-sandbox/blob/master/proposals/problem-details/spec/src/main/asciidoc/microprofile-problemdetails.asciidoc[Microprofile Problem Detail Spec] to map standard and custom exceptions to http response bodies containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807] and/or convert and throw problem details as exceptions on the client side. Both for JAX-RS as well as Spring Boot.
 
-On the server side, include a dependency on `com.github.t1:problem-details-api` and a runtime dependency on `com.github.t1:problem-details-ri` for JAX-RS applications and `com.github.t1:problem-details-ri-spring` for Spring applications. Then you can simply throw an exception, and things will just work with defaults. Use annotations on the exception to use custom values.
+Why would you? See https://blog.codecentric.de/en/2020/01/rfc-7807-problem-details-with-spring-boot-and-jax-rs/[this blog post].
 
-=== Default Mapping
+== Quick Start
 
-To produce a problem detail body, simply throw a standard exception, e.g. in JAX-RS:
+Say you have a custom business exception to tell the client that the order just posted was above the credit range granted to the customer.
 
 [source,java]
 ---------------------------------------------------------------
-throw new NotFoundException("There is no article [" + articleId + "]");
+public class OutOfCreditException extends RuntimeException {}
 ---------------------------------------------------------------
 
-In Spring, you do:
+Throwing this will produce a 500 Internal Server Error with some html page that includes the stack trace. The client _could_ search for this exception in the stack trace and display a corresponding message to the customer... but that's not what we _want_ to do.
 
-[source,java]
----------------------------------------------------------------
-throw HttpClientErrorException.create("There is no article [" + articleId + "]",
-    NOT_FOUND, NOT_FOUND.getReasonPhrase(), null, null, null);
----------------------------------------------------------------
+Add a dependency on `io.microprofile.sandbox:problem-details-api` and a runtime dependency on `com.github.t1:problem-details-ri` for JAX-RS applications and `com.github.t1:problem-details-ri-spring` for Spring applications.
 
-Both will result in an exception body similar to this:
+Now throwing the same exception will result in an exception body with a `Content-Type` header `application/problem+json` similar to this:
 
 [source,yaml]
 ---------------------------------------------------------------
 {
-  "type": "urn:problem-type:not-found",                       # <1>
-  "title": "Not Found",                                       # <2>
-  "status": 404,                                              # <3>
-  "detail": "There is no article [862353]",                   # <4>
-  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d" # <5>
+  "type": "urn:problem-type:out-of-credit",                   # <1>
+  "title": "Out Of Credit",                                   # <2>
+  "status": 400,                                              # <3>
+  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d" # <4>
 }
 ---------------------------------------------------------------
 
 <1> The default `type` is a URN derived from the type name of the exception by converting camel case to kebap case and stripping the `Exception`.
 <2> The default `title` is derived from the type name of the exception by converting camel case to separate words.
-<3> The default `status` is `400 Bad Request` except for standard http exceptions (JAX-RS: `WebApplicationException`; Spring `HttpClientErrorException`), which get mapped to their corresponding status codes, and `NullPointerException`, which gets mapped to `500 Internal Server Error`.
-<4> The default `detail` is the message of the exception. There won't be a `detail` field, if the message of the exception is null.
-<5> The default `instance` is a random UUID URN.
+<3> The default `status` is `400 Bad Request` except for custom exceptions.
+<4> The default `instance` is a random UUID URN.
 
-If the first requested type (in an `Accept` header) is `application/xml`, the body will be the xml equivalent of this json document.
+There's no stack trace in the response any more, so we don't expose details about our service that could be interesting to a potential adversary. But we can use the `instance` field to search our server logs, so we can see this failure in the context of all the other logs produced for the request.
 
-=== Default Logging
-
-The main use of the `instance` field is to have a reference to search for in the logs. So an appropriate log event is produced whenever the problem detail is created. Then you can see all the logs that led to the problem and other details, such as the stack trace. The stack trace is explicitly _never_ part of the body, as it must be considered sensitive information.
-
-The logging category defaults to the fully qualified class name of the exception. By default, 4xx status codes are considered a problem of the client and are logged at `DEBUG` log level; 5xx status codes are a problem of the service, so they are logged at `ERROR`. As the stack trace is only relevant for server problems, it's only logged at `ERROR` and `WARNING` levels, not at `INFO` or `DEBUG` (see below for how to log at those levels).
-
-http://www.slf4j.org[slf4j] is used for the logging. If this is not provided by your application server, you may also have to package the `slf4j-api` and a binding like `slf4j-jdk14`.
-
-=== Annotations
-
-Each of the defaults above can optionally be overridden with annotations. Additionally, custom problem detail fields (called extensions) can be defined with `@Extension` annotated fields or methods. E.g.:
+On the client side, we can use the `type` field to react in a sensible manner. But we can do even better: by adding the same dependencies on the client side, the problem detail is converted back to an exception. E.g. when using the MicroProfile Rest Client, the code can look like this:
 
 [source,java]
 ---------------------------------------------------------------
-@Type("https://example.com/probs/out-of-credit")
-@Title("You do not have enough credit.")
-@Status(FORBIDDEN) // <1>
-@Logging(at = WARNING, to = "warnings") // <2>
-@Getter @AllArgsConstructor @NoArgsConstructor(force = true) // <3>
-public class OutOfCreditException extends RuntimeException {
-    @Instance private URI instance; // <4>
-    @Extension private int balance; // <5>
-    private int cost; // <6>
-    @Extension private List<URI> accounts; // <7>
+public class OrderGateway {
 
-    @Detail public String getDetail() { // <8>
-        return "Your current balance is " + balance + ", but that costs " + cost + ".";
+    @RegisterRestClient
+    interface OrderApi {
+        @Path("/orders/{article-id}")
+        @POST Shipment order(@PathParam("article-id") String articleId)
+            throws OutOfCreditException;
+    }
+
+    @Inject @RestClient OrderApi orderApi;
+
+    public Shipment order(String articleId) {
+        try {
+            return orderApi.order(articleId);
+        } catch (OutOfCreditException e) {
+            handleOutOfCredit();
+            return null;
+        }
     }
 }
 ---------------------------------------------------------------
 
-<1> The status is a constant from the `javax.ws.rs.core.Response.Status` enum. This works also for Spring applications.
-<2> The `@Logging` annotation defines the log level and the category. Can also be on the package (i.e. in the `package-info.java` file) to be a fallback for all exceptions in the package.
-<3> These are https://projectlombok.org[Lombok] annotations, just for demo purposes; feel free to write the boiler plate code by hand ;-)
-<4> The `@Instance` annotation can be on a field or a no-arg method.
-<5> There can be multiple `@Extension` annotations on fields or no-arg methods.
-<6> This field is not annotated, so it won't be part of the body.
-<7> Extensions can also be complex types, i.e. arrays/lists or maps/objects containing multiple fields, as long as they are (de)serializable.
-<8> The `@Detail` annotation can be on a field or a no-arg method.
+Note that the `OutOfCreditException` doesn't have to be exactly the same, it just has to have the same simple class name, but can be in a different package, have different constructors, etc.
 
-This will result in an problem detail body like this:
+Maybe we want to have more control over the problem detail. E.g. we may want to have a status code `403 Forbidden`, a different `title`, and the client needs to display the current balance, so we need a `balance` field.
 
-[source,json]
+[source,java]
+---------------------------------------------------------------
+@Status(FORBIDDEN)
+@Title("You do not have enough credit.")
+public class OutOfCreditException extends RuntimeException {
+    @Extension private int balance;
+}
+---------------------------------------------------------------
+
+This will produce a problem detail like this:
+
+[source,yaml]
 ---------------------------------------------------------------
 {
-  "type": "https://example.com/probs/out-of-credit",
-  "title": "Forbidden",
+  "type": "urn:problem-type:out-of-credit",
+  "title": "You do not have enough credit.",
   "status": 403,
-  "detail": "Your current balance is 30, but that costs 50.",
   "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d",
-  "balance": 50,
-  "accounts": [
-    "/account/12345",
-    "/account/67890"
-  ]
+  "balance": 50
 }
 ---------------------------------------------------------------
 
-=== Validations
+There are many other nice features. For the full documentation, look at the https://github.com/eclipse/microprofile-sandbox/blob/master/proposals/problem-details/spec/src/main/asciidoc/microprofile-problemdetails.asciidoc[MP spec] and/or the https://tools.ietf.org/html/rfc7807[RFC-7807] for the exact semantics of those fields.
 
-One of the most common use-cases for Bad Requests is a failing validation. You can do a verification and throw a corresponding problem detail exception simply by calling `ValidationFailedException.validate(object)`. Both implementations also convert the exception thrown when a parameter to a REST boundary method is annotated as `@Valid`.
+== Implementation Details
 
-=== HTML Output
-
-A problem detail will be rendered as a simple html table, when you requested `text/html`. This will happen for any Map, actually.
-
-== Client Side Examples
-
-On the client side, a type-safe exception is thrown for your code to catch.
-
-=== JAX-RS
-
-The ideal JAX-RS client code would look like this:
-
-[source,java]
----------------------------------------------------------------
-class OrderGateway {
-    public Shipment order(String articleId) {
-        try {
-            return target() // a configured `WebTarget`
-                .path("/orders").request(APPLICATION_JSON_TYPE)
-                .post(Entity.form(new Form().param("article", article)));
-        } catch (OutOfCreditException e) {
-            displayOutOfCredit(e.getBalance());
-            return null;
-        }
-    }
-}
----------------------------------------------------------------
-
-The current RI is based on a JAX-RS `ClientResponseFilter` which requires some boiler plate code:
-
-[source,java]
----------------------------------------------------------------
-class OrderGateway {
-    static {
-        ProblemDetailExceptionRegistry.register(OutOfCreditException.class); // <1>
-    }
-
-    public Shipment order(String articleId) {
-        try {
-            try {
-                return target() // a configured `WebTarget`
-                    .path("/orders").request(APPLICATION_JSON_TYPE)
-                    .post(Entity.form(new Form().param("article", article)));
-            } catch (ResponseProcessingException e) { // <2>
-                throw (RuntimeException) e.getCause();
-            }
-        } catch (OutOfCreditException e) {
-            displayOutOfCredit(e.getBalance());
-            return null;
-        }
-    }
-}
----------------------------------------------------------------
-
-<1> Register all custom exceptions that may be thrown.
-<2> Unwrap the JAX-RS `ResponseProcessingException` before you can catch the `OutOfCreditException`
-
-Other implementations may have other requirements and limitations.
-
-=== MicroProfile REST Client
-
-Things look fine here:
-
-[source,java]
----------------------------------------------------------------
-class OrderGateway {
-    @Path("/orders")
-    public interface OrderApi {
-        @POST Shipment order(@FormParam("article") @NotNull String article)
-            throws OutOfCreditException; // <1>
-    }
-
-    private OrderApi api = RestClientBuilder.newBuilder()
-        .baseUri("http://...")
-        .build(OrderApi.class);
-
-    public Shipment order(String articleId) {
-        try {
-            return api.order(article);
-        } catch (OutOfCreditException e) {
-            displayOutOfCredit(e.getBalance());
-            return null;
-        }
-    }
-}
----------------------------------------------------------------
-
-<1> The exceptions declared on the rest client api interface are registered automatically.
-
-This automatic registration mechanism uses a magical heuristic, not an official API, so it may fail in the future or on other app containers.
-
-=== Spring Boot
-
-In Spring, a client could look like this:
-
-[source,java]
----------------------------------------------------------------
-class OrderGateway {
-    static {
-        ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
-    }
-
-    public Shipment order(String articleId) {
-        try {
-            RestTemplate template = new RestTemplate();
-            template.setErrorHandler(new ProblemDetailErrorHandler());
-            return template.postForObject(BASE_URI + "/orders", form, Shipment.class);
-        } catch (OutOfCreditException e) {
-            displayOutOfCredit(e.getBalance());
-            return null;
-        }
-    }
-}
----------------------------------------------------------------
-
-Note that the registration of the `OutOfCreditException` in the `ProblemDetailExceptionRegistry` and the `ProblemDetailErrorHandler` in the `RestTemplate` is specific to the Spring Boot RI. Other implementations may have other requirements and limitations.
+1. We use http://www.slf4j.org[slf4j] for logging. If this is not provided by your application server, you may also have to package the `slf4j-api` and a binding like `slf4j-jdk14`.
 
 == Module Structure
 
-=== API
-
-This is the API your application can depend on while the implementations can vary. It contains the annotations, an enum `LogLevel` for the `@Logging` annotation, and a `Constants` class containing `PROBLEM_DETAIL_JSON` and `PROBLEM_DETAIL_XML`, and their typed equivalents for JAX-RS `MediaType`.
-
-On the server side, the binding happens without any application code dependencies, e.g. by an `ExceptionMapper`, a `ControllerAdvice`, or whatever mechanism is necessary for the implementation.
-
-On the client side, some manual registration (e.g. of a `ClientResponseFilter` or a `ResponseErrorHandler` and the exceptions to be mapped to) may be necessary, but this will not be portable, as the mechanism to do this registration is specific to the http client api you use. Some implementations may even work without such a manual step.
-
-=== Dummy-Impl [ri]
+=== ri
 
 A JAX-RS implementation, called `ri` even though it's actually only a POC, and it's incomplete. See the README for details.
 
@@ -265,9 +128,7 @@ Default `mvn` or explicitly `mvn -Djee-testcontainer=wildfly`
 
 ==== Open Liberty
 
-`mvn -Djee-testcontainer=open-liberty:full`
-
-Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
+`mvn -Djee-testcontainer=open-liberty:full -Pwith-slf4j`
 
 ==== TomEE
 
@@ -279,9 +140,7 @@ This version doesn't write the problem detail response entity in some cases I do
 
 ==== Payara
 
-`mvn -Djee-testcontainer=payara`
-
-Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
+`mvn -Djee-testcontainer=payara -Pwith-slf4j`
 
 === test-spring
 

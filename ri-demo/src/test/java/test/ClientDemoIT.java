@@ -21,7 +21,6 @@ import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.Response;
-
 import java.time.LocalDate;
 
 import static com.github.t1.problemdetaildemoapp.DemoService.ACCOUNT_1;
