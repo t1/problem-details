@@ -88,11 +88,13 @@ public abstract class ProblemDetailBuilder {
     protected ResponseStatus buildStatus() {
         for (Throwable e = exception; e != null; e = e.getCause()) {
             Class<? extends @NonNull Throwable> exceptionType = exception.getClass();
+
             if (exceptionType.isAnnotationPresent(Status.class)) {
                 return exceptionType.getAnnotation(Status.class).value();
             }
 
-            if ("java.lang".equals(exceptionType.getPackage().getName())) {
+            String packageName = exceptionType.getPackage().getName();
+            if (packageName.startsWith("java.") || packageName.startsWith("javax.")) { // TODO add to spec
                 return INTERNAL_SERVER_ERROR;
             }
         }

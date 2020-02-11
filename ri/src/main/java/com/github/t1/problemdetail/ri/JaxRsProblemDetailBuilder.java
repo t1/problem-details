@@ -6,10 +6,7 @@ import org.eclipse.microprofile.problemdetails.ResponseStatus;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import java.net.URI;
-
-import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
 
 class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
     private final HttpHeaders requestHeaders;
@@ -26,11 +23,9 @@ class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
     }
 
     @Override protected ResponseStatus buildStatus() {
-        ResponseStatus responseStatus = super.buildStatus();
-        if (response != null && responseStatus == BAD_REQUEST) {
-            return ResponseStatus.valueOf(response.getStatus());
-        }
-        return responseStatus;
+        return (response != null && ResponseStatus.allowed(response.getStatus()))
+            ? ResponseStatus.valueOf(response.getStatus())
+            : super.buildStatus();
     }
 
     @Override protected URI buildTypeUri() {

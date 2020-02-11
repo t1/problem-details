@@ -1,7 +1,5 @@
 package com.github.t1.problemdetail.ri;
 
-import lombok.extern.slf4j.Slf4j;
-
 import javax.annotation.Priority;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -14,7 +12,6 @@ import javax.ws.rs.ext.Provider;
  * Maps exceptions to a response with a body containing problem details
  * as specified in https://tools.ietf.org/html/rfc7807
  */
-@Slf4j
 @Provider
 @Priority(0)
 public class ProblemDetailExceptionMapper implements ExceptionMapper<Throwable> {

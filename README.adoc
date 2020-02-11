@@ -265,9 +265,9 @@ Default `mvn` or explicitly `mvn -Djee-testcontainer=wildfly`
 
 ==== Open Liberty
 
-`mvn -Djee-testcontainer=open-liberty:19.0.0.9-javaee8-java11`
+`mvn -Djee-testcontainer=open-liberty:full`
 
-Needs the tag for jdk11 support. Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
+Needs dependencies on `slf4j-api` and `slf4j-jdk14`.
 
 ==== TomEE
 
