@@ -1,5 +1,6 @@
 = Problem Details
 :toc: preamble
+:toclevels: 1
 :numbered:
 :icons: font
 
@@ -107,6 +108,10 @@ There are many other nice features. For the full documentation, look at the http
 === ri
 
 A JAX-RS implementation, called `ri` even though it's actually only a POC, and it's incomplete. See the README for details.
+
+=== ri-tck
+
+Utilizes the MP Problem Detail TCK to check the compliance of the RI.
 
 === ri-spring
 
