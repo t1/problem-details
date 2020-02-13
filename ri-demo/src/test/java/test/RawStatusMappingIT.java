@@ -9,10 +9,10 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON;
-import static test.ContainerLaunchingExtension.post;
+import static test.DemoContainerLaunchingExtension.post;
 
 /** Status codes without a problem detail body */
-@ExtendWith(ContainerLaunchingExtension.class)
+@ExtendWith(DemoContainerLaunchingExtension.class)
 class RawStatusMappingIT {
     @Test void shouldMapRawUnauthorized() {
         Response response = post("raw/401");

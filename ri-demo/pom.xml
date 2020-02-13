@@ -20,6 +20,7 @@
 
         <slf4j.version>1.7.30</slf4j.version>
         <resteasy.version>4.4.2.Final</resteasy.version>
+        <mp-problem-details.version>1.0.0-SNAPSHOT</mp-problem-details.version>
     </properties>
 
     <build>
@@ -87,7 +88,7 @@
         <dependency>
             <groupId>io.microprofile.sandbox</groupId>
             <artifactId>problem-details-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>${mp-problem-details.version}</version>
         </dependency>
 
         <dependency>
@@ -160,8 +161,13 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>jee-testcontainers</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.microprofile.sandbox</groupId>
+            <artifactId>problem-details.tck-jar</artifactId>
+            <version>${mp-problem-details.version}</version>
         </dependency>
     </dependencies>
 

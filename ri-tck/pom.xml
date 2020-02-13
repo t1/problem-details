@@ -44,9 +44,6 @@
                             urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
                             urn:mvn:com.github.t1:problem-details-ri:${project.version}:jar
                             urn:mvn:com.github.t1:problem-details-ri-lib:${project.version}:jar
-                            <!-- the slf4j dependencies are required only by some containers, but it doesn't hurt the others -->
-                            urn:mvn:org.slf4j:slf4j-api:${slf4j.version}:jar
-                            urn:mvn:org.slf4j:slf4j-jdk14:${slf4j.version}:jar
                         </problemdetails-tck-libs>
                     </systemPropertyVariables>
                     <!-- TODO don't skip this test but fix the RI -->
@@ -65,4 +62,30 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <!-- required by some but redundant on other JEE containers -->
+            <id>with-slf4j</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <problemdetails-tck-libs>
+                                    urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
+                                    urn:mvn:com.github.t1:problem-details-ri:${project.version}:jar
+                                    urn:mvn:com.github.t1:problem-details-ri-lib:${project.version}:jar
+                                    <!-- the slf4j dependencies are required only by some containers, but it doesn't hurt the others -->
+                                    urn:mvn:org.slf4j:slf4j-api:${slf4j.version}:jar
+                                    urn:mvn:org.slf4j:slf4j-jdk14:${slf4j.version}:jar
+                                </problemdetails-tck-libs>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

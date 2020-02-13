@@ -31,14 +31,17 @@ import static javax.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.BDDAssertions.then;
-import static test.ContainerLaunchingExtension.target;
+import static org.eclipse.microprofile.problemdetails.LogLevel.ERROR;
+import static org.eclipse.microprofile.problemdetails.LogLevel.INFO;
+import static test.DemoContainerLaunchingExtension.target;
+import static test.DemoContainerLaunchingExtension.thenLogged;
 
 /**
  * Demonstrate the client side when mapping exceptions to problem details
  * as presented in the rfc.
  */
 @Slf4j
-@ExtendWith(ContainerLaunchingExtension.class)
+@ExtendWith(DemoContainerLaunchingExtension.class)
 class ClientDemoIT {
     static {
         ProblemDetailExceptionRegistry.register(OutOfCreditException.class);
@@ -67,6 +70,13 @@ class ClientDemoIT {
             OutOfMemoryError.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
+        thenLogged(ERROR, OutOfMemoryError.class.getName())
+            .type("urn:problem-type:out-of-memory-error")
+            .title("Out Of Memory Error")
+            .status("500")
+            .instance("urn:uuid:")
+            .stackTrace("java.lang.OutOfMemoryError: not really")
+            .check();
     }
 
     // TODO TomEE explodes the accounts-uris https://github.com/t1/problem-details/issues/17
@@ -84,6 +94,16 @@ class ClientDemoIT {
         // detail is not settable, i.e. it's recreated in the method and the cost is 0
         then(throwable.getDetail()).isEqualTo("Your current balance is 30, but that costs 0.");
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
+        thenLogged(INFO, OutOfCreditException.class.getName())
+            .type("https://example.com/probs/out-of-credit")
+            .title("You do not have enough credit.")
+            .status("403")
+            .detail("Your current balance is 30, but that costs 50.")
+            .instance("/account/12345/msgs/abc")
+            .extension("accounts: [/account/12345, /account/67890]")
+            .extension("balance: 30")
+            .noStackTrace()
+            .check();
     }
 
     @Test void shouldFailToOrderWhenCreditCardLimitIsReached() {
