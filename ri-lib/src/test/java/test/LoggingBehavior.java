@@ -15,7 +15,7 @@ import static org.eclipse.microprofile.problemdetails.LogLevel.DEBUG;
 import static org.eclipse.microprofile.problemdetails.LogLevel.ERROR;
 import static org.eclipse.microprofile.problemdetails.LogLevel.INFO;
 import static org.eclipse.microprofile.problemdetails.LogLevel.OFF;
-import static org.eclipse.microprofile.problemdetails.LogLevel.WARNING;
+import static org.eclipse.microprofile.problemdetails.LogLevel.WARN;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.INTERNAL_SERVER_ERROR;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,7 +51,7 @@ class LoggingBehavior {
     }
 
     @Test void shouldLogExplicitlyAtWarning() {
-        @Logging(at = WARNING) class CustomException extends Exception {}
+        @Logging(at = WARN) class CustomException extends Exception {}
 
         ProblemDetailBuilder details = problemDetailsFor(new CustomException());
 

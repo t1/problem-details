@@ -253,7 +253,7 @@ public abstract class ProblemDetailBuilder {
 
     public String getLogMessage() {
         if (logMessage == null) {
-            logMessage = "ProblemDetail:" + formatBody(getBody());
+            logMessage = "ProblemDetails:" + formatBody(getBody());
         }
         return logMessage;
     }
@@ -289,7 +289,7 @@ public abstract class ProblemDetailBuilder {
             case ERROR:
                 logger.error(message, exception);
                 break;
-            case WARNING:
+            case WARN:
                 logger.warn(message, exception);
                 break;
             case INFO:
