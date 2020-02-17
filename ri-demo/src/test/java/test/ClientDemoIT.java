@@ -1,8 +1,8 @@
 package test;
 
 import com.github.t1.jaxrslog.LoggingFilter;
-import com.github.t1.problemdetail.ri.ProblemDetailClientResponseFilter;
-import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
+import com.github.t1.problemdetails.ri.ProblemDetailClientResponseFilter;
+import com.github.t1.problemdetails.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;

@@ -1,7 +1,7 @@
 package test;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailExceptionRegistry;
-import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
+import com.github.t1.problemdetails.ri.lib.ProblemDetailExceptionRegistry;
+import com.github.t1.problemdetails.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import org.eclipse.microprofile.problemdetails.Extension;
 import org.eclipse.microprofile.problemdetails.Instance;
 import org.junit.jupiter.api.Test;

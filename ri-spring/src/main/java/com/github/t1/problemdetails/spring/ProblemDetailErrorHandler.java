@@ -1,6 +1,6 @@
-package com.github.t1.problemdetail.spring;
+package com.github.t1.problemdetails.spring;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
+import com.github.t1.problemdetails.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpResponse;

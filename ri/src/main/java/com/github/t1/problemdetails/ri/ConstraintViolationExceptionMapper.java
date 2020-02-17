@@ -1,4 +1,4 @@
-package com.github.t1.problemdetail.ri;
+package com.github.t1.problemdetails.ri;
 
 import org.eclipse.microprofile.problemdetails.Detail;
 import org.eclipse.microprofile.problemdetails.Extension;

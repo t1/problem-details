@@ -1,10 +1,8 @@
-package com.github.t1.problemdetail.ri.lib;
+package com.github.t1.problemdetails.ri.lib;
 
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder.URN_PROBLEM_TYPE_PREFIX;
 
 public class ProblemDetailExceptionRegistry {
     static final Map<String, Class<? extends Throwable>> REGISTRY = new HashMap<>();
@@ -26,8 +24,8 @@ public class ProblemDetailExceptionRegistry {
     }
 
     public static Class<? extends Throwable> computeFrom(String type, String prefix, String suffix) {
-        if (type.startsWith(URN_PROBLEM_TYPE_PREFIX)) {
-            return computeFromUrn(type.substring(URN_PROBLEM_TYPE_PREFIX.length()), prefix, suffix);
+        if (type.startsWith(ProblemDetailBuilder.URN_PROBLEM_TYPE_PREFIX)) {
+            return computeFromUrn(type.substring(ProblemDetailBuilder.URN_PROBLEM_TYPE_PREFIX.length()), prefix, suffix);
         } else {
             return null;
         }

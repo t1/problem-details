@@ -1,6 +1,6 @@
-package com.github.t1.problemdetail.spring;
+package com.github.t1.problemdetails.spring;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
+import com.github.t1.problemdetails.ri.lib.ProblemDetailBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.problemdetails.Detail;
 import org.eclipse.microprofile.problemdetails.Extension;
@@ -9,7 +9,6 @@ import org.eclipse.microprofile.problemdetails.Status;
 import org.eclipse.microprofile.problemdetails.Title;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;

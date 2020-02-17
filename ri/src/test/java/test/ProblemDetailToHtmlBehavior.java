@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetail.ri.ProblemDetailHtmlMessageBodyWriter;
+import com.github.t1.problemdetails.ri.ProblemDetailHtmlMessageBodyWriter;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;

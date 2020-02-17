@@ -1,4 +1,4 @@
-package com.github.t1.problemdetail.ri.lib;
+package com.github.t1.problemdetails.ri.lib;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.github.t1.problemdetail.ri;
+package com.github.t1.problemdetails.ri;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
+import com.github.t1.problemdetails.ri.lib.ProblemDetailBuilder;
 import org.eclipse.microprofile.problemdetails.ResponseStatus;
 
 import javax.ws.rs.core.HttpHeaders;

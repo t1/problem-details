@@ -1,4 +1,4 @@
-package com.github.t1.problemdetail.ri;
+package com.github.t1.problemdetails.ri;
 
 import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.junit.jupiter.api.extension.BeforeEachCallback;

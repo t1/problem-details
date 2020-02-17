@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetail.ri.lib.ProblemDetailBuilder;
+import com.github.t1.problemdetails.ri.lib.ProblemDetailBuilder;
 import org.eclipse.microprofile.problemdetails.Detail;
 import org.eclipse.microprofile.problemdetails.Extension;
 import org.eclipse.microprofile.problemdetails.Instance;
