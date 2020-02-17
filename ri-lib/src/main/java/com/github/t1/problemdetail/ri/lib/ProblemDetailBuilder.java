@@ -94,7 +94,7 @@ public abstract class ProblemDetailBuilder {
             }
 
             String packageName = exceptionType.getPackage().getName();
-            if (packageName.startsWith("java.") || packageName.startsWith("javax.")) { // TODO add to spec
+            if (packageName.startsWith("java.") || packageName.startsWith("javax.")) {
                 return INTERNAL_SERVER_ERROR;
             }
         }
