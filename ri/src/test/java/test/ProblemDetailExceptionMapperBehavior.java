@@ -246,7 +246,7 @@ class ProblemDetailExceptionMapperBehavior {
             entry("title", "Some"),
             entry("status", 400))
             .containsKey("instance");
-        then(map.get("instance").toString()).startsWith("urn:uuid:");
+        then(map.get("instance")).isNull();
     }
 
     @Test void shouldMapCustomExceptionWithParameterizedInstanceMethod() {
@@ -283,7 +283,7 @@ class ProblemDetailExceptionMapperBehavior {
             entry("title", "Some"),
             entry("status", 400))
             .containsKey("instance");
-        then(map.get("instance").toString()).startsWith("urn:uuid:");
+        then(map.get("instance")).isNull();
     }
 
 

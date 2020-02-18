@@ -24,11 +24,9 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
 
@@ -181,22 +179,26 @@ public abstract class ProblemDetailBuilder {
     }
 
     protected URI buildInstance() {
-        String instance = Arrays.stream(exception.getClass().getDeclaredFields())
-            .filter(field -> field.isAnnotationPresent(Instance.class))
-            .map(this::get)
-            .filter(Objects::nonNull)
-            .findAny()
-            .map(Object::toString)
-            .orElseGet(
-                () -> Arrays.stream(exception.getClass().getDeclaredMethods())
-                    .filter(method -> method.isAnnotationPresent(Instance.class))
-                    .map(this::invoke)
-                    .filter(Objects::nonNull)
-                    .findAny()
-                    .map(Object::toString)
-                    .orElseGet(
-                        () -> "urn:uuid:" + UUID.randomUUID()));
-        return createSafeUri(instance);
+        boolean anyAnnotatedInstance = false;
+        for (Field field : exception.getClass().getDeclaredFields()) {
+            if (field.isAnnotationPresent(Instance.class)) {
+                anyAnnotatedInstance = true;
+                Object o = get(field);
+                if (o != null) {
+                    return createSafeUri(o.toString());
+                }
+            }
+        }
+        for (Method method : exception.getClass().getDeclaredMethods()) {
+            if (method.isAnnotationPresent(Instance.class)) {
+                anyAnnotatedInstance = true;
+                Object o = invoke(method);
+                if (o != null) {
+                    return createSafeUri(o.toString());
+                }
+            }
+        }
+        return (anyAnnotatedInstance) ? null : createSafeUri("urn:uuid:" + UUID.randomUUID());
     }
 
     private URI createSafeUri(String string) {
