@@ -84,13 +84,13 @@
     </build>
 
     <modules>
-        <module>ri-lib</module>
+        <module>lib</module>
 
-        <module>ri</module>
-        <module>ri-demo</module>
-        <module>ri-tck</module>
+        <module>jaxrs</module>
+        <module>demo</module>
+        <module>jaxrs-tck</module>
 
-        <module>ri-spring</module>
+        <module>spring</module>
         <module>test-spring</module>
     </modules>
 </project>

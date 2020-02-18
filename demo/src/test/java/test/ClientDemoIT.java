@@ -1,11 +1,11 @@
 package test;
 
 import com.github.t1.jaxrslog.LoggingFilter;
-import com.github.t1.problemdetails.ri.ProblemDetailClientResponseFilter;
-import com.github.t1.problemdetails.ri.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
+import com.github.t1.problemdetails.ri.ProblemDetailClientResponseFilter;
+import com.github.t1.problemdetails.ri.lib.ProblemDetailExceptionRegistry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.eclipse.microprofile.problemdetails.LogLevel.ERROR;
 import static org.eclipse.microprofile.problemdetails.LogLevel.INFO;
+import static test.DemoContainerLaunchingExtension.assumeCanCheckLogging;
 import static test.DemoContainerLaunchingExtension.target;
 import static test.DemoContainerLaunchingExtension.thenLogged;
 
@@ -70,6 +71,7 @@ class ClientDemoIT {
             OutOfMemoryError.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
+        assumeCanCheckLogging();
         thenLogged(ERROR, OutOfMemoryError.class.getName())
             .type("urn:problem-type:out-of-memory-error")
             .title("Out Of Memory Error")
@@ -94,6 +96,7 @@ class ClientDemoIT {
         // detail is not settable, i.e. it's recreated in the method and the cost is 0
         then(throwable.getDetail()).isEqualTo("Your current balance is 30, but that costs 0.");
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
+        assumeCanCheckLogging();
         thenLogged(INFO, OutOfCreditException.class.getName())
             .type("https://example.com/probs/out-of-credit")
             .title("You do not have enough credit.")

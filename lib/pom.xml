@@ -11,7 +11,7 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>problem-details-ri-lib</artifactId>
+    <artifactId>problem-details-lib</artifactId>
     <description>Code to be reused by jax-rs as well as spring impls</description>
 
     <build>

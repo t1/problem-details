@@ -24,28 +24,25 @@ public class OutOfCreditException extends RuntimeException {}
 
 Throwing this will produce a 500 Internal Server Error with some html page that includes the stack trace. The client _could_ search for this exception in the stack trace and display a corresponding message to the customer... but that's not what we _want_ to do.
 
-Add a dependency on `io.microprofile.sandbox:problem-details-api` and a runtime dependency on `com.github.t1:problem-details-ri` for JAX-RS applications and `com.github.t1:problem-details-ri-spring` for Spring applications.
+Add a dependency on `io.microprofile.sandbox:problem-details-api` and a runtime dependency on `com.github.t1:problem-details-jaxrs` for JAX-RS applications and `com.github.t1:problem-details-spring` for Spring applications.
 
 Now throwing the same exception will result in an exception body with a `Content-Type` header `application/problem+json` similar to this:
 
 [source,yaml]
 ---------------------------------------------------------------
 {
-  "type": "urn:problem-type:out-of-credit",                   # <1>
-  "title": "Out Of Credit",                                   # <2>
-  "status": 400,                                              # <3>
-  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d" # <4>
+  "type": "urn:problem-type:out-of-credit",
+  "title": "Out Of Credit",
+  "status": 400,
+  "instance": "urn:uuid:d294b32b-9dda-4292-b51f-35f65b4bf64d"
 }
 ---------------------------------------------------------------
 
-<1> The default `type` is a URN derived from the type name of the exception by converting camel case to kebap case and stripping the `Exception`.
-<2> The default `title` is derived from the type name of the exception by converting camel case to separate words.
-<3> The default `status` is `400 Bad Request` except for custom exceptions.
-<4> The default `instance` is a random UUID URN.
+For details see the https://github.com/eclipse/microprofile-sandbox/blob/master/proposals/problem-details/spec/src/main/asciidoc/microprofile-problemdetails.asciidoc[spec]
 
 There's no stack trace in the response any more, so we don't expose details about our service that could be interesting to a potential adversary. But we can use the `instance` field to search our server logs, so we can see this failure in the context of all the other logs produced for the request.
 
-On the client side, we can use the `type` field to react in a sensible manner. But we can do even better: by adding the same dependencies on the client side, the problem detail is converted back to an exception. E.g. when using the MicroProfile Rest Client, the code can look like this:
+On the client side, we can now use the `type` field to react in a sensible manner, e.g. by using a `switch` statement. But we can do even better: by adding the same dependencies on the client side, the problem detail is converted back to an exception. E.g. when using the MicroProfile Rest Client, the code can look like this:
 
 [source,java]
 ---------------------------------------------------------------
@@ -97,7 +94,7 @@ This will produce a problem detail like this:
 }
 ---------------------------------------------------------------
 
-There are many other nice features. For the full documentation, look at the https://github.com/eclipse/microprofile-sandbox/blob/master/proposals/problem-details/spec/src/main/asciidoc/microprofile-problemdetails.asciidoc[MP spec] and/or the https://tools.ietf.org/html/rfc7807[RFC-7807] for the exact semantics of those fields.
+There are many other nice features. For the full documentation, look at the https://github.com/eclipse/microprofile-sandbox/blob/master/proposals/problem-details/spec/src/main/asciidoc/microprofile-problemdetails.asciidoc[spec] and/or the https://tools.ietf.org/html/rfc7807[RFC-7807] for the exact semantics of those fields.
 
 == Implementation Details
 
@@ -105,27 +102,27 @@ There are many other nice features. For the full documentation, look at the http
 
 == Module Structure
 
-=== ri
+=== jaxrs
 
-A JAX-RS implementation, called `ri` even though it's actually only a POC, and it's incomplete. See the README for details.
+The JAX-RS implementation.
 
-=== ri-tck
+=== jaxrs-tck
 
-Utilizes the MP Problem Detail TCK to check the compliance of the RI.
+Utilizes the MP Problem Detail TCK to check the compliance of the jaxrs implementation.
 
-=== ri-spring
+=== spring
 
 A Spring Boot implementation. This also is just a POC, there may be better integration points that I'm not aware of.
 
-=== ri-lib
+=== lib
 
-This is a library used by the JAX-RS RI as well as the Spring RI. It's not part of any supported public API, so you MUST NOT depend on this module directly.
+This is a library used by the JAX-RS implementation as well as the Spring implementation. It's not part of any supported public API, so you MUST NOT depend on this module directly.
 
-=== ri-demo
+=== demo
 
-Builds a `war` hard-wired to the `ri`; and when using the maven profile `with-slf4j`, the `slf4j-api` and `slf4j-jdk14` are included as well. The integration tests use https://github.com/t1/jee-testcontainers[JEE Testcontainers], i.e. it can be configured to start different Docker containers with various JEE application servers (details below). By default, it starts a Wildfly.
+Builds a `war` hard-wired to the JAX-RS implementation; and when using the maven profile `with-slf4j`, the `slf4j-api` and `slf4j-jdk14` are included as well. The integration tests use https://github.com/t1/jee-testcontainers[JEE Testcontainers], i.e. it can be configured to start different Docker containers with various JEE application servers (details below). By default, it starts a Wildfly.
 
-You can also specify a base URL in the system property `testcontainer-running` (e.g. `-Dtestcontainer-running=http://localhost:8080/ri-demo`), so the tests verify a running service. This is very handy while developing. This also works when the running service is the Spring Boot Test application (see below).
+You can also specify a base URL in the system property `testcontainer-running` (e.g. `-Dtestcontainer-running=http://localhost:8080/demo`), so the tests verify a running service. This is very handy while developing. This also works when the running service is the Spring Boot Test application (see below).
 
 ==== Wildfly
 
@@ -149,6 +146,6 @@ This version doesn't write the problem detail response entity in some cases I do
 
 === test-spring
 
-Builds a Spring Boot application containing the RI. The integration tests also start the application.
+Builds a Spring Boot application containing the Spring implementation. The integration tests also start the application.
 
 You can specify a base URL in the system property `testcontainer-running` (e.g. `-Dtestcontainer-running=http://localhost:8080`), so the tests verify a running service. This is very handy while developing the implementation. This also works when the running service is the JAX-RS Test application (see above).
