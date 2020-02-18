@@ -1,4 +1,4 @@
-package com.github.t1.problemdetails.ri.lib;
+package com.github.t1.problemdetails.jaxrs.lib;
 
 import java.net.URI;
 import java.util.HashMap;

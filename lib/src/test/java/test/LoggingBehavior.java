@@ -1,6 +1,6 @@
 package test;
 
-import com.github.t1.problemdetails.ri.lib.ProblemDetailBuilder;
+import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailBuilder;
 import org.eclipse.microprofile.problemdetails.Logging;
 import org.eclipse.microprofile.problemdetails.Status;
 import org.junit.jupiter.api.AfterEach;

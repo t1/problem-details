@@ -1,7 +1,7 @@
-package com.github.t1.problemdetails.ri;
+package com.github.t1.problemdetails.jaxrs;
 
-import com.github.t1.problemdetails.ri.lib.ProblemDetailExceptionRegistry;
-import com.github.t1.problemdetails.ri.lib.ProblemDetailJsonToExceptionBuilder;
+import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailExceptionRegistry;
+import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailJsonToExceptionBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package com.github.t1.problemdetails.ri.lib;
+package com.github.t1.problemdetails.jaxrs.lib;
 
 import lombok.SneakyThrows;
 import org.w3c.dom.Document;

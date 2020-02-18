@@ -1,6 +1,6 @@
-package com.github.t1.problemdetails.ri;
+package com.github.t1.problemdetails.jaxrs;
 
-import com.github.t1.problemdetails.ri.lib.ProblemXml;
+import com.github.t1.problemdetails.jaxrs.lib.ProblemXml;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;

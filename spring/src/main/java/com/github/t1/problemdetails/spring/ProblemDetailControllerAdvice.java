@@ -1,6 +1,6 @@
 package com.github.t1.problemdetails.spring;
 
-import com.github.t1.problemdetails.ri.lib.ProblemDetailBuilder;
+import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.problemdetails.Detail;
 import org.eclipse.microprofile.problemdetails.Extension;

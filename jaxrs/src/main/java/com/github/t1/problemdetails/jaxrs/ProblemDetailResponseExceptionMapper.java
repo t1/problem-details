@@ -1,4 +1,4 @@
-package com.github.t1.problemdetails.ri;
+package com.github.t1.problemdetails.jaxrs;
 
 import org.eclipse.microprofile.rest.client.ext.ResponseExceptionMapper;
 

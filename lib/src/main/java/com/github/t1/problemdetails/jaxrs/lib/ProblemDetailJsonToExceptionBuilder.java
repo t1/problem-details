@@ -1,4 +1,4 @@
-package com.github.t1.problemdetails.ri.lib;
+package com.github.t1.problemdetails.jaxrs.lib;
 
 import lombok.SneakyThrows;
 import org.eclipse.microprofile.problemdetails.Extension;
@@ -17,7 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
-import static com.github.t1.problemdetails.ri.lib.ProblemDetailExceptionRegistry.REGISTRY;
+import static com.github.t1.problemdetails.jaxrs.lib.ProblemDetailExceptionRegistry.REGISTRY;
 
 // TODO also support XML problem detail bodies https://github.com/t1/problem-details/issues/6
 public class ProblemDetailJsonToExceptionBuilder {
