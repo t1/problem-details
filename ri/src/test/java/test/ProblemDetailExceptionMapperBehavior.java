@@ -157,6 +157,17 @@ class ProblemDetailExceptionMapperBehavior {
         );
     }
 
+    @Test void shouldMapCustomExceptionWithTwoDetailFields() {
+        class SomeException extends RuntimeException {
+            @Detail String detail1 = "d1";
+            @Detail String detail2 = "d2";
+        }
+
+        Response response = mapper.toResponse(new SomeException());
+
+        then(problemDetailAsMap(response).get("detail")).isEqualTo("d1 d2");
+    }
+
     @Test void shouldMapCustomExceptionWithFailingMethods() {
         @Type("some-type")
         @Title("some-title")

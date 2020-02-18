@@ -16,21 +16,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.eclipse.microprofile.problemdetails.LogLevel.AUTO;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.INTERNAL_SERVER_ERROR;
@@ -136,63 +132,21 @@ public abstract class ProblemDetailBuilder {
     }
 
     protected String buildDetail() {
-        List<Object> details = new ArrayList<>();
-        for (Method method : exception.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Detail.class)) {
-                details.add(invoke(method));
-            }
-        }
-        for (Field field : exception.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(Detail.class)) {
-                details.add(get(field));
-            }
-        }
-        return (details.isEmpty()) ? null
-            : details.stream().map(Object::toString).collect(joining(". "));
-    }
-
-    private Object invoke(Method method) {
-        try {
-            if (method.getParameterCount() != 0)
-                return invocationFailed(method, "expected no args but got " + method.getParameterCount());
-            method.setAccessible(true);
-            return method.invoke(exception);
-        } catch (IllegalAccessException e) {
-            return invocationFailed(method, e);
-        } catch (InvocationTargetException e) {
-            return invocationFailed(method, e.getTargetException());
-        }
-    }
-
-    private String invocationFailed(Method method, Object detail) {
-        return "could not invoke " + method.getDeclaringClass().getSimpleName()
-            + "." + method.getName() + ": " + detail;
-    }
-
-    private Object get(Field field) {
-        try {
-            field.setAccessible(true);
-            return field.get(exception);
-        } catch (IllegalAccessException e) {
-            return "could not get " + field;
-        }
+        String details = Property.allIn(exception)
+            .filter(property -> property.isAnnotationPresent(Detail.class))
+            .map(Property::get)
+            .filter(Objects::nonNull)
+            .map(Object::toString)
+            .collect(joining(" "));
+        return (details.isEmpty()) ? null : details;
     }
 
     protected URI buildInstance() {
         boolean anyAnnotatedInstance = false;
-        for (Field field : exception.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(Instance.class)) {
+        for (Property property : Property.allIn(exception).collect(toList())) {
+            if (property.isAnnotationPresent(Instance.class)) {
                 anyAnnotatedInstance = true;
-                Object o = get(field);
-                if (o != null) {
-                    return createSafeUri(o.toString());
-                }
-            }
-        }
-        for (Method method : exception.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Instance.class)) {
-                anyAnnotatedInstance = true;
-                Object o = invoke(method);
+                Object o = property.get();
                 if (o != null) {
                     return createSafeUri(o.toString());
                 }
@@ -217,23 +171,15 @@ public abstract class ProblemDetailBuilder {
     }
 
     protected Map<String, Object> buildExtensions() {
-        Map<String, Object> extensions = new TreeMap<>();
-        for (Method method : exception.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(Extension.class)) {
-                extensions.put(extensionName(method), invoke(method));
-            }
-        }
-        for (Field field : exception.getClass().getDeclaredFields()) {
-            if (field.isAnnotationPresent(Extension.class)) {
-                extensions.put(extensionName(field), get(field));
-            }
-        }
-        return extensions;
+        return Property.allIn(exception)
+            .filter(property -> property.isAnnotationPresent(Extension.class))
+            .filter(Property::notNull)
+            .collect(toMap(this::extensionName, Property::get, (a, b) -> a, TreeMap::new));
     }
 
-    private String extensionName(Member member) {
-        String annotatedName = ((AnnotatedElement) member).getAnnotation(Extension.class).value();
-        return annotatedName.isEmpty() ? member.getName() : annotatedName;
+    private String extensionName(Property property) {
+        String annotatedName = property.getAnnotation(Extension.class).value();
+        return annotatedName.isEmpty() ? property.getName() : annotatedName;
     }
 
     public String getMediaType() {
