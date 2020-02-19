@@ -33,7 +33,6 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.eclipse.microprofile.problemdetails.LogLevel.ERROR;
 import static org.eclipse.microprofile.problemdetails.LogLevel.INFO;
-import static test.DemoContainerLaunchingExtension.assumeCanCheckLogging;
 import static test.DemoContainerLaunchingExtension.target;
 import static test.DemoContainerLaunchingExtension.thenLogged;
 
@@ -71,7 +70,7 @@ class ClientDemoIT {
             OutOfMemoryError.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
-        assumeCanCheckLogging();
+        then(throwable.getMessage()).isEqualTo("not really");
         thenLogged(ERROR, OutOfMemoryError.class.getName())
             .type("urn:problem-type:out-of-memory-error")
             .title("Out Of Memory Error")
@@ -96,7 +95,6 @@ class ClientDemoIT {
         // detail is not settable, i.e. it's recreated in the method and the cost is 0
         then(throwable.getDetail()).isEqualTo("Your current balance is 30, but that costs 0.");
         then(throwable.getAccounts()).containsExactly(ACCOUNT_1, ACCOUNT_2);
-        assumeCanCheckLogging();
         thenLogged(INFO, OutOfCreditException.class.getName())
             .type("https://example.com/probs/out-of-credit")
             .title("You do not have enough credit.")
@@ -124,6 +122,7 @@ class ClientDemoIT {
             NotFoundException.class);
 
         then(throwable).describedAs("nothing thrown").isNotNull();
+        then(throwable.getMessage()).startsWith("There is no article [unknown article]");
     }
 
 

@@ -1,10 +1,10 @@
 package test;
 
-import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailExceptionRegistry;
-import com.github.t1.problemdetails.spring.ProblemDetailErrorHandler;
 import com.github.t1.problemdetaildemoapp.DemoService.CreditCardLimitExceeded;
 import com.github.t1.problemdetaildemoapp.DemoService.UserNotEntitledToOrderOnAccount;
 import com.github.t1.problemdetaildemoapp.OutOfCreditException;
+import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailExceptionRegistry;
+import com.github.t1.problemdetails.spring.ProblemDetailErrorHandler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -46,6 +46,7 @@ class ClientDemoIT extends AbstractClientDemoIT {
             "\"type\":\"urn:problem-type:not-found\"," +
             "\"title\":\"Not Found\"," +
             "\"status\":404," +
+            "\"detail\":\"There is no article [unknown article]\"," +
             "\"instance\":"; // random uuid
     }
 }

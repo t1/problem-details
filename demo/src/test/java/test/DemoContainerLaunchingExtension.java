@@ -15,12 +15,6 @@ class DemoContainerLaunchingExtension extends ContainerLaunchingExtension {
         return JeeContainer.create().withDeployment("target/problem-details-jaxrs-demo.war");
     }
 
-    public static void assumeCanCheckLogging() {
-        assumeThat(System.getProperty("problem-details-demo-running", null))
-            .describedAs("can't grab logging from running container")
-            .isNull();
-    }
-
     public static Response post(String path) {
         return target(path).request(APPLICATION_JSON_TYPE).post(null);
     }

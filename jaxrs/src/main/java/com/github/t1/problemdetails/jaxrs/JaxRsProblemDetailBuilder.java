@@ -6,6 +6,7 @@ import org.eclipse.microprofile.problemdetails.ResponseStatus;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 
 class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
@@ -38,6 +39,18 @@ class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
         if (response != null)
             return response.getStatusInfo().getReasonPhrase();
         return super.fallbackTitle();
+    }
+
+    @Override protected boolean useExceptionMessageAsDetail() {
+        return Boolean.parseBoolean(System.getProperty("exceptionMessageAsDetail", "true"))
+            && !hasDefaultMessage();
+    }
+
+    /** We don't want to repeat default messages like `400 Bad Request` */
+    private boolean hasDefaultMessage() {
+        int statusCode = getStatus().code;
+        String defaultMessage = "HTTP " + statusCode + " " + Status.fromStatusCode(statusCode);
+        return defaultMessage.equals(exception.getMessage());
     }
 
     @Override protected String findMediaTypeSubtype() {

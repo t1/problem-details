@@ -20,6 +20,7 @@ import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST
 
 class TestData {
     static final ProblemDetailBuilder PROBLEM_DETAILS = new ProblemDetailBuilder(new SomeException()) {
+        @Override protected boolean useExceptionMessageAsDetail() { return true; }
         @Override protected String findMediaTypeSubtype() { return null; }
     };
 

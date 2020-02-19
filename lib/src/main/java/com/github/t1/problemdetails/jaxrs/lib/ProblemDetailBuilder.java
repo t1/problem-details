@@ -138,8 +138,13 @@ public abstract class ProblemDetailBuilder {
             .filter(Objects::nonNull)
             .map(Object::toString)
             .collect(joining(" "));
-        return (details.isEmpty()) ? null : details;
+        if (details.isEmpty()) {
+            return useExceptionMessageAsDetail() ? exception.getMessage() : null;
+        }
+        return details;
     }
+
+    protected abstract boolean useExceptionMessageAsDetail();
 
     protected URI buildInstance() {
         boolean anyAnnotatedInstance = false;

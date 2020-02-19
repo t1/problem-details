@@ -9,6 +9,7 @@ import org.eclipse.microprofile.problemdetails.Status;
 import org.eclipse.microprofile.problemdetails.Title;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -105,6 +106,21 @@ public class ProblemDetailControllerAdvice {
                     return ResponseStatus.valueOf(((HttpStatusCodeException) exception).getStatusCode().value());
                 } else {
                     return super.buildStatus();
+                }
+            }
+
+            @Override protected boolean useExceptionMessageAsDetail() {
+                return Boolean.parseBoolean(System.getProperty("exceptionMessageAsDetail", "true"))
+                    && !hasDefaultMessage();
+            }
+
+            /** We don't want to repeat default messages like `400 Bad Request` */
+            private boolean hasDefaultMessage() {
+                if (exception instanceof HttpStatusCodeException) {
+                    HttpStatus status = ((HttpStatusCodeException) exception).getStatusCode();
+                    return exception.getMessage().equals(status.value() + " " + status.getReasonPhrase());
+                } else {
+                    return false;
                 }
             }
         };
