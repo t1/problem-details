@@ -3,14 +3,19 @@ package test;
 import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailBuilder;
 import org.eclipse.microprofile.problemdetails.Logging;
 import org.eclipse.microprofile.problemdetails.Status;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import test.JavaUtilLoggingMemento.Log;
 import test.sub.SubException;
 import test.sub.SubExceptionWithCategory;
 import test.sub.SubExceptionWithLevel;
 
 import java.net.URI;
+import java.util.logging.Level;
 
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
+import static org.assertj.core.api.BDDAssertions.then;
 import static org.eclipse.microprofile.problemdetails.LogLevel.DEBUG;
 import static org.eclipse.microprofile.problemdetails.LogLevel.ERROR;
 import static org.eclipse.microprofile.problemdetails.LogLevel.INFO;
@@ -18,44 +23,44 @@ import static org.eclipse.microprofile.problemdetails.LogLevel.OFF;
 import static org.eclipse.microprofile.problemdetails.LogLevel.WARN;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.INTERNAL_SERVER_ERROR;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.then;
-import static test.MockLoggerFactory.onlyLogger;
+import static test.JavaUtilLoggingMemento.LOGS;
 
+@ExtendWith(JavaUtilLoggingMemento.class)
 class LoggingBehavior {
-    @AfterEach void cleanup() { MockLoggerFactory.reset(); }
-
     @Test void shouldLogAuto5xxAtError() {
         @Status(INTERNAL_SERVER_ERROR) class CustomException extends Exception {}
+        CustomException exception = new CustomException();
 
-        ProblemDetailBuilder details = problemDetailsFor(new CustomException());
+        ProblemDetailBuilder details = problemDetailsFor(exception);
 
-        then(onlyLogger(CustomException.class)).should().error(eq(details.getLogMessage()), any(CustomException.class));
+        then(LOGS).containsExactly(new Log(CustomException.class.getName(), SEVERE, exception, details.getLogMessage()));
     }
 
     @Test void shouldLogAuto4xxAtDebug() {
         @Status(BAD_REQUEST) class CustomException extends Exception {}
+        CustomException exception = new CustomException();
 
-        ProblemDetailBuilder details = problemDetailsFor(new CustomException());
+        ProblemDetailBuilder details = problemDetailsFor(exception);
 
-        then(onlyLogger(CustomException.class)).should().info(details.getLogMessage());
+        then(LOGS).containsExactly(new Log(CustomException.class.getName(), Level.INFO, null, details.getLogMessage()));
     }
 
     @Test void shouldLogExplicitlyAtError() {
         @Logging(at = ERROR) class CustomException extends Exception {}
+        CustomException exception = new CustomException();
 
-        ProblemDetailBuilder details = problemDetailsFor(new CustomException());
+        ProblemDetailBuilder details = problemDetailsFor(exception);
 
-        then(onlyLogger(CustomException.class)).should().error(eq(details.getLogMessage()), any(CustomException.class));
+        then(LOGS).containsExactly(new Log(CustomException.class.getName(), SEVERE, exception, details.getLogMessage()));
     }
 
     @Test void shouldLogExplicitlyAtWarning() {
         @Logging(at = WARN) class CustomException extends Exception {}
+        CustomException exception = new CustomException();
 
-        ProblemDetailBuilder details = problemDetailsFor(new CustomException());
+        ProblemDetailBuilder details = problemDetailsFor(exception);
 
-        then(onlyLogger(CustomException.class)).should().warn(eq(details.getLogMessage()), any(CustomException.class));
+        then(LOGS).containsExactly(new Log(CustomException.class.getName(), WARNING, exception, details.getLogMessage()));
     }
 
     @Test void shouldLogExplicitlyAtInfo() {
@@ -63,7 +68,7 @@ class LoggingBehavior {
 
         ProblemDetailBuilder details = problemDetailsFor(new CustomException());
 
-        then(onlyLogger(CustomException.class)).should().info(details.getLogMessage());
+        then(LOGS).containsExactly(new Log(CustomException.class.getName(), Level.INFO, null, details.getLogMessage()));
     }
 
     @Test void shouldLogExplicitlyAtDebug() {
@@ -71,7 +76,7 @@ class LoggingBehavior {
 
         ProblemDetailBuilder details = problemDetailsFor(new CustomException());
 
-        then(onlyLogger(CustomException.class)).should().debug(details.getLogMessage());
+        then(LOGS).containsExactly(new Log(CustomException.class.getName(), Level.FINE, null, details.getLogMessage()));
     }
 
     @Test void shouldLogExplicitlyAtOff() {
@@ -79,7 +84,7 @@ class LoggingBehavior {
 
         problemDetailsFor(new CustomException());
 
-        then(onlyLogger(CustomException.class)).shouldHaveNoInteractions();
+        then(LOGS).isEmpty();
     }
 
 
@@ -88,26 +93,30 @@ class LoggingBehavior {
 
         ProblemDetailBuilder details = problemDetailsFor(new CustomException());
 
-        then(onlyLogger("my-errors")).should().info(eq(details.getLogMessage()));
+        then(LOGS).containsExactly(new Log("my-errors", Level.INFO, null, details.getLogMessage()));
     }
 
 
     @Test void shouldLogToPackageAnnotatedCategory() {
-        ProblemDetailBuilder details = problemDetailsFor(new SubException());
+        SubException exception = new SubException();
 
-        then(onlyLogger("warnings")).should().warn(eq(details.getLogMessage()), any(SubException.class));
+        ProblemDetailBuilder details = problemDetailsFor(exception);
+
+        then(LOGS).containsExactly(new Log("warnings", WARNING, exception, details.getLogMessage()));
     }
 
     @Test void shouldOverridePackageAnnotatedLogLevel() {
         ProblemDetailBuilder details = problemDetailsFor(new SubExceptionWithLevel());
 
-        then(onlyLogger("warnings")).should().info(details.getLogMessage());
+        then(LOGS).containsExactly(new Log("warnings", Level.INFO, null, details.getLogMessage()));
     }
 
     @Test void shouldOverridePackageAnnotatedLogCategory() {
-        ProblemDetailBuilder details = problemDetailsFor(new SubExceptionWithCategory());
+        SubExceptionWithCategory exception = new SubExceptionWithCategory();
 
-        then(onlyLogger("sub-cat")).should().warn(eq(details.getLogMessage()), any(SubExceptionWithCategory.class));
+        ProblemDetailBuilder details = problemDetailsFor(exception);
+
+        then(LOGS).containsExactly(new Log("sub-cat", WARNING, exception, details.getLogMessage()));
     }
 
     private MockProblemDetailBuilder problemDetailsFor(Exception exception) {

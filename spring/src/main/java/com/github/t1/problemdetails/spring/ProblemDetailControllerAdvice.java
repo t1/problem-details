@@ -1,7 +1,7 @@
 package com.github.t1.problemdetails.spring;
 
 import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailBuilder;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.eclipse.microprofile.problemdetails.Detail;
 import org.eclipse.microprofile.problemdetails.Extension;
 import org.eclipse.microprofile.problemdetails.ResponseStatus;
@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import static java.util.logging.Level.FINE;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.eclipse.microprofile.problemdetails.Constants.EXCEPTION_MESSAGE_AS_DETAIL;
@@ -42,7 +43,7 @@ import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST
  * The server side tool to convert an exception into a response with a problem detail body
  * as specified in https://tools.ietf.org/html/rfc7807
  */
-@Slf4j
+@Log
 @Order(0)
 @ControllerAdvice
 public class ProblemDetailControllerAdvice {
@@ -65,7 +66,7 @@ public class ProblemDetailControllerAdvice {
             }
         }
 
-        log.debug("handle error", exception);
+        log.log(FINE, "handle error", exception);
         ProblemDetailBuilder problemDetailBuilder = new ProblemDetailBuilder(exception) {
             @Override protected Object buildBody() {
                 if (exception instanceof RestClientResponseException) {

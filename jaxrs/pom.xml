@@ -74,12 +74,6 @@
             <version>2.0.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
-            <scope>provided</scope>
-        </dependency>
 
         <dependency>
             <groupId>io.microprofile.sandbox</groupId>

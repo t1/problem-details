@@ -17,16 +17,6 @@
 
     <properties>
         <problemdetails.version>1.0.0-SNAPSHOT</problemdetails.version>
-        <slf4j.version>1.7.30</slf4j.version>
-
-        <problemdetails-tck-libs>
-            urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
-            urn:mvn:com.github.t1:problem-details-jaxrs:${project.version}:jar
-        </problemdetails-tck-libs>
-        <slf4j-libs>
-            urn:mvn:org.slf4j:slf4j-api:${slf4j.version}:jar
-            urn:mvn:org.slf4j:slf4j-jdk14:${slf4j.version}:jar
-        </slf4j-libs>
     </properties>
 
     <build>
@@ -49,7 +39,10 @@
                         <dependency>io.microprofile.sandbox:problem-details.tck-jar</dependency>
                     </dependenciesToScan>
                     <systemPropertyVariables>
-                        <problemdetails-tck-libs>${problemdetails-tck-libs}</problemdetails-tck-libs>
+                        <problemdetails-tck-libs>
+                            urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
+                            urn:mvn:com.github.t1:problem-details-jaxrs:${project.version}:jar
+                        </problemdetails-tck-libs>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -101,13 +94,10 @@
                     <plugin>
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <configuration>
-                            <systemPropertyVariables>
-                                <problemdetails-tck-libs>${problemdetails-tck-libs} ${slf4j-libs}</problemdetails-tck-libs>
-                            </systemPropertyVariables>
-                            <!-- TODO don't skip these tests but fix the config backdoor on open-liberty -->
+                            <!-- TODO don't skip these tests but fix the config backdoor for open-liberty -->
                             <test>
-                                !CustomExceptionIT
-                                !StandardExceptionMappingIT
+                                !CustomExceptionIT#shouldMapCustomExceptionWithMessageButDisableExceptionMessageAsDetail,
+                                !StandardExceptionMappingIT#shouldMapNullPointerExceptionWithMessageButDisableExceptionMessageAsDetail
                             </test>
                         </configuration>
                     </plugin>
@@ -115,27 +105,7 @@
             </build>
         </profile>
 
-        <profile>
-            <id>payara</id>
-            <activation>
-                <property>
-                    <name>jee-testcontainer</name>
-                    <value>payara</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <systemPropertyVariables>
-                                <problemdetails-tck-libs>${problemdetails-tck-libs} ${slf4j-libs}</problemdetails-tck-libs>
-                            </systemPropertyVariables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
+        <!-- payara runs out of the box -->
 
         <profile>
             <id>tomee</id>

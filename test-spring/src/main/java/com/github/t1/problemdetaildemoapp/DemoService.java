@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.eclipse.microprofile.problemdetails.Status;
 import org.eclipse.microprofile.problemdetails.Type;
 import org.springframework.http.HttpStatus;
@@ -19,11 +19,11 @@ import static java.util.Arrays.asList;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-@Slf4j
+@Log
 @Service
 public class DemoService {
     public Shipment order(int userId, String article, PaymentMethod paymentMethod) {
-        log.info("order [{}] for [{}] by [{}]", article, userId, paymentMethod);
+        log.info("order [" + article + "] for [" + userId + "] by [" + paymentMethod + "]");
 
         int cost = cost(article);
 
@@ -31,7 +31,7 @@ public class DemoService {
 
         deduct(cost, userId);
         String shipmentId = ship(article, userId);
-        log.info("ship {} id {} to {}", article, shipmentId, userId);
+        log.info("ship [" + article + "] id [" + shipmentId + "] to [" + userId + "]");
 
         return new Shipment(shipmentId, userId, article);
     }

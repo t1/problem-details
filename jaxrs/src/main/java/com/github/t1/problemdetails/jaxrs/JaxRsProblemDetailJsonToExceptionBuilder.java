@@ -2,14 +2,12 @@ package com.github.t1.problemdetails.jaxrs;
 
 import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailExceptionRegistry;
 import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailJsonToExceptionBuilder;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Slf4j
 class JaxRsProblemDetailJsonToExceptionBuilder extends ProblemDetailJsonToExceptionBuilder {
     public JaxRsProblemDetailJsonToExceptionBuilder(InputStream entityStream) { super(entityStream); }
 

@@ -11,8 +11,6 @@ import org.eclipse.microprofile.problemdetails.ResponseStatus;
 import org.eclipse.microprofile.problemdetails.Status;
 import org.eclipse.microprofile.problemdetails.Title;
 import org.eclipse.microprofile.problemdetails.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
@@ -23,7 +21,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.logging.Logger;
 
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.SEVERE;
+import static java.util.logging.Level.WARNING;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -236,20 +238,20 @@ public abstract class ProblemDetailBuilder {
                 if (getStatus().code < 500) {
                     logger.info(message);
                 } else {
-                    logger.error(message, exception);
+                    logger.log(SEVERE, message, exception);
                 }
                 break;
             case ERROR:
-                logger.error(message, exception);
+                logger.log(SEVERE, message, exception);
                 break;
             case WARN:
-                logger.warn(message, exception);
+                logger.log(WARNING, message, exception);
                 break;
             case INFO:
                 logger.info(message);
                 break;
             case DEBUG:
-                logger.debug(message);
+                logger.log(FINE, message);
                 break;
             case OFF:
                 break;
@@ -258,8 +260,8 @@ public abstract class ProblemDetailBuilder {
 
     private Logger buildLogger() {
         Logging logging = findLoggingAnnotation();
-        return (logging == null || logging.to().isEmpty()) ? LoggerFactory.getLogger(exception.getClass())
-            : LoggerFactory.getLogger(logging.to());
+        return (logging == null || logging.to().isEmpty()) ? Logger.getLogger(exception.getClass().getName())
+            : Logger.getLogger(logging.to());
     }
 
     private LogLevel buildLogLevel() {
