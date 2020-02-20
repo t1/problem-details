@@ -56,4 +56,4 @@ jobs:
         mvn --batch-mode dependency:get -Dartifact=org.slf4j:slf4j-api:1.7.30:jar
         mvn --batch-mode dependency:get -Dartifact=org.slf4j:slf4j-jdk14:1.7.30:jar
     - name: Build with Maven
-      run: mvn --batch-mode install -Djee-testcontainer=${{ matrix.container }}
+      run: mvn --batch-mode verify -Djee-testcontainer=${{ matrix.container }}
