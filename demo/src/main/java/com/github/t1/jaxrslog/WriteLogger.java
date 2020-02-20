@@ -1,6 +1,6 @@
 package com.github.t1.jaxrslog;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -15,7 +15,7 @@ import java.io.OutputStream;
 import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON;
 
 // TODO RestEasy: this is not registered when it's implemented directly by the LoggingFilter
-@Slf4j
+@Log
 @Provider
 public class WriteLogger implements WriterInterceptor {
     public static final MediaType PROBLEM_DETAIL_JSON_TYPE = MediaType.valueOf(PROBLEM_DETAIL_JSON);
@@ -25,7 +25,7 @@ public class WriteLogger implements WriterInterceptor {
             LoggingOutputStream buffer = new LoggingOutputStream(context.getOutputStream());
             context.setOutputStream(buffer);
             context.proceed();
-            log.info("<-- {}", buffer.copy.toString());
+            log.info("<-- " + buffer.copy.toString());
         } else {
             context.proceed();
         }

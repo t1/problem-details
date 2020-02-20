@@ -18,7 +18,6 @@
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
 
-        <slf4j.version>1.7.30</slf4j.version>
         <resteasy.version>4.4.2.Final</resteasy.version>
         <mp-problem-details.version>1.0.0-SNAPSHOT</mp-problem-details.version>
     </properties>
@@ -70,12 +69,6 @@
             <artifactId>microprofile</artifactId>
             <type>pom</type>
             <version>3.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -170,24 +163,4 @@
             <version>${mp-problem-details.version}</version>
         </dependency>
     </dependencies>
-
-    <profiles>
-        <profile>
-            <!-- required by some but redundant on other JEE containers -->
-            <id>with-slf4j</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                    <version>${slf4j.version}</version>
-                    <!-- not provided any more -->
-                </dependency>
-                <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-jdk14</artifactId>
-                    <version>${slf4j.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>

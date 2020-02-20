@@ -1,6 +1,6 @@
 package com.github.t1.jaxrslog;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientRequestFilter;
@@ -19,7 +19,7 @@ import javax.ws.rs.ext.Provider;
 import java.net.URI;
 import java.util.function.Consumer;
 
-@Slf4j
+@Log
 @Provider
 @PreMatching
 @SuppressWarnings("unused")
@@ -41,11 +41,11 @@ public class LoggingFilter implements
     }
 
     public static LoggingFilter atDebug() {
-        return new LoggingFilter(log::debug);
+        return new LoggingFilter(log::fine);
     }
 
     @SuppressWarnings("unused") public LoggingFilter() {
-        this(log::debug);
+        this(log::fine);
     }
 
     public LoggingFilter(Consumer<String> messageConsumer) {

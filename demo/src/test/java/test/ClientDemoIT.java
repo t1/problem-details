@@ -9,7 +9,7 @@ import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailExceptionRegistry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +40,7 @@ import static test.DemoContainerLaunchingExtension.thenLogged;
  * Demonstrate the client side when mapping exceptions to problem details
  * as presented in the rfc.
  */
-@Slf4j
+@Log
 @ExtendWith(DemoContainerLaunchingExtension.class)
 class ClientDemoIT {
     static {
@@ -134,7 +134,7 @@ class ClientDemoIT {
     }
 
     private Shipment postOrder(String userId, String article, String paymentMethod) {
-        log.info("post order [{}:{}:{}]", userId, article, paymentMethod);
+        log.info("post order [" + userId + ":" + article + ":" + paymentMethod);
 
         try {
             WebTarget target = target()
