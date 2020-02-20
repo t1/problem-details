@@ -30,7 +30,7 @@ jobs:
       matrix:
         container:
         - wildfly
-        - open-liberty:full
+        - open-liberty
         #- payara # TODO Payara run with Microprofile support https://github.com/t1/problem-details/issues/25
         #- tomee # TODO TomEE enable when fixed https://github.com/t1/problem-details/issues/17
         jdk: [8, 11]
@@ -51,9 +51,9 @@ jobs:
       with:
         name: mp-problemdetails
         path: /home/runner/.m2/repository/io/microprofile/sandbox/
-    - name: Pre-fetch slf4j dependencies # required by jee-testcontainers
+    - name: Pre-fetch slf4j dependencies # required by some jee-testcontainers
       run: |
         mvn --batch-mode dependency:get -Dartifact=org.slf4j:slf4j-api:1.7.30:jar
         mvn --batch-mode dependency:get -Dartifact=org.slf4j:slf4j-jdk14:1.7.30:jar
     - name: Build with Maven
-      run: mvn --batch-mode install -Djee-testcontainer=${{ matrix.container }} -Pwith-slf4j
+      run: mvn --batch-mode install -Djee-testcontainer=${{ matrix.container }}

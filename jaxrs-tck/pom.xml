@@ -18,6 +18,15 @@
     <properties>
         <problemdetails.version>1.0.0-SNAPSHOT</problemdetails.version>
         <slf4j.version>1.7.30</slf4j.version>
+
+        <problemdetails-tck-libs>
+            urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
+            urn:mvn:com.github.t1:problem-details-jaxrs:${project.version}:jar
+        </problemdetails-tck-libs>
+        <slf4j-libs>
+            urn:mvn:org.slf4j:slf4j-api:${slf4j.version}:jar
+            urn:mvn:org.slf4j:slf4j-jdk14:${slf4j.version}:jar
+        </slf4j-libs>
     </properties>
 
     <build>
@@ -40,16 +49,8 @@
                         <dependency>io.microprofile.sandbox:problem-details.tck-jar</dependency>
                     </dependenciesToScan>
                     <systemPropertyVariables>
-                        <problemdetails-tck-libs>
-                            <!-- these three are repeated below -->
-                            urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
-                            urn:mvn:com.github.t1:problem-details-jaxrs:${project.version}:jar
-                            urn:mvn:com.github.t1:problem-details-lib:${project.version}:jar
-                        </problemdetails-tck-libs>
+                        <problemdetails-tck-libs>${problemdetails-tck-libs}</problemdetails-tck-libs>
                     </systemPropertyVariables>
-                    <!-- TODO don't skip this test but fix the RI -->
-                    <!-- the RI doesn't inject the ApiException properly in wildfly webTarget -->
-                    <test>!org.eclipse.microprofile.problemdetails.tck.MicroprofileRestClientBridgeIT#shouldMapBridgedFail_webTarget</test>
                 </configuration>
             </plugin>
         </plugins>
@@ -66,8 +67,35 @@
 
     <profiles>
         <profile>
-            <!-- required by some but redundant on other JEE containers -->
-            <id>with-slf4j</id>
+            <id>wildfly</id>
+            <activation>
+                <property>
+                    <name>jee-testcontainer</name>
+                    <value>wildfly</value>
+                </property>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <!-- TODO don't skip this test but fix the injection of the ApiException properly in wildfly webTarget -->
+                            <test>!MicroprofileRestClientBridgeIT#shouldMapBridgedFail_webTarget</test>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>open-liberty</id>
+            <activation>
+                <property>
+                    <name>jee-testcontainer</name>
+                    <value>open-liberty</value>
+                </property>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
@@ -75,15 +103,65 @@
                         <configuration>
                             <systemPropertyVariables>
                                 <problemdetails-tck-libs>
-                                    <!-- these three are a repetition from above -->
-                                    urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
-                                    urn:mvn:com.github.t1:problem-details-jaxrs:${project.version}:jar
-                                    urn:mvn:com.github.t1:problem-details-lib:${project.version}:jar
-                                    <!-- the slf4j dependencies are required only by some containers, but it doesn't hurt the others -->
-                                    urn:mvn:org.slf4j:slf4j-api:${slf4j.version}:jar
-                                    urn:mvn:org.slf4j:slf4j-jdk14:${slf4j.version}:jar
+                                    ${problemdetails-tck-libs}
+                                    ${slf4j-libs}
                                 </problemdetails-tck-libs>
                             </systemPropertyVariables>
+                            <!-- TODO don't skip these tests but fix the config backdoor on open-liberty -->
+                            <test>
+                                !CustomExceptionIT
+                                !StandardExceptionMappingIT
+                            </test>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>payara</id>
+            <activation>
+                <property>
+                    <name>jee-testcontainer</name>
+                    <value>payara</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <problemdetails-tck-libs>
+                                    ${problemdetails-tck-libs}
+                                    ${slf4j-libs}
+                                </problemdetails-tck-libs>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>tomee</id>
+            <activation>
+                <property>
+                    <name>jee-testcontainer</name>
+                    <value>tomee</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <!-- TODO TomEE doesn't write some problem detail entities https://github.com/t1/problem-details/issues/17-->
+                            <test>
+                                !StandardExceptionMappingIT#shouldMapClientWebApplicationExceptionWithoutEntityOrMessage
+                                !StandardExceptionMappingIT#shouldMapClientWebApplicationExceptionWithoutEntityButMessage
+                                !StandardExceptionMappingIT#shouldMapServerWebApplicationExceptionWithoutEntityOrMessage
+                            </test>
                         </configuration>
                     </plugin>
                 </plugins>

@@ -1,6 +1,7 @@
 package com.github.t1.problemdetails.jaxrs;
 
 import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailBuilder;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.problemdetails.ResponseStatus;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -8,6 +9,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
+
+import static org.eclipse.microprofile.problemdetails.Constants.EXCEPTION_MESSAGE_AS_DETAIL;
+import static org.eclipse.microprofile.problemdetails.Constants.EXCEPTION_MESSAGE_AS_DETAIL_DEFAULT;
 
 class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
     private final HttpHeaders requestHeaders;
@@ -42,15 +46,23 @@ class JaxRsProblemDetailBuilder extends ProblemDetailBuilder {
     }
 
     @Override protected boolean useExceptionMessageAsDetail() {
-        return Boolean.parseBoolean(System.getProperty("exceptionMessageAsDetail", "true"))
-            && !hasDefaultMessage();
+        return exceptionMessageAsDetail() && !isDefaultStatusMessage();
     }
 
-    /** We don't want to repeat default messages like `400 Bad Request` */
-    private boolean hasDefaultMessage() {
+    private boolean exceptionMessageAsDetail() {
+        return ConfigProvider.getConfig()
+            .getOptionalValue(EXCEPTION_MESSAGE_AS_DETAIL, Boolean.class)
+            .orElse(EXCEPTION_MESSAGE_AS_DETAIL_DEFAULT);
+    }
+
+    /** We don't want to repeat JAX-RS default messages like `400 Bad Request` */
+    private boolean isDefaultStatusMessage() {
+        return defaultStatusMessage().equals(exception.getMessage());
+    }
+
+    private String defaultStatusMessage() {
         int statusCode = getStatus().code;
-        String defaultMessage = "HTTP " + statusCode + " " + Status.fromStatusCode(statusCode);
-        return defaultMessage.equals(exception.getMessage());
+        return "HTTP " + statusCode + " " + Status.fromStatusCode(statusCode);
     }
 
     @Override protected String findMediaTypeSubtype() {

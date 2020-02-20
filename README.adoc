@@ -130,7 +130,7 @@ Default `mvn` or explicitly `mvn -Djee-testcontainer=wildfly`
 
 ==== Open Liberty
 
-`mvn -Djee-testcontainer=open-liberty:full -Pwith-slf4j`
+`mvn -Djee-testcontainer=open-liberty -Pwith-slf4j`
 
 ==== TomEE
 

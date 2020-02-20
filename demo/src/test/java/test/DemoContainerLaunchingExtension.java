@@ -6,7 +6,6 @@ import org.eclipse.microprofile.problemdetails.tck.ContainerLaunchingExtension;
 import javax.ws.rs.core.Response;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static org.assertj.core.api.Assumptions.assumeThat;
 
 class DemoContainerLaunchingExtension extends ContainerLaunchingExtension {
     @Override protected String runningProperty() { return "problem-details-demo-running"; }

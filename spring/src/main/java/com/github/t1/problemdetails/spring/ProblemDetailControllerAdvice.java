@@ -34,6 +34,8 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static org.eclipse.microprofile.problemdetails.Constants.EXCEPTION_MESSAGE_AS_DETAIL;
+import static org.eclipse.microprofile.problemdetails.Constants.EXCEPTION_MESSAGE_AS_DETAIL_DEFAULT;
 import static org.eclipse.microprofile.problemdetails.ResponseStatus.BAD_REQUEST;
 
 /**
@@ -110,11 +112,12 @@ public class ProblemDetailControllerAdvice {
             }
 
             @Override protected boolean useExceptionMessageAsDetail() {
-                return Boolean.parseBoolean(System.getProperty("exceptionMessageAsDetail", "true"))
+                return Boolean.parseBoolean(System.getProperty(EXCEPTION_MESSAGE_AS_DETAIL,
+                    EXCEPTION_MESSAGE_AS_DETAIL_DEFAULT.toString()))
                     && !hasDefaultMessage();
             }
 
-            /** We don't want to repeat default messages like `400 Bad Request` */
+            /** We don't want to repeat Spring default messages like `400 Bad Request` */
             private boolean hasDefaultMessage() {
                 if (exception instanceof HttpStatusCodeException) {
                     HttpStatus status = ((HttpStatusCodeException) exception).getStatusCode();
