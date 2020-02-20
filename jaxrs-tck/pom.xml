@@ -102,10 +102,7 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <configuration>
                             <systemPropertyVariables>
-                                <problemdetails-tck-libs>
-                                    ${problemdetails-tck-libs}
-                                    ${slf4j-libs}
-                                </problemdetails-tck-libs>
+                                <problemdetails-tck-libs>${problemdetails-tck-libs} ${slf4j-libs}</problemdetails-tck-libs>
                             </systemPropertyVariables>
                             <!-- TODO don't skip these tests but fix the config backdoor on open-liberty -->
                             <test>
@@ -132,10 +129,7 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <configuration>
                             <systemPropertyVariables>
-                                <problemdetails-tck-libs>
-                                    ${problemdetails-tck-libs}
-                                    ${slf4j-libs}
-                                </problemdetails-tck-libs>
+                                <problemdetails-tck-libs>${problemdetails-tck-libs} ${slf4j-libs}</problemdetails-tck-libs>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
