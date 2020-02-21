@@ -55,13 +55,14 @@ jobs:
 
   build:
     strategy:
+      fail-fast: false
       matrix:
         container:
-        #- wildfly
-        #- open-liberty
+        - wildfly
+        - open-liberty
         - payara
         #- tomee # TODO TomEE enable when fixed https://github.com/t1/problem-details/issues/17
-        jdk: [8] #, 11]
+        jdk: [8, 11]
 
     runs-on: ubuntu-latest
     needs: build-microprofile-artifacts
