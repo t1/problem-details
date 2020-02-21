@@ -7,11 +7,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
-@Path("/prices/{articleId}")
 @RegisterRestClient
-@Produces(APPLICATION_JSON)
 public interface PriceService {
+    @Path("/prices/{articleId}")
+    @Produces(TEXT_PLAIN)
     @GET int get(@PathParam("articleId") String articleId);
 }
