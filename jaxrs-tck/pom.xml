@@ -40,8 +40,8 @@
                     </dependenciesToScan>
                     <systemPropertyVariables>
                         <problemdetails-tck-libs>
-                            urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}:jar
-                            urn:mvn:com.github.t1:problem-details-jaxrs:${project.version}:jar
+                            urn:mvn:io.microprofile.sandbox:problem-details-api:${problemdetails.version}
+                            urn:mvn:com.github.t1:problem-details-jaxrs:${project.version}
                         </problemdetails-tck-libs>
                     </systemPropertyVariables>
                 </configuration>
