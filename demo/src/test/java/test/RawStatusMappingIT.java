@@ -18,8 +18,6 @@ class RawStatusMappingIT {
         Response response = post("raw/401");
 
         then(response.getStatusInfo()).isEqualTo(UNAUTHORIZED);
-        if (response.hasEntity())
-            then(response.readEntity(String.class)).isEmpty();
         MediaType contentType = MediaType.valueOf(response.getHeaderString("Content-Type"));
         then(contentType.isCompatible(MediaType.valueOf(PROBLEM_DETAIL_JSON))).isFalse();
     }
