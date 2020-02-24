@@ -18,7 +18,7 @@
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
 
-        <resteasy.version>4.4.2.Final</resteasy.version>
+        <resteasy.version>4.5.0.Final</resteasy.version>
         <mp-problem-details.version>1.0.0-SNAPSHOT</mp-problem-details.version>
     </properties>
 
