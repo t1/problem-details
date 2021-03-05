@@ -1,6 +1,4 @@
-= Problem Detail
-
-image::https://api.bintray.com/packages/t1/javaee-helpers/problem-details/images/download.svg[link="https://bintray.com/t1/javaee-helpers/problem-details/_latestVersion"]
+= Problem Detail image:https://maven-badges.herokuapp.com/maven-central/com.github.t1/problem-details/badge.svg[link=https://search.maven.org/artifact/com.github.t1/problem-details] image:https://github.com/t1/problem-details/actions/workflows/maven.yml/badge.svg[link=https://github.com/t1/problem-details/actions/workflows/maven.yml]
 
 == Abstract
 
