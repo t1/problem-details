@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.github.t1</groupId>
         <artifactId>problem-details</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
+        <version>1.0.7</version>
     </parent>
 
     <artifactId>problem-details-test</artifactId>
-    <version>1.0.7-SNAPSHOT</version>
+    <version>1.0.7</version>
     <packaging>war</packaging>
     <description>Problem Detail test suite for JAX-RS</description>
 
@@ -69,12 +69,12 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-api</artifactId>
-            <version>1.0.7-SNAPSHOT</version>
+            <version>1.0.7</version>
         </dependency>
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-ri</artifactId>
-            <version>1.0.7-SNAPSHOT</version>
+            <version>1.0.7</version>
         </dependency>
 
         <dependency>
