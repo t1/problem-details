@@ -17,9 +17,6 @@
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-
-        <resteasy.version>4.5.3.Final</resteasy.version>
-        <mp-problem-details.version>1.0.0-SNAPSHOT</mp-problem-details.version>
     </properties>
 
     <build>
@@ -55,7 +52,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -94,13 +91,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.6.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.16.1</version>
+            <version>${assertj.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -136,7 +133,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.1.2.Final</version>
+            <version>6.2.0.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -154,7 +151,7 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>jee-testcontainers</artifactId>
-            <version>1.5.1</version>
+            <version>1.5.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>

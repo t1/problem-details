@@ -10,36 +10,51 @@
     <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>Problem Details [RFC-7807] Java API, TCK, and implementations for JAX-RS and Spring Boot</description>
+    <url>https://github.com/t1/problem-details</url>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>utf-8</project.reporting.outputEncoding>
+
+        <mp-problem-details.version>1.0.0-SNAPSHOT</mp-problem-details.version>
+
+        <lombok.version>1.18.18</lombok.version>
+        <resteasy.version>4.5.9.Final</resteasy.version>
+
+        <junit.version>5.7.1</junit.version>
+        <assertj.version>3.19.0</assertj.version>
+        <mockito.version>3.8.0</mockito.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>jcenter</id>
-            <name>jcenter</name>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <repository>
-            <id>bintray-t1-javaee-helpers</id>
-            <name>t1-javaee-helpers</name>
-            <url>https://api.bintray.com/maven/t1/javaee-helpers/problem-details/;publish=1</url>
-        </repository>
-    </distributionManagement>
+    <developers>
+        <developer>
+            <id>t1</id>
+            <name>Rüdiger zu Dohna</name>
+        </developer>
+    </developers>
     <licenses>
         <license>
             <name>Apache License 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <url>http://choosealicense.com/licenses/apache-2.0/</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <name>t1-javaee-helpers</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
     <scm>
-        <developerConnection>scm:git:https://github.com/t1/problem-details</developerConnection>
+        <developerConnection>scm:git:https://github.com/t1/problem-details.git</developerConnection>
         <tag>HEAD</tag>
+        <url>https://github.com/t1/problem-details.git</url>
     </scm>
 
     <build>
@@ -80,6 +95,31 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doclint>-missing</doclint>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -93,4 +133,29 @@
         <module>spring</module>
         <module>test-spring</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- always run source+javadoc => see problems early & source available in local repo -->
+                    <plugin>
+                        <!-- but don't run gpg everywhere, esp. not in github actions -->
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
