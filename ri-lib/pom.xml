@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.github.t1</groupId>
         <artifactId>problem-details</artifactId>
-        <version>1.0.7-SNAPSHOT</version>
+        <version>1.0.8-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>problem-details-ri-lib</artifactId>
-    <version>1.0.7-SNAPSHOT</version>
     <description>Code to be reused by jax-rs as well as spring impls</description>
 
     <properties>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-api</artifactId>
-            <version>1.0.7-SNAPSHOT</version>
+            <version>1.0.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
