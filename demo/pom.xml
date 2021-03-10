@@ -145,7 +145,7 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>jee-testcontainers</artifactId>
-            <version>1.5.3</version>
+            <version>1.5.6</version>
             <scope>test</scope>
         </dependency>
         <dependency>
