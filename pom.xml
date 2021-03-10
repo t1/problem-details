@@ -6,6 +6,7 @@
     <artifactId>problem-details</artifactId>
     <version>1.0.9-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>Problem Details</name>
     <description>Problem Details [RFC-7807] Java API, TCK, and implementations for JAX-RS and Spring Boot</description>
     <url>https://github.com/t1/problem-details</url>
 
@@ -27,6 +28,26 @@
         <mockito.version>3.8.0</mockito.version>
         <jee-testcontainers.version>1.5.3</jee-testcontainers.version>
     </properties>
+
+    <developers>
+        <developer>
+            <id>t1</id>
+            <name>Rüdiger zu Dohna</name>
+        </developer>
+    </developers>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://choosealicense.com/licenses/apache-2.0/</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <developerConnection>scm:git:https://github.com/t1/problem-details.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/t1/problem-details.git</url>
+    </scm>
     <distributionManagement>
         <repository>
             <id>ossrh</id>
@@ -38,25 +59,7 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
-    <licenses>
-        <license>
-            <name>Apache License 2.0</name>
-            <url>http://choosealicense.com/licenses/apache-2.0/</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <scm>
-        <developerConnection>scm:git:https://github.com/t1/problem-details.git</developerConnection>
-        <tag>HEAD</tag>
-        <url>https://github.com/t1/problem-details.git</url>
-    </scm>
 
-    <developers>
-        <developer>
-            <id>t1</id>
-            <name>Rüdiger zu Dohna</name>
-        </developer>
-    </developers>
     <build>
         <defaultGoal>install</defaultGoal>
         <plugins>
@@ -90,14 +93,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagNameFormat>@{project.version}</tagNameFormat>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.2.1</version>
                 <executions>
@@ -122,6 +117,16 @@
                 </executions>
                 <configuration>
                     <doclint>-missing</doclint>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <releaseProfiles>release</releaseProfiles>
                 </configuration>
             </plugin>
             <plugin>
