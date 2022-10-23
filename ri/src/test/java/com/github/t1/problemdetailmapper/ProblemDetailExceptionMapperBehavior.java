@@ -10,12 +10,14 @@ import org.jboss.resteasy.specimpl.ResteasyHttpHeaders;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.ejb.EJBException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Map;
+import java.util.concurrent.CompletionException;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
@@ -23,9 +25,10 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.BDDAssertions.then;
 
+@SuppressWarnings("unused")
 class ProblemDetailExceptionMapperBehavior {
 
-    private ProblemDetailExceptionMapper mapper = new ProblemDetailExceptionMapper();
+    private final ProblemDetailExceptionMapper mapper = new ProblemDetailExceptionMapper();
 
     @BeforeEach void setUp() {
         mapper.requestHeaders = new ResteasyHttpHeaders(new MultivaluedHashMap<>());
@@ -73,13 +76,56 @@ class ProblemDetailExceptionMapperBehavior {
             .containsKey("instance");
     }
 
+    @Test void shouldUnwrapEJBException() {
+        Response problemDetail = mapper.toResponse(new EJBException(new RuntimeException("some message")));
+
+        then(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(problemDetail))
+            .contains(
+                entry("type", URI.create("urn:problem-type:runtime")),
+                entry("title", "Runtime"),
+                entry("status", 500),
+                entry("detail", "some message"))
+            .hasSize(5) // the URN is random
+            .containsKey("instance");
+    }
+
+    @Test void shouldUnwrapIllegalStateException() {
+        Response problemDetail = mapper.toResponse(new IllegalStateException(new RuntimeException("some message")));
+
+        then(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(problemDetail))
+            .contains(
+                entry("type", URI.create("urn:problem-type:runtime")),
+                entry("title", "Runtime"),
+                entry("status", 500),
+                entry("detail", "some message"))
+            .hasSize(5) // the URN is random
+            .containsKey("instance");
+    }
+
+    @Test void shouldUnwrapCompletionException() {
+        Response problemDetail = mapper.toResponse(new CompletionException(new RuntimeException("some message")));
+
+        then(problemDetail.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+        then(problemDetailAsMap(problemDetail))
+            .contains(
+                entry("type", URI.create("urn:problem-type:runtime")),
+                entry("title", "Runtime"),
+                entry("status", 500),
+                entry("detail", "some message"))
+            .hasSize(5) // the URN is random
+            .containsKey("instance");
+    }
+
     @Test void shouldMapWebApplicationExceptionWithResponse() {
         Response in = Response.serverError().entity("some entity").build();
 
-        Response out = mapper.toResponse(new InternalServerErrorException(in));
+        try (Response out = mapper.toResponse(new InternalServerErrorException(in))) {
 
-        then(out.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
-        then(out.getEntity()).isSameAs(in.getEntity());
+            then(out.getStatusInfo()).isEqualTo(INTERNAL_SERVER_ERROR);
+            then(out.getEntity()).isSameAs(in.getEntity());
+        }
     }
 
     @Test void shouldMapCustomExceptionWithFields() {
@@ -90,6 +136,7 @@ class ProblemDetailExceptionMapperBehavior {
             @Extension private final int f1 = 123;
             @SuppressWarnings("unused") private final int unmapped = 456;
             @Instance private final URI instance = URI.create("https://some.domain/some/path");
+            @SuppressWarnings("FieldMayBeFinal")
             @Detail String detail = "some-detail";
         }
 

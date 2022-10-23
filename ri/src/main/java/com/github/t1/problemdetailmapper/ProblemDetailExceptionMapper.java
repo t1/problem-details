@@ -11,14 +11,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.StatusType;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 
 /**
  * Maps exceptions to a response with a body containing problem details
- * as specified in https://tools.ietf.org/html/rfc7807
+ * as specified in <a href="https://tools.ietf.org/html/rfc7807">rfc-7807</a>
  */
 @Slf4j
 @Provider
 public class ProblemDetailExceptionMapper implements ExceptionMapper<Exception> {
+    private static final List<String> UNWRAP = asList("javax.ejb.EJBException", "java.lang.IllegalStateException",
+        "java.util.concurrent.CompletionException");
+
     @Context
     HttpHeaders requestHeaders;
 
@@ -29,6 +35,10 @@ public class ProblemDetailExceptionMapper implements ExceptionMapper<Exception> 
             return response;
         }
 
+        while (UNWRAP.contains(exception.getClass().getName()) && exception.getCause() instanceof Exception /* implies not null */) {
+            exception = (Exception) exception.getCause();
+        }
+
         ProblemDetails problemDetail = new ProblemDetails(exception) {
             @Override protected StatusType fallbackStatus() {
                 return (response != null) ? response.getStatusInfo() : super.fallbackStatus();
@@ -36,8 +46,8 @@ public class ProblemDetailExceptionMapper implements ExceptionMapper<Exception> 
 
             @Override protected boolean hasDefaultMessage() {
                 return exception.getMessage() != null
-                    && exception.getMessage().equals("HTTP " + getStatus().getStatusCode()
-                    + " " + getStatus().getReasonPhrase());
+                       && exception.getMessage().equals("HTTP " + getStatus().getStatusCode()
+                                                        + " " + getStatus().getReasonPhrase());
             }
 
             @Override protected String findMediaTypeSubtype() {
