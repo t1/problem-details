@@ -12,7 +12,7 @@ import org.eclipse.microprofile.problemdetails.Status;
 import org.eclipse.microprofile.problemdetails.Title;
 import org.eclipse.microprofile.problemdetails.Type;
 
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -90,7 +90,7 @@ public abstract class ProblemDetailBuilder {
             }
 
             String packageName = exceptionType.getPackage().getName();
-            if (packageName.startsWith("java.") || packageName.startsWith("javax.")) {
+            if (packageName.startsWith("java.") || packageName.startsWith("javax.") || packageName.startsWith("jakarta.")) {
                 return INTERNAL_SERVER_ERROR;
             }
         }

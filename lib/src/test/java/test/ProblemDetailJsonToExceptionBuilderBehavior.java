@@ -6,8 +6,8 @@ import org.eclipse.microprofile.problemdetails.Extension;
 import org.eclipse.microprofile.problemdetails.Instance;
 import org.junit.jupiter.api.Test;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;

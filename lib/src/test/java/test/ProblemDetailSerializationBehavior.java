@@ -7,7 +7,7 @@ import test.TestData.SomeException;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbConfig;
-import javax.xml.bind.JAXB;
+import jakarta.xml.bind.JAXB;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
@@ -24,7 +24,7 @@ class ProblemDetailSerializationBehavior {
 
         String json = jsonb.toJson(PROBLEM_DETAILS.getBody());
 
-        then(json).isEqualTo("\n" + PROBLEM_DETAIL_JSON);
+        then(json).isEqualTo(PROBLEM_DETAIL_JSON);
     }
 
     // TODO support XML https://github.com/t1/problem-details/issues/6

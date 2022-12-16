@@ -3,5 +3,5 @@
     elementFormDefault = XmlNsForm.QUALIFIED)
 package com.github.t1.problemdetails.jaxrs.lib;
 
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;
