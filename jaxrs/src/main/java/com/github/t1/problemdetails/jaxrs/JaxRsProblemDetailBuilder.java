@@ -4,10 +4,10 @@ import com.github.t1.problemdetails.jaxrs.lib.ProblemDetailBuilder;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.problemdetails.ResponseStatus;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.net.URI;
 
 import static org.eclipse.microprofile.problemdetails.Constants.EXCEPTION_MESSAGE_AS_DETAIL;

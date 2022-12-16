@@ -65,7 +65,7 @@ class JaxRsProblemDetailJsonToExceptionBuilder extends ProblemDetailJsonToExcept
 
     private Throwable createJaxRsException() {
         Class<? extends Throwable> type = ProblemDetailExceptionRegistry.computeFrom(getTypeUri(),
-            "javax.ws.rs.", "Exception");
+            "jakarta.ws.rs.", "Exception");
         return (type == null) ? null : newInstance(getDetail(), type);
     }
 }

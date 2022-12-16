@@ -5,8 +5,8 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.Response;
 
 public class ProblemDetailExceptionMapperExtension implements Extension, BeforeEachCallback {
     private MultivaluedHashMap<String, String> requestHeaders = new MultivaluedHashMap<>();

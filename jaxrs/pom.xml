@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project
-        xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -13,6 +13,11 @@
 
     <artifactId>problem-details-jaxrs</artifactId>
     <description>An implementation for JAX-RS using an ExceptionMapper</description>
+    
+    <properties>
+        <microprofile.version>5.0</microprofile.version>
+        <resteasy.version>6.2.1.Final</resteasy.version>
+    </properties>
 
     <build>
         <defaultGoal>verify</defaultGoal>
@@ -64,14 +69,20 @@
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
-            <version>${microprofile.version}</version>
+            <version>5.0</version>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>2.0.2</version>
+            <version>3.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -126,6 +137,12 @@
             <groupId>org.eclipse</groupId>
             <artifactId>yasson</artifactId>
             <version>${yasson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.config</groupId>
+            <artifactId>geronimo-config-impl</artifactId>
+            <version>1.2.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

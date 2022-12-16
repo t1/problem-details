@@ -10,16 +10,16 @@ import org.eclipse.microprofile.problemdetails.Type;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import javax.ws.rs.ForbiddenException;
-import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.ForbiddenException;
+import jakarta.ws.rs.InternalServerErrorException;
+import jakarta.ws.rs.core.Response;
 import java.net.URI;
 import java.util.Map;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_XML;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.eclipse.microprofile.problemdetails.Constants.PROBLEM_DETAIL_JSON;
