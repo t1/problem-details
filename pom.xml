@@ -19,7 +19,7 @@
         <lombok.version>1.18.18</lombok.version>
         <microprofile.version>3.3</microprofile.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <resteasy.version>3.15.1.Final</resteasy.version>
+        <resteasy.version>3.15.3.Final</resteasy.version>
         <snakeyaml.version>1.28</snakeyaml.version>
         <hibernate.version>6.2.0.Final</hibernate.version>
 
