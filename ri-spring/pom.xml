@@ -11,7 +11,7 @@
 
     <groupId>com.github.t1</groupId>
     <artifactId>problem-details-ri-spring</artifactId>
-    <version>1.0.10-SNAPSHOT</version>
+    <version>1.0.10</version>
     <description>Problem Detail implementation for Spring Boot</description>
     <url>https://github.com/t1/problem-details</url>
 
@@ -47,7 +47,7 @@
         </snapshotRepository>
     </distributionManagement>
     <scm>
-        <tag>HEAD</tag>
+        <tag>v1.0.10</tag>
         <developerConnection>scm:git:https://github.com/t1/problem-details.git</developerConnection>
         <url>https://github.com/t1/problem-details.git</url>
     </scm>
@@ -120,12 +120,12 @@
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-api</artifactId>
-            <version>1.0.10-SNAPSHOT</version>
+            <version>1.0.10</version>
         </dependency>
         <dependency>
             <groupId>com.github.t1</groupId>
             <artifactId>problem-details-ri-lib</artifactId>
-            <version>1.0.10-SNAPSHOT</version>
+            <version>1.0.10</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
