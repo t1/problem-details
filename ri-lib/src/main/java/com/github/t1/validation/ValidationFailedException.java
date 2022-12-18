@@ -7,14 +7,13 @@ import com.github.t1.problemdetail.Title;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
-import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toSet;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
@@ -25,11 +24,15 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 @Status(BAD_REQUEST)
 public class ValidationFailedException extends RuntimeException {
 
-    private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+    private static ValidatorFactory VALIDATOR_FACTORY;
 
     public static void validate(Object object, Class<?>... groups) {
-        Validator validator = VALIDATOR_FACTORY.getValidator();
-        Set<ConstraintViolation<Object>> violations = validator.validate(object, groups);
+        if (VALIDATOR_FACTORY == null) VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+        validate(VALIDATOR_FACTORY, object, groups);
+    }
+
+    public static void validate(ValidatorFactory factory, Object object, Class<?>... groups) {
+        Set<ConstraintViolation<Object>> violations = factory.getValidator().validate(object, groups);
         if (violations.isEmpty())
             return;
         throw new ValidationFailedException(violations);
@@ -48,10 +51,11 @@ public class ValidationFailedException extends RuntimeException {
     }
 
     @Extension
-    public Map<String, String> violations() {
-        return violations.stream()
-            .map(violation -> new SimpleEntry<>(violation.getPropertyPath().toString(), violation.getMessage()))
-            .collect(toMap(Entry::getKey, Entry::getValue));
+    public Map<String, Set<String>> violations() {
+        return violations.stream().collect(groupingBy(
+            (ConstraintViolation<?> violation) -> violation.getPropertyPath().toString(),
+            mapping(ConstraintViolation::getMessage, toSet())
+        ));
     }
 
     private static String rootBean(Set<ConstraintViolation<Object>> violations) {

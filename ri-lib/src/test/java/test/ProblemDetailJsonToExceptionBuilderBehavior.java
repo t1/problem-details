@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class ProblemDetailJsonToExceptionBuilderBehavior {
-    private JsonObjectBuilder entity = Json.createObjectBuilder();
+    private final JsonObjectBuilder entity = Json.createObjectBuilder();
 
     @Test void shouldTriggerNullType() {
         // entity = "{}"

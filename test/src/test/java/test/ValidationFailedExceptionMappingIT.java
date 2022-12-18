@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;
+import java.util.Set;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -22,20 +23,20 @@ class ValidationFailedExceptionMappingIT {
             .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:validation-failed")
             .hasTitle("Validation Failed")
-            .hasDetail("6 violations failed")
+            .hasDetail("10 violations failed")
             .hasUuidInstance()
             .checkExtensions(detail -> then(detail.violations).containsOnly(
-                entry("lastName", "must not be null"),
-                entry("address[0].city", "must not be null"),
-                entry("address[0].street", "must not be null"),
-                entry("address[0].zipCode", "must be greater than 0"),
-                entry("firstName", "must not be null"),
-                entry("born", "must be a past date")
+                entry("lastName", Set.of("must not be null")),
+                entry("address[0].city", Set.of("must not be null")),
+                entry("address[0].street", Set.of("must not be null")),
+                entry("address[0].zipCode", Set.of("must be greater than 0")),
+                entry("firstName", Set.of("must not be null")),
+                entry("born", Set.of("must be a past date"))
             ));
     }
 
     @Data @EqualsAndHashCode(callSuper = true)
     public static class ValidationProblemDetail extends ProblemDetail {
-        private Map<String, String> violations;
+        private Map<String, Set<String>> violations;
     }
 }

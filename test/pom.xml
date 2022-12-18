@@ -110,12 +110,8 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.web</groupId>
-            <artifactId>javax.el</artifactId>
-            <version>2.2.6</version>
-            <scope>test</scope>
+            <!--no EL, as we use org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator-->
+            <!--see https://docs.jboss.org/hibernate/validator/6.2/reference/en-US/html_single/#non-el-message-interpolator-->
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
