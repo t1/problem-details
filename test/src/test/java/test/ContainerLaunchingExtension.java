@@ -25,8 +25,8 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
     private static URI BASE_URI = null;
 
     /**
-     * Stopping is done by the ryuk container... see
-     * https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers
+     * Stopping is done by the ryuk container...
+     * see <a href="https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers">here</a>
      */
     @Override public void beforeAll(ExtensionContext context) {
         if (System.getProperty("testcontainer-running") != null) {
@@ -84,7 +84,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
     }
 
     public static class ProblemDetailAssert<T extends ProblemDetail> extends ResponseAssert<T> {
-        public ProblemDetailAssert(Response response, Class<T> type) { super(response, type); }
+        public ProblemDetailAssert(Response response, Class<T> type) {super(response, type);}
 
         @Override public ProblemDetailAssert<T> hasStatus(Status status) {
             super.hasStatus(status);
@@ -162,7 +162,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         public ResponseAssert<T> hasContentType(MediaType contentType) {
             assertThat(response.getMediaType().isCompatible(contentType))
                 .describedAs("response content type [" + response.getMediaType() + "] "
-                    + "is not compatible with [" + contentType + "]").isTrue();
+                             + "is not compatible with [" + contentType + "]").isTrue();
             return this;
         }
 

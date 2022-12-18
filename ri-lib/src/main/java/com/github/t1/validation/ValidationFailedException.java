@@ -8,6 +8,7 @@ import com.github.t1.problemdetail.Title;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,8 +24,11 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 @Title("Validation Failed")
 @Status(BAD_REQUEST)
 public class ValidationFailedException extends RuntimeException {
+
+    private static final ValidatorFactory VALIDATOR_FACTORY = Validation.buildDefaultValidatorFactory();
+
     public static void validate(Object object, Class<?>... groups) {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Validator validator = VALIDATOR_FACTORY.getValidator();
         Set<ConstraintViolation<Object>> violations = validator.validate(object, groups);
         if (violations.isEmpty())
             return;

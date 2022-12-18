@@ -10,7 +10,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.Mockito.mock;
 
 public class MockLoggerFactory implements ILoggerFactory {
-    private static Map<String, Logger> LOGGERS = new LinkedHashMap<>();
+    private static final Map<String, Logger> LOGGERS = new LinkedHashMap<>();
 
     public static void reset() { LOGGERS.clear(); }
 
