@@ -12,9 +12,6 @@ These defaults can be overridden with annotations.
 == Motivation
 
 
-== Spring
-
-
 == Spec & API
 
 * MUST `application/problem+json`, `application/problem+xml`; SHOULD any, e.g. `+yaml`

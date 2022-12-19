@@ -7,7 +7,7 @@
     <version>2.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Problem Details</name>
-    <description>Problem Details [RFC-7807] Java API, TCK, and implementations for JAX-RS and Spring Boot</description>
+    <description>Problem Details [RFC-7807] Java API, TCK, and implementations for JAX-RS</description>
     <url>https://github.com/t1/problem-details</url>
 
     <properties>
@@ -146,8 +146,6 @@
         <module>api</module>
         <module>ri</module>
         <module>ri-lib</module>
-        <module>ri-spring</module>
-        <!--<module>test-spring</module>-->
         <module>test</module>
     </modules>
 

@@ -1,5 +1,0 @@
-= Problem Details Spring Boot Test Suite
-
-This is the test suite for Spring Boot, i.e. a Spring Boot app exposing various problem detail errors and a set of integration tests using the client side api to check it.
-
-Note that the tests can check various Testcontainers or an already running service, which can also be the JAX-RS test app.
