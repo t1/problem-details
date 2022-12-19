@@ -18,7 +18,7 @@
 
         <lombok.version>1.18.24</lombok.version>
         <microprofile.version>3.3</microprofile.version>
-        <slf4j.version>1.7.36</slf4j.version>
+        <slf4j.version>2.0.6</slf4j.version>
         <resteasy.version>6.2.2.Final</resteasy.version>
         <hibernate.version>8.0.0.Final</hibernate.version>
 
@@ -26,7 +26,7 @@
         <junit.version>5.9.1</junit.version>
         <mockito.version>4.10.0</mockito.version>
         <jee-testcontainers.version>2.0</jee-testcontainers.version>
-        <logback.version>1.2.11</logback.version>
+        <logback.version>1.4.5</logback.version>
     </properties>
 
     <developers>
