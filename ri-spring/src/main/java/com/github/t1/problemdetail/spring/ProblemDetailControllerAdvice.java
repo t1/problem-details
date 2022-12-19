@@ -1,6 +1,8 @@
 package com.github.t1.problemdetail.spring;
 
 import com.github.t1.problemdetail.ri.lib.ProblemDetails;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,14 +14,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientResponseException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 
 /**
  * Maps exceptions to a response with a body containing problem details
- * as specified in https://tools.ietf.org/html/rfc7807
+ * as specified in <a href="https://tools.ietf.org/html/rfc7807">rfc-7807</a>
  */
 @Slf4j
 @ControllerAdvice
@@ -73,17 +73,25 @@ public class ProblemDetailControllerAdvice {
                 }
             }
 
+            public int getStatusCode() {
+                if (exception instanceof HttpStatusCodeException) {
+                    return ((HttpStatusCodeException) exception).getStatusCode().value();
+                } else {
+                    return super.getStatusCode();
+                }
+            }
+
             @Override protected boolean hasDefaultMessage() {
                 if (exception instanceof HttpStatusCodeException) {
                     HttpStatus status = ((HttpStatusCodeException) exception).getStatusCode();
-                    return exception.getMessage().equals(status.value() + " " + status.getReasonPhrase());
+                    return (status.value() + " " + status.getReasonPhrase()).equals(exception.getMessage());
                 } else {
                     return false;
                 }
             }
         };
 
-        return ResponseEntity.status(problemDetail.getStatus().getStatusCode())
+        return ResponseEntity.status(problemDetail.getStatusCode())
             .contentType(MediaType.valueOf(problemDetail.getMediaType()))
             .body(problemDetail.getBody());
     }

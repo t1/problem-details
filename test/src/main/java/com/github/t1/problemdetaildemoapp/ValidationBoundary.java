@@ -4,12 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Positive;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Positive;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 import java.time.LocalDate;
 
 import static com.github.t1.validation.ValidationFailedException.validate;

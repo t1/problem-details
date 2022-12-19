@@ -6,7 +6,7 @@ import com.github.t1.problemdetailmapper.ProblemDetailXmlMessageBodyReader;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;

@@ -2,22 +2,22 @@ package com.github.t1.problemdetaildemoapp;
 
 import lombok.extern.slf4j.Slf4j;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.Provider;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
-import static javax.ws.rs.core.MediaType.CHARSET_PARAMETER;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
+import static jakarta.ws.rs.core.MediaType.CHARSET_PARAMETER;
 
 @Slf4j
 @Provider
@@ -42,8 +42,8 @@ public class LoggingFilter implements ContainerRequestFilter, ContainerResponseF
     }
 
     @Override public void filter(ContainerRequestContext request, ContainerResponseContext response) {
-        log.info("{} response {} -> {}{}", request.getMethod(), request.getUriInfo().getPath(),
-            response.getStatusInfo(), response.hasEntity() ? (":\n" + response.getEntity()) : "");
+        log.info("{} response {} -> {}:{}{}", request.getMethod(), request.getUriInfo().getPath(),
+            response.getStatusInfo(), response.getMediaType(), response.hasEntity() ? (":\n" + response.getEntity()) : "");
     }
 
     private static final List<MediaType> TEXT_TYPES = asList(

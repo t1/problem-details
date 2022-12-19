@@ -2,17 +2,17 @@ package com.github.t1.problemdetailmapper;
 
 import com.github.t1.problemdetail.ProblemDetail;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXB;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.xml.bind.JAXB;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_XML_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
 
 @Provider
 public class ProblemDetailXmlMessageBodyReader implements MessageBodyReader<ProblemDetail> {

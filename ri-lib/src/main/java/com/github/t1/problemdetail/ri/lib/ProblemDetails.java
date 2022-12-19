@@ -12,8 +12,8 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.Response.StatusType;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -31,9 +31,9 @@ import java.util.UUID;
 
 import static com.github.t1.problemdetail.LogLevel.AUTO;
 import static java.util.stream.Collectors.joining;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 /**
  * Tech stack independent collector. Template methods can be overridden to provide tech stack specifics.
@@ -76,6 +76,10 @@ public abstract class ProblemDetails {
         body.putAll(buildExtensions());
 
         return body;
+    }
+
+    public int getStatusCode() {
+        return buildStatus().getStatusCode();
     }
 
     protected StatusType buildStatus() {

@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import java.net.URI;
 import java.util.List;
 
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
 
 @Type("https://example.com/probs/out-of-credit")
 @Title("You do not have enough credit.")

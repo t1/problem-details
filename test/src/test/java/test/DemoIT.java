@@ -9,18 +9,18 @@ import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.json.bind.annotation.JsonbProperty;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.Form;
-import javax.ws.rs.core.Response;
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.core.Form;
+import jakarta.ws.rs.core.Response;
 import java.net.URI;
 import java.time.LocalDate;
 
 import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_1;
 import static com.github.t1.problemdetaildemoapp.DemoBoundary.ACCOUNT_2;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.BDDAssertions.then;
 import static test.ContainerLaunchingExtension.target;

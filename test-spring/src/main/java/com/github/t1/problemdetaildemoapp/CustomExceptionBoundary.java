@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
 
 @RestController
 @RequestMapping(path = "/custom")

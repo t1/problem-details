@@ -3,14 +3,14 @@ package com.github.t1.problemdetailmapper;
 import com.github.t1.problemdetail.ri.lib.ProblemDetails;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.StatusType;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.ext.Provider;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -22,7 +22,7 @@ import static java.util.Arrays.asList;
 @Slf4j
 @Provider
 public class ProblemDetailExceptionMapper implements ExceptionMapper<Exception> {
-    private static final List<String> UNWRAP = asList("javax.ejb.EJBException", "java.lang.IllegalStateException",
+    private static final List<String> UNWRAP = asList("jakarta.ejb.EJBException", "java.lang.IllegalStateException",
         "java.util.concurrent.CompletionException");
 
     @Context

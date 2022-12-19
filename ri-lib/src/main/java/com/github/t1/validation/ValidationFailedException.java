@@ -5,16 +5,16 @@ import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toSet;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
  * Can be mapped as <code>problem detail</code>, exposing only the violations, but not the

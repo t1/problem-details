@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.BDDAssertions.then;
 import static test.ContainerLaunchingExtension.testPost;
@@ -23,7 +23,7 @@ class ValidationFailedExceptionMappingIT {
             .hasContentType(PROBLEM_DETAIL_JSON)
             .hasType("urn:problem-type:validation-failed")
             .hasTitle("Validation Failed")
-            .hasDetail("10 violations failed")
+            .hasDetail("6 violations failed")
             .hasUuidInstance()
             .checkExtensions(detail -> then(detail.violations).containsOnly(
                 entry("lastName", Set.of("must not be null")),

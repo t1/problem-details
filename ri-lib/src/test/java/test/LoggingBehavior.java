@@ -16,8 +16,8 @@ import static com.github.t1.problemdetail.LogLevel.ERROR;
 import static com.github.t1.problemdetail.LogLevel.INFO;
 import static com.github.t1.problemdetail.LogLevel.OFF;
 import static com.github.t1.problemdetail.LogLevel.WARNING;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.mockito.BDDMockito.then;
 import static test.MockLoggerFactory.onlyLogger;
 

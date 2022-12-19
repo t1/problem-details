@@ -1,6 +1,6 @@
 package com.github.t1.problemdetail;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 public class Constants {
     /**

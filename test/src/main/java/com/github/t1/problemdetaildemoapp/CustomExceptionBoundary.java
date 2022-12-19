@@ -7,11 +7,11 @@ import com.github.t1.problemdetail.Status;
 import com.github.t1.problemdetail.Title;
 import com.github.t1.problemdetail.Type;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 import java.net.URI;
 
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
 
 @Path("/custom")
 public class CustomExceptionBoundary {
@@ -29,7 +29,7 @@ public class CustomExceptionBoundary {
 
     @Path("/explicit-type")
     @POST public void customTypeException() {
-        @Type("http://error-codes.org/out-of-memory")
+        @Type("https://error-codes.org/out-of-memory")
         class SomeException extends RuntimeException {}
         throw new SomeException();
     }
@@ -91,7 +91,7 @@ public class CustomExceptionBoundary {
     @Path("/private-detail-field")
     @POST public void privateDetailField() {
         class SomeMessageException extends RuntimeException {
-            @Detail private String detail = "some detail";
+            @Detail private final String detail = "some detail";
 
             public SomeMessageException(String message) {
                 super(message);
@@ -103,8 +103,8 @@ public class CustomExceptionBoundary {
     @Path("/multi-detail-fields")
     @POST public void multiDetailField() {
         class SomeMessageException extends RuntimeException {
-            @Detail public String detail1 = "detail a";
-            @Detail public String detail2 = "detail b";
+            @Detail public final String detail1 = "detail a";
+            @Detail public final String detail2 = "detail b";
         }
         throw new SomeMessageException();
     }
@@ -114,8 +114,8 @@ public class CustomExceptionBoundary {
         class SomeMessageException extends RuntimeException {
             @Detail public String detail0() { return "detail a"; }
 
-            @Detail public String detail1 = "detail b";
-            @Detail public String detail2 = "detail c";
+            @Detail public final String detail1 = "detail b";
+            @Detail public final String detail2 = "detail c";
         }
         throw new SomeMessageException();
     }
@@ -155,7 +155,7 @@ public class CustomExceptionBoundary {
     @Path("/extension-field")
     @POST public void customExtensionField() {
         class SomeMessageException extends RuntimeException {
-            @Extension public String ex = "some extension";
+            @Extension public final String ex = "some extension";
         }
         throw new SomeMessageException();
     }
@@ -163,7 +163,7 @@ public class CustomExceptionBoundary {
     @Path("/extension-field-with-name")
     @POST public void customExtensionFieldWithName() {
         class SomeMessageException extends RuntimeException {
-            @Extension("foo") public String ex = "some extension";
+            @Extension("foo") public final String ex = "some extension";
         }
         throw new SomeMessageException();
     }
@@ -175,8 +175,8 @@ public class CustomExceptionBoundary {
 
             @Extension("m2") String method() { return "method 2"; }
 
-            @Extension String f1 = "field 1";
-            @Extension("f2") String field = "field 2";
+            @Extension final String f1 = "field 1";
+            @Extension("f2") final String field = "field 2";
         }
         throw new SomeMessageException();
     }

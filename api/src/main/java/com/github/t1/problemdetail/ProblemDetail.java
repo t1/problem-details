@@ -1,6 +1,6 @@
 package com.github.t1.problemdetail;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 import java.net.URI;
 import java.util.Objects;
 

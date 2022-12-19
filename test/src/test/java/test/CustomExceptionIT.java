@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static com.github.t1.problemdetail.Constants.PROBLEM_DETAIL_JSON;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static test.ContainerLaunchingExtension.testPost;
 
 @ExtendWith(ContainerLaunchingExtension.class)
@@ -36,7 +36,7 @@ class CustomExceptionIT {
         testPost("/custom/explicit-type")
             .hasStatus(INTERNAL_SERVER_ERROR)
             .hasContentType(PROBLEM_DETAIL_JSON)
-            .hasType("http://error-codes.org/out-of-memory")
+            .hasType("https://error-codes.org/out-of-memory")
             .hasTitle("Some")
             .hasDetail(null)
             .hasUuidInstance();

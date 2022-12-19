@@ -3,6 +3,7 @@ package com.github.t1.problemdetaildemoapp;
 import com.github.t1.problemdetail.Detail;
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Status;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.time.LocalDate;
 
+import static jakarta.ws.rs.core.Response.Status.FORBIDDEN;
 import static java.util.Arrays.asList;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 @Slf4j
 @RestController

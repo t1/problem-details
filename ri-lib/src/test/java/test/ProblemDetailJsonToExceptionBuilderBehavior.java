@@ -5,8 +5,8 @@ import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
 import org.junit.jupiter.api.Test;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
