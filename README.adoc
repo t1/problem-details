@@ -67,3 +67,7 @@ ValidationFailedExceptionMappingIT.shouldMapValidationFailedException
 
 fails due to lack of jdk11 support of the https://hub.docker.com/r/payara/server-full[`payara`] image.
 needs dependencies on slf4j-api and slf4j-jdk14
+
+== Spring
+
+We build for JDK 11 and the Jakarta EE 10 APIs. The current versions of Spring Boot don't support this combination. But you can still use the older `com.github.t1:problem-details-api:1.0.10`, which was based on Jakarta EE 8.
