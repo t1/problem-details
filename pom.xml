@@ -17,7 +17,7 @@
         <project.reporting.outputEncoding>utf-8</project.reporting.outputEncoding>
 
         <lombok.version>1.18.24</lombok.version>
-        <microprofile.version>5.0</microprofile.version>
+        <microprofile.version>6.0</microprofile.version>
         <slf4j.version>2.0.6</slf4j.version>
         <resteasy.version>6.2.2.Final</resteasy.version>
         <hibernate.version>8.0.0.Final</hibernate.version>
