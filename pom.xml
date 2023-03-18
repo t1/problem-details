@@ -4,7 +4,7 @@
 
     <groupId>com.github.t1</groupId>
     <artifactId>problem-details</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Problem Details</name>
     <description>Problem Details [RFC-7807] Java API, TCK, and implementations for JAX-RS</description>
@@ -45,7 +45,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/t1/problem-details.git</developerConnection>
-        <tag>v3.0.0</tag>
+        <tag>HEAD</tag>
         <url>https://github.com/t1/problem-details.git</url>
     </scm>
     <distributionManagement>
