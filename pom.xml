@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>utf-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>utf-8</project.reporting.outputEncoding>
 
-        <lombok.version>1.18.26</lombok.version>
+        <lombok.version>1.18.28</lombok.version>
         <microprofile.version>6.0</microprofile.version>
         <slf4j.version>2.0.7</slf4j.version>
         <resteasy.version>6.2.4.Final</resteasy.version>
