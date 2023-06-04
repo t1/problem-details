@@ -32,7 +32,7 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
         if (System.getProperty("testcontainer-running") != null) {
             BASE_URI = URI.create(System.getProperty("testcontainer-running"));
         } else if (BASE_URI == null) {
-            JeeContainer container = JeeContainer.create("wildfly:27.0.1.Final-jdk17-graphql")
+            JeeContainer container = JeeContainer.create("rdohna/wildfly:27.0.1.Final-jdk17-graphql")
                 .withDeployment("target/problem-details-test.war");
             container.start();
             BASE_URI = container.baseUri();

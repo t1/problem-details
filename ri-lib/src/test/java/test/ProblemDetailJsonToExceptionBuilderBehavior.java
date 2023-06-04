@@ -3,17 +3,16 @@ package test;
 import com.github.t1.problemdetail.Extension;
 import com.github.t1.problemdetail.Instance;
 import com.github.t1.problemdetail.ri.lib.ProblemDetailJsonToExceptionBuilder;
-import org.junit.jupiter.api.Test;
-
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;
+import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.BDDAssertions.then;
 
 class ProblemDetailJsonToExceptionBuilderBehavior {
@@ -38,7 +37,7 @@ class ProblemDetailJsonToExceptionBuilderBehavior {
     @Test void shouldBuildNullPointer() {
         entity.add("type", "urn:problem-type:null-pointer");
 
-        NullPointerException thrown = catchThrowableOfType(this::trigger, NullPointerException.class);
+        Exception thrown = catchException(this::trigger);
 
         assertThat(thrown)
             .isInstanceOf(NullPointerException.class)
@@ -50,9 +49,9 @@ class ProblemDetailJsonToExceptionBuilderBehavior {
     @Test void shouldBuildCustomType() {
         givenRegisteredType(CustomException.class);
 
-        CustomException thrown = catchThrowableOfType(this::trigger, CustomException.class);
+        Exception thrown = catchException(this::trigger);
 
-        assertThat(thrown).hasMessage(null);
+        assertThat(thrown).isInstanceOf(CustomException.class).hasMessage(null);
     }
 
     public static class CustomWithStringInstanceException extends RuntimeException {
