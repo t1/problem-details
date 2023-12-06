@@ -29,6 +29,7 @@
         <junit.version>5.7.1</junit.version>
         <assertj.version>3.19.0</assertj.version>
         <mockito.version>3.8.0</mockito.version>
+        <logback.version>1.2.12</logback.version>
     </properties>
 
     <developers>
