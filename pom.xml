@@ -24,7 +24,7 @@
 
         <assertj.version>3.25.3</assertj.version>
         <junit.version>5.10.2</junit.version>
-        <mockito.version>5.10.0</mockito.version>
+        <mockito.version>5.11.0</mockito.version>
         <jee-testcontainers.version>2.1</jee-testcontainers.version>
         <logback.version>1.5.1</logback.version>
     </properties>
