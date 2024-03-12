@@ -2,17 +2,24 @@
 
 == Abstract
 
-Map standard and custom exceptions to a http response body
-containing problem details as specified in https://tools.ietf.org/html/rfc7807[RFC-7807].
+Map standard and custom exceptions to a http response body containing problem details as specified in https://datatracker.ietf.org/doc/html/rfc9457[RFC-9457] (formerly https://datatracker.ietf.org/doc/html/rfc7807[RFC-7807]).
 
 Most things work out of the box: the `type` and `title` fields are derived from the exception class name; the `detail` field is the message of the exception; the `instance` field is a random UUID URN that is also logged together with the complete stack trace.
 
-These defaults can be overridden with annotations.
+These defaults and the status code can be overridden with annotations.
 
 == Motivation
 
+Getting a consistent error response format for a REST API is a common problem and allows clients to handle specific business errors. Getting some generic HTML response is not helpful. There is a standard for this type of details about an error: RFC-9457. And this library provides a simple way to map exceptions to this format.
 
 == Spec & API
+
+This has been proposed to and rejected by several existing specs:
+
+* https://github.com/jakartaee/rest/issues/839[Jakarta REST (JAX-RS)]; a second discussion was also https://github.com/jakartaee/rest/issues/1150[rejected].
+* https://github.com/eclipse/microprofile-rest-client/issues/248[MP REST Client].
+
+The API in the `api` module looks quite stable. Some first ideas for a full spec follow below. It's yet far from complete, but it's a start:
 
 * MUST `application/problem+json`, `application/problem+xml`; SHOULD any, e.g. `+yaml`
 * SHOULD render `text/html`
@@ -22,12 +29,11 @@ These defaults can be overridden with annotations.
 * multiple extensions with the same name: undefined behavior
 * JAXB can't unmarshal a subclass with the same type and namespace
 * Security considerations: nothing dangerous in problem details (i.e. exception message); stack-trace in logs
-
-// TODO scan client classpath for @Type annotated exceptions (and document this in the spec and the annotation)
-// TODO inherited annotations
-// TODO cause annotations
-// TODO type factory, e.g. URL to OpenAPI
-// TODO instance factory, e.g. URL to the logging system filtering on an UUID
+* TODO scan client classpath for @Type annotated exceptions (and document this in the spec and the annotation)
+* TODO inherited annotations
+* TODO cause annotations
+* TODO type factory, e.g. URL to OpenAPI
+* TODO instance factory, e.g. URL to the logging system filtering on an UUID
 
 == Dummy-Impl [ri]
 
