@@ -8,6 +8,8 @@ Most things work out of the box: the `type` and `title` fields are derived from 
 
 These defaults and the status code can be overridden with annotations.
 
+I wrote a https://www.codecentric.de/wissens-hub/blog/rfc-7807-problem-details-with-spring-boot-and-jax-rs[blog] about this.
+
 == Motivation
 
 Getting a consistent error response format for a REST API is a common problem and allows clients to handle specific business errors. Getting some generic HTML response is not helpful. There is a standard for this type of details about an error: RFC-9457. And this library provides a simple way to map exceptions to this format.
