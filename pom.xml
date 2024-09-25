@@ -23,7 +23,7 @@
         <hibernate.version>8.0.1.Final</hibernate.version>
 
         <assertj.version>3.26.3</assertj.version>
-        <junit.version>5.11.0</junit.version>
+        <junit.version>5.11.1</junit.version>
         <mockito.version>5.13.0</mockito.version>
         <jee-testcontainers.version>2.1</jee-testcontainers.version>
         <logback.version>1.5.8</logback.version>
