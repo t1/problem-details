@@ -22,7 +22,7 @@
         <resteasy.version>6.2.11.Final</resteasy.version>
         <hibernate.version>8.0.2.Final</hibernate.version>
 
-        <assertj.version>3.27.2</assertj.version>
+        <assertj.version>3.27.3</assertj.version>
         <junit.version>5.11.4</junit.version>
         <mockito.version>5.15.2</mockito.version>
         <jee-testcontainers.version>2.1</jee-testcontainers.version>
