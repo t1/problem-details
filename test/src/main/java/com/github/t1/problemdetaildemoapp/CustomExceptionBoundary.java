@@ -79,7 +79,7 @@ public class CustomExceptionBoundary {
     @Path("/public-detail-field")
     @POST public void publicDetailField() {
         class SomeMessageException extends RuntimeException {
-            @Detail public String detail = "some detail";
+            @Detail public final String detail = "some detail";
 
             public SomeMessageException(String message) {
                 super(message);
@@ -128,7 +128,7 @@ public class CustomExceptionBoundary {
         throw new SomeMessageException();
     }
 
-    @Path("/explicit-uri-instance")
+    @Path("/explicit-instance")
     @POST public void customInstanceException() {
         class SomeException extends RuntimeException {
             @Instance URI instance() { return URI.create("foobar"); }

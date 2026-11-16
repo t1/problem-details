@@ -5,6 +5,7 @@ import com.github.t1.problemdetailmapper.ProblemDetailJsonMessageBodyReader;
 import com.github.t1.problemdetailmapper.ProblemDetailXmlMessageBodyReader;
 import com.github.t1.testcontainers.jee.JeeContainer;
 import org.assertj.core.api.Condition;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -28,11 +29,11 @@ class ContainerLaunchingExtension implements Extension, BeforeAllCallback {
      * Stopping is done by the ryuk container...
      * see <a href="https://www.testcontainers.org/test_framework_integration/manual_lifecycle_control/#singleton-containers">here</a>
      */
-    @Override public void beforeAll(ExtensionContext context) {
+    @Override public void beforeAll(@NonNull ExtensionContext context) {
         if (System.getProperty("testcontainer-running") != null) {
             BASE_URI = URI.create(System.getProperty("testcontainer-running"));
         } else if (BASE_URI == null) {
-            JeeContainer container = JeeContainer.create("rdohna/wildfly:27.0.1.Final-jdk17-graphql")
+            JeeContainer container = JeeContainer.create("rdohna/wildfly:36.0.1.Final-jdk17-graphql")
                 .withDeployment("target/problem-details-test.war");
             container.start();
             BASE_URI = container.baseUri();
