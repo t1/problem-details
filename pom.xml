@@ -4,7 +4,7 @@
 
     <groupId>com.github.t1</groupId>
     <artifactId>problem-details</artifactId>
-    <version>3.0.4-SNAPSHOT</version>
+    <version>3.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Problem Details</name>
     <description>Problem Details [RFC-9457] Java API, TCK, and implementations for JAX-RS and (currently not) Spring Boot</description>

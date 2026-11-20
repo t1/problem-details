@@ -5,11 +5,12 @@
     <parent>
         <groupId>com.github.t1</groupId>
         <artifactId>problem-details</artifactId>
-        <version>3.0.4-SNAPSHOT</version>
+        <version>3.0.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>problem-details-api</artifactId>
+    <name>api</name>
     <description>Problem Detail API</description>
 
     <properties>
