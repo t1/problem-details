@@ -4,10 +4,10 @@
 
     <groupId>com.github.t1</groupId>
     <artifactId>problem-details</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.0.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Problem Details</name>
-    <description>Problem Details [RFC-7807] Java API, TCK, and implementations for JAX-RS</description>
+    <description>Problem Details [RFC-9457] Java API, TCK, and implementations for JAX-RS and (currently not) Spring Boot</description>
     <url>https://github.com/t1/problem-details</url>
 
     <properties>
@@ -48,17 +48,6 @@
         <tag>HEAD</tag>
         <url>https://github.com/t1/problem-details.git</url>
     </scm>
-    <distributionManagement>
-        <repository>
-            <id>ossrh</id>
-            <name>t1-javaee-helpers</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <build>
         <defaultGoal>install</defaultGoal>
@@ -143,13 +132,14 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.7.0</version>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.12.0</version>
+                <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <publishingServerId>central</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
                 </configuration>
             </plugin>
         </plugins>
